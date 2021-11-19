@@ -1,6 +1,6 @@
+require('dotenv').config();
 const mongoose = require('mongoose');
-
-const DB_URI = "mongodb+srv://admin:yatrasansar14.com@cluster0.lqavg.mongodb.net/travelApp?retryWrites=true&w=majority";
+const DB_URI = process.env.MONGODB_URI;
 
 const Connect = () => {
   return mongoose.connect(DB_URI);
