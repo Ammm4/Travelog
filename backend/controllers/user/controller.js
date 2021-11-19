@@ -5,17 +5,19 @@ const jwt = require('jsonwebtoken');
 const { validationResult } = require('express-validator');
 
 //================== Token Generator ========================//
+
 function createAccessToken(id) {
   return jwt.sign({ id } , process.env.ACCESS_TOKEN_SECRET, { expiresIn:'15m' });
 }
-function createRefreshToken(id) {
-  return jwt.sign({ id } , process.env.REFRESH_TOKEN_SECRET, { expiresIn:'7d' });
-}
+
 
 const cookie_Options = {
   expires:new Date(Date.now + process.env.COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000),
   httpOnly: true
 }
+
+// ===================== Controllers ===========================//
+
 //==================== SignUp User =========================//
 const signUpUser = async (req, res, next) => {
   try {
@@ -53,8 +55,6 @@ const signUpUser = async (req, res, next) => {
     const result = await user.save();
     if(result) {
       const AccessToken = createAccessToken(user._id);
-      //const RefreshToken = createRefreshToken(user._id);
-      
       return res.status(201).cookie('Token', AccessToken, cookie_Options).send({
         success: true,
         message: 'User Successfully created!!',
@@ -84,10 +84,9 @@ const loginUser = async (req, res, next) => {
     if(user) {
       const match = await bcrypt.compare(password, user.password);
       if(match) {
-        //========== Create AccessToken and RefreshToken ========= //
-        const AccessToken = jwt.sign({ user: user.username} , process.env.ACCESS_TOKEN_SECRET, { expiresIn:'15m' });
-        const RefreshToken = jwt.sign({ user: user.username} , process.env.REFRESH_TOKEN_SECRET, { expiresIn:'7d' });
-        return res.status(200).cookie('RefreshToken', RefreshToken, { cookie_Options }).send({message: 'success', user})
+        //========== Create AccessToken ========= //
+        const AccessToken = jwt.sign({ id: user._id} , process.env.ACCESS_TOKEN_SECRET, { expiresIn:'15m' });
+        return res.status(200).cookie('Token', AccessToken, { cookie_Options }).send({message: 'success', user})
       } else {
         return res.send('Wrong Email or Password')
       }

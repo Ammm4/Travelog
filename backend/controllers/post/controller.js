@@ -9,7 +9,7 @@ const getPostDetail = (req, res, next) => {
 }
 
 const addPost = async( req, res ) => {
-  const { author, title, place, images, likes, comments, replies } = req.body;
+  const { author, title, place, images, description, cost, attractions, todoList } = req.body;
   
   try {
    const post = new PostModel({
@@ -17,9 +17,12 @@ const addPost = async( req, res ) => {
      title,
      place,
      images,
-     likes,
-     comments,
-     replies
+     description,
+     cost,
+     attractions,
+     todoList,
+     likes:[],
+     comments:[],
    })
     const result = await post.save();
     if(result) {
