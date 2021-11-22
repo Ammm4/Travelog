@@ -1,21 +1,31 @@
 const { PostModel }  = require("../../database/models/PostModel.js");
+const ErrorHandler = require("../../utils/errorHandler.js");
 
-const getPosts = (req, res, next) => {
-  res.status(201).send('Hi from Posts!!')
-}
+const asyncFunctionWrapper =  require('../../utils/asyncFunctionWrapper');
 
-const getPostDetail = (req, res, next) => {
-  res.status(201).send('Hi from Post!!')
-}
+const getAllPosts = asyncFunctionWrapper(async (req, res, next) => {
+    const posts = await PostModel.find(); 
+    res.status(201).json({
+      success: true,
+      posts
+    })
+});
 
-const addPost = async( req, res ) => {
-  const { author, title, place, images, description, cost, attractions, todoList } = req.body;
-  
-  try {
-   const post = new PostModel({
+const getSinglePost = asyncFunctionWrapper(async (req, res, next) => {
+   const post = await PostModel.findById(req.params.id);
+   if(!post) return next(new ErrorHandler("Post not found", 404))
+   res.status(200).json({
+      success: true,
+      post
+   })   
+})
+
+const addPost = asyncFunctionWrapper( async ( req, res, next ) => {
+  const { author, title, destination, images, description, cost, attractions, todoList } = req.body;
+  const post = new PostModel({
      author,
      title,
-     place,
+     destination,
      images,
      description,
      cost,
@@ -24,29 +34,32 @@ const addPost = async( req, res ) => {
      likes:[],
      comments:[],
    })
-    const result = await post.save();
-    if(result) {
-      return res.status(201).send(result);
-    } else {
-      console.log('Something went Worng')
-    }
-  } catch(e) {
-    console.log(e.message)
-  }
-  res.status(201).send('Hi from Post Request!!')
-};
+  const result = await post.save();
+  res.status(201).send({success: true, message: "Post successfully Created!!", result});
+})
 
-const updatePost = async (req, res) => {
- res.status(201).send('Hi from Patch Post!!')
-}
+const updatePost = asyncFunctionWrapper(async (req, res, next) => {
+  post = await PostModel.findByIdAndUpdate(req.params.id, req.body, {new: true, runValidators: true, useFindandModify:false}) 
+  if(!post) return next(new ErrorHandler("Post not found", 400))
+  res.status(200).json({
+    success: true,
+    message:"Post successfully updated!!",
+    post
+  })
+})
 
-const deletePost = async (req, res) => {
-    res.status(201).send('Hi from Delete Post!!')
-}
+const deletePost = asyncFunctionWrapper(async (req, res, next) => {
+  const post = await PostModel.findById(req.params.id);
+  if(!post) return next(new ErrorHandler("Post not found", 400))
+  await post.remove();
+  res.status(201).json({
+    success: true,
+    message: "Post is successfully Deleted!!"}) 
+})
 
 module.exports = {
-  getPosts,
-  getPostDetail,
+  getAllPosts,
+  getSinglePost,
   addPost,
   updatePost,
   deletePost

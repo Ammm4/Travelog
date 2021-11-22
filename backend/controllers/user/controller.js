@@ -3,13 +3,15 @@ const { UserModel }  = require("../../database/models/userModel.js");
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { validationResult } = require('express-validator');
+const asyncFunctionWrapper = require('../../utils/asyncFunctionWrapper.js');
+const ErrorHandler = require('../../utils/errorHandler.js');
+
 
 //================== Token Generator ========================//
 
 function createAccessToken(id) {
   return jwt.sign({ id } , process.env.ACCESS_TOKEN_SECRET, { expiresIn:'15m' });
 }
-
 
 const cookie_Options = {
   expires:new Date(Date.now + process.env.COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000),
@@ -19,25 +21,22 @@ const cookie_Options = {
 // ===================== Controllers ===========================//
 
 //==================== SignUp User =========================//
-const signUpUser = async (req, res, next) => {
-  try {
-    const { username, email, password } = req.body;
-
-    // Validate Email and Password
-    const errors = validationResult(req);
-    if(!errors.isEmpty()){
-      return res.status(400).json({errors: errors.array()})
-    }
-
-   // Check if email already exists
-   const emailExists = await UserModel.findOne({email: email});
-     if(emailExists) return res.status(400).send({error: {msg: 'Email already exists'}});
-
+const signUpUser = asyncFunctionWrapper(async (req, res, next) => {
+  const { username, email, password } = req.body;
+  // Validate Email and Password
+  const errors = validationResult(req);
+  if(!errors.isEmpty()){
+    const errorMessage = errors.array()[0].msg;
+    return next(new ErrorHandler(errorMessage, 400))
+  }
+  // Check if email already exists
+  const emailExists = await UserModel.findOne({email: email});
+  if(emailExists) return next(new ErrorHandler('User already exists', 400));
  // If email doesnot exists hash the password
-   const hashedPassword = await bcrypt.hash(password, 10);
+  const hashedPassword = await bcrypt.hash(password, 10);
 
  // Insert user in the database
-   const user = new UserModel({
+  const user = new UserModel({
      username,
      email,
      password: hashedPassword,
@@ -52,51 +51,35 @@ const signUpUser = async (req, res, next) => {
      comments:[]
    });
 
-    const result = await user.save();
-    if(result) {
-      const AccessToken = createAccessToken(user._id);
-      return res.status(201).cookie('Token', AccessToken, cookie_Options).send({
-        success: true,
-        message: 'User Successfully created!!',
-        user
-      });
-    } else {
-      console.log('Something went Worng')
-    }
-  } catch(e) {
-    console.log(e.message)
-  }
-  res.status(201).send('Hi from Signup')
+  const result = await user.save();
+  const AccessToken = createAccessToken(user._id);
+  return res.status(201).cookie('Token', AccessToken, cookie_Options).send({
+    success: true,
+    message: 'User Successfully created!!',
+    result
+  })
 }
-
+)
 
 
 //==================== Login/SignIn User =========================//
-const loginUser = async (req, res, next) => {
+const loginUser = asyncFunctionWrapper(async (req, res, next) => {
   const { email, password } = req.body;
-
   if(!email || !password) {
-    return res.status(400).send('Please Enter email or password')
+    return next(new ErrorHandler('Please Enter Email or Password'), 400)
   }
-
-  try {
-    const user = await UserModel.findOne({ email: email }).select("+password");
-    if(user) {
-      const match = await bcrypt.compare(password, user.password);
-      if(match) {
-        //========== Create AccessToken ========= //
-        const AccessToken = jwt.sign({ id: user._id} , process.env.ACCESS_TOKEN_SECRET, { expiresIn:'15m' });
-        return res.status(200).cookie('Token', AccessToken, { cookie_Options }).send({message: 'success', user})
-      } else {
-        return res.send('Wrong Email or Password')
-      }
+  const user = await UserModel.findOne({ email: email }).select("+password");
+  if(!user) return next(new ErrorHandler("User doesn't Exist", 501))
+ 
+  const match = await bcrypt.compare(password, user.password);
+  if(!match) {
+      return next(new ErrorHandler('Wrong Email or Password!!'))
     }
-    return res.send("User doesn't exist");
-  } catch(e) {
-    console.log(e.message)
-  }
+  //========== Create AccessToken ========= //
+  const AccessToken = jwt.sign({ id: user._id }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: process.env.TOKEN_EXPIRES_IN });
+  return res.status(200).cookie('Token', AccessToken, cookie_Options ).send({ message: 'success', user })
 
-}
+})
 
 
 //======================= Logout User ==========================//
@@ -118,9 +101,8 @@ const resetPassword = async (req, res, next) => {
   const { email } = req.body;
   const user = await UserModel.findOne({email: email});
 
-  if(!user) {
-    res.status(400).send('Please enter a correct Email!!')
-  }
+  if(!user) return next(new ErrorHandler('Please enter a correct Email!!', 400))
+    
 
   /* Get resetPasswordToken
     const resetToken = user.generatePasswordToken();

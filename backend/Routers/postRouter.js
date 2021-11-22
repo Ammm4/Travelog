@@ -1,19 +1,17 @@
 const express = require('express');
 const router = express.Router();
-const { getPosts, getPostDetail, addPost, updatePost, deletePost  } = require('../controllers/post/controller');
+const { getAllPosts, getSinglePost, addPost, updatePost, deletePost  } = require('../controllers/post/controller');
+const is_User_Authenticated = require('../middleware/checkAuthentication');
 
-const checkAuthentication = require('../middleware/checkAuthentication');
 
+router.get('/posts', getAllPosts);
 
-router.get('/posts', getPosts);
+router.get('/posts/:id', getSinglePost);
 
-router.get('/posts/:id', getPostDetail);
+router.route('/posts').post( is_User_Authenticated, addPost);
 
-router.route('/posts').post( checkAuthentication, addPost);
+router.route('/posts/:id').put(updatePost).delete(deletePost);
 
-router.route('/posts/:id').put(updatePost);
-
-router.route('/posts/:id').delete(deletePost);
 
 
 module.exports = router;

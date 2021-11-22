@@ -1,18 +1,18 @@
 const jwt = require('jsonwebtoken');
 const { UserModel } = require("../database/models/userModel");
+const asyncFunctionWrapper = require('../utils/asyncFunctionWrapper');
+const ErrorHandler = require('../utils/errorHandler');
 
 
-const  checkAuthentication = async (req, res, next) => {
+const  is_User_Authenticated = asyncFunctionWrapper(async (req, res, next) => {
   const { Token } = req.cookies;
   if(!Token) {
-    console.log('log in please')
+    return next(new ErrorHandler("Action denied, You need to Log in first", 401))
   }
-  const decodedData = jwt.verify(Token, process.env.ACCESS_TOKEN_SECRET);
-  
-  if(!decodedData) {
-    console.log('invalid Token')
-  }
-  //req.user = await UserModel.findById(decodedData.id)
-  next();
-}
-module.exports = checkAuthentication;
+  const payload = jwt.verify(Token, process.env.ACCESS_TOKEN_SECRET);
+  if(!payload) return next(new ErrorHandler("Invalid Token", 500))
+  req.user = payload;
+  next()
+});
+
+module.exports = is_User_Authenticated;
