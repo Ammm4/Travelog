@@ -1,0 +1,195 @@
+import React from 'react';
+import styled from 'styled-components';
+
+import PostImages from './PostImages';
+import PostDetails from './PostDetails';
+
+//Icons
+import { BiLike, BiNotepad } from "react-icons/bi";
+import { FaComments } from "react-icons/fa";
+
+const PostWrapper = styled.article`
+  margin: auto;
+  margin-top: 6rem;
+  border-radius: 10px;
+  padding: 10px;
+  width: 98%;
+  max-width: 800px;
+  background-color: #fff;
+`
+const PostTitle =  styled.h1`
+  width: 100%;
+  margin: 1rem auto;
+  letter-spacing: 1px;
+  border-bottom: 2px solid #ccc;
+  max-width:300px;
+  font-family: 'Montserrat Alternates', sans-serif;
+  text-align: center;
+`
+const InfoGroup = styled.div`
+  margin: 1.5rem auto 2rem auto;
+  padding: 10px;
+  width: 100%;
+  max-width: 400px;
+`
+const Infos = styled.div`
+ margin-bottom: 0.75rem;
+`
+const InfoLabel = styled.h5`
+  display: block;
+  margin-bottom: 0.5rem;
+`
+const InputsGroupHeading = styled.h4`
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-size: 1.35rem;
+  margin-bottom: 1.5rem;
+`
+
+//============== Images =============== //
+const ImagePreview = styled.div`
+  margin-top: 1rem;
+  display: grid;
+  grid-template-columns:1fr 1fr;
+`
+const ImagePreviewImg = styled.div`
+  position: relative; 
+  width: 100%;
+  height: 200px;
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit:cover;
+    }
+    span {
+    position: absolute;
+    top: 5px; right: 5px;
+    font-size: 1.5rem;
+    color: #1e1e1e;
+    cursor: pointer;
+    }
+`
+const BtnGroup = styled.div`
+    width: 100%;
+    max-width: 400px; 
+    margin: auto;
+`
+const Button = styled.button`
+  outline: none;
+  border: none;
+  background: #000;
+  padding: 6px 10px;
+  border-radius: 5px;
+  margin-right:3px;
+  color: #FFF;
+  letter-spacing: 1px;
+  &:hover{
+    color:#ccc
+  }
+`
+const Answer = styled.p`
+  font-size: 0.9rem;
+`
+
+const List = styled.ul`
+  padding-left: 1.75rem;
+  li {
+    font-size: 0.85rem;
+  }
+`
+export default function PostConfirm(props) {
+  const {
+         basicInfo, 
+         imgPreview,
+         heritages,
+         places,
+         todos,
+         toggleForm,
+         handleSubmit
+  } = props;
+  return (
+    <PostWrapper>
+      <PostTitle>Review & Submit</PostTitle>
+      <InfoGroup>
+        <InputsGroupHeading>Destination</InputsGroupHeading>
+        <Infos>
+          <InfoLabel>Place</InfoLabel>
+          <Answer>{basicInfo.destination}</Answer>
+        </Infos>
+        <Infos>
+          <InfoLabel>Country</InfoLabel>
+          <Answer>{basicInfo.country}</Answer>
+        </Infos>
+        <Infos>
+          <InfoLabel>Summary</InfoLabel>
+          <Answer>{basicInfo.summary}</Answer>
+        </Infos>
+        <InfoLabel>Images({imgPreview.length})</InfoLabel>
+        <ImagePreview>
+          { imgPreview && imgPreview.map((img, index) => {
+                return  <ImagePreviewImg key={img.name}>
+                          <img src={ img } alt="preview"/>
+                        </ImagePreviewImg>
+              })
+          }
+        </ImagePreview>
+      </InfoGroup>
+      <InfoGroup>
+        <InputsGroupHeading>Traveller</InputsGroupHeading>
+        <Infos>
+          <InfoLabel>No. of People</InfoLabel>
+          <Answer>{basicInfo.people}</Answer>
+        </Infos>
+        <Infos>
+          <InfoLabel>Cost- £/p</InfoLabel>
+          <Answer>{basicInfo.cost}</Answer>
+        </Infos>
+      </InfoGroup>
+      <InfoGroup>
+        <InputsGroupHeading>Recommendations</InputsGroupHeading>
+        <Infos>
+          <InfoLabel>No. of Days</InfoLabel>
+          <Answer>{basicInfo.days}</Answer>
+        </Infos>
+        <Infos>
+          <InfoLabel>Budget- £/p</InfoLabel>
+          <Answer>{basicInfo.budget}</Answer>
+        </Infos>
+        <Infos>
+          <InfoLabel>Heritages to See</InfoLabel>
+          <List>
+            {heritages.map((item, index) => {
+              return <li key={index}>{item.heritage}</li>
+            })}
+          </List>
+        </Infos>
+        <Infos>
+          <InfoLabel>Places to Visit</InfoLabel>
+          <List>
+            { places.map((item, index) => {
+              return <li key={index}>{item.place}</li>
+            })}
+          </List>
+        </Infos>
+        <Infos>
+          <InfoLabel>Things to Do</InfoLabel>
+          <List>
+            { todos.map((item, index) => {
+              return <li key={index}>{item.todo}</li>
+            })}
+          </List>
+        </Infos>
+      </InfoGroup>
+      <InfoGroup>
+        <InputsGroupHeading>Others</InputsGroupHeading>
+        <Infos>
+          <InfoLabel>Transportations, Amneties, Safety, etc.</InfoLabel>
+          <Answer>{basicInfo.others}</Answer>
+        </Infos>
+      </InfoGroup>
+      <BtnGroup>
+        <Button onClick={(e) => toggleForm(e, 'review')}>Edit</Button>
+        <Button onClick={(e) => handleSubmit(e)}>Submit</Button>
+      </BtnGroup>
+    </PostWrapper>
+  )
+}
