@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { useParams } from 'react-router-dom';
+import { Link, useParams, useRouteMatch } from 'react-router-dom';
 import styled, {css} from 'styled-components';
 
 import SinglePostImages from '../components/SinglePostImages';
@@ -9,6 +9,9 @@ import PostDetails from '../components/PostDetails';
 import { BiLike } from "react-icons/bi";
 import { FaComments } from "react-icons/fa";
 import { AiOutlineHeart } from "react-icons/ai";
+import { IoTrashBinOutline } from "react-icons/io5";
+import { GrEdit } from "react-icons/gr";
+
 
 const sharedBtnCss = css`
   outline: none;
@@ -23,7 +26,7 @@ const AvatarImage = styled.img`
   border-radius: 50%;
   margin-right: 0.25rem;
 `
-const AuthorName = styled.div`
+const AuthorName = styled.span`
  display: flex;
  align-items: center;
  font-weight: 600;
@@ -192,14 +195,31 @@ const ReplyContainer = styled.div`
   grid-column-start: 2;
   grid-column-end: 4;
 `
+const ActionContainer = styled.div`
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`
+const EditLink = styled(Link)`
+  display: inline-block;
+  margin-right: 0.4rem;
+  text-decoration: none;
+`
+const DeleteButton = styled(Button)`
+  font-size: 1rem;
+`
 
 // Single Post Extra Components 
-export default function Singlepost() {
+export default function Singlepost({user}) {
   const [showInfo, setShowInfo] = useState(false);
-  const [comment, setComment] = useState('')
+  const [comment, setComment] = useState('');
+  let match = useRouteMatch();
   const commentInputRef = useRef();
   const { post_id } = useParams();
   const post = posts.find(post => post.id === post_id);
+  let showEditPostButton = post.authorId === user.user_id ? true : false;
   const postDetails = {
     numPeople: post.numPeople,
     numDays: post.numDays,
@@ -211,6 +231,8 @@ export default function Singlepost() {
     todos: post.todos,
     others: post.others,
   }
+  
+  // <Link to={`${match.url}/users/${post.authorId}`}>
   return (
     <SinglePostContainer>
       <ImageGridWrapper>
@@ -218,8 +240,15 @@ export default function Singlepost() {
       </ImageGridWrapper>
       <PostWrapper>
         <PostAuthor>
-          <AvatarImage src={post.authorAvatar} alt="avatar"/> 
+          <Link to={`${match.url}/users/${post.authorId}`}><AvatarImage src={post.authorAvatar} alt="avatar"/></Link>
           <AuthorName>{post.authorName}</AuthorName>
+          { 
+          showEditPostButton && 
+           <ActionContainer>
+              <EditLink><GrEdit /></EditLink>
+              <DeleteButton><IoTrashBinOutline /></DeleteButton>
+           </ActionContainer>
+        }
         </PostAuthor>
         <PostTitle>
           <h3>{post.destination}, {post.country}</h3>
@@ -251,39 +280,43 @@ export default function Singlepost() {
        <PostDiscussion>
         { post.comments.map(comment => {
           return (
-        <Discussion key={comment.comment_id}>
-          <AvatarImage src={comment.userAvatar} alt="avatar"/>
-          <p><AuthorName>{comment.username}</AuthorName> {comment.question}</p> 
-          <CommentLike>
-            <Button><AiOutlineHeart /></Button>
-          </CommentLike>
-          <Count>
-              <div>
-                {comment.likes.length > 0 ? <span>0 Likes</span>:''}
-                <Button>Reply</Button>  
-              </div>
-           </Count>
+            <Discussion key={comment.comment_id}>
+              <Link to={`${match.url}/users/${comment.user_id}`}>
+                <AvatarImage src={comment.userAvatar} alt="avatar"/>
+              </Link>
+              <p><AuthorName>{comment.username}</AuthorName> {comment.question}</p> 
+              <CommentLike>
+              <Button><AiOutlineHeart /></Button>
+              </CommentLike>
+              <Count>
+                <div>
+                  {comment.likes.length > 0 ? <span>0 Likes</span>:''}
+                  <Button>Reply</Button>  
+                </div>
+              </Count>
          
-          <ReplyContainer>
-            { comment.replies.map(reply => {
-               return (
-                 <Discussion>
-                   <AvatarImage src={reply.userAvatar} alt="avatar"/>
-                   <p><AuthorName>{reply.username}</AuthorName>{reply.answer}</p>
-                   <CommentLike>
-                    <Button><AiOutlineHeart /></Button>
-                   </CommentLike>
-                   <Count>
-                    <div>
-                      {reply.likes.length > 0 ? <span>0 Likes</span>:''}
-                      <Button>Reply</Button>  
-                    </div>
-                  </Count> 
-            </Discussion>
-              )
-            })}
-          </ReplyContainer>
-       </Discussion>
+              <ReplyContainer>
+                { comment.replies.map(reply => {
+                  return (
+                   <Discussion key={reply.reply_id}>
+                     <Link to={`${match.url}/users/${reply.user_id}`}>
+                       <AvatarImage src={reply.userAvatar} alt="avatar"/>
+                     </Link>
+                     <p><AuthorName>{reply.username}</AuthorName>{reply.answer}</p>
+                     <CommentLike>
+                      <Button><AiOutlineHeart /></Button>
+                     </CommentLike>
+                     <Count>
+                      <div>
+                        {reply.likes.length > 0 ? <span>0 Likes</span>:''}
+                        <Button>Reply</Button>  
+                      </div>
+                     </Count> 
+                 </Discussion>
+                )
+               })}
+            </ReplyContainer>
+          </Discussion>
           )
         })}
       </PostDiscussion>
@@ -409,6 +442,7 @@ const posts = [
     comments:[
       { 
       comment_id: 'comment1',
+      user_id: 'user1',
       username: 'John',
       userAvatar: 'https://assets.mycast.io/characters/jerry-mouse-1236784-normal.jpg?1610584771',
       
@@ -416,6 +450,7 @@ const posts = [
       likes:[],
       replies:[{
         username: 'Lewis',
+        user_id: 'user2',
         userAvatar: 'http://miftyisbored.com/wp-content/uploads/2013/06/iron-man-mask-thumbnail.png',
         answer: 'Yes, but still need to follow some rules.',
         likes:[]
@@ -423,11 +458,13 @@ const posts = [
     },
     {
       comment_id: 'comment2',
+      user_id: 'user3',
       username: 'Max',
       userAvatar: 'https://www.oneindia.com/img/1200x80/2017/05/x05-1451993146-himalayas-mount-everest-latest-600-jpg-pagespeed-ic-dkoe-ed5xd1-22-1495457231.jpg',
       question: 'Is public transports safe to use?',
       likes:[],
       replies:[{
+        user_id: 'user2',
         username: 'Lewis',
         userAvatar: 'http://miftyisbored.com/wp-content/uploads/2013/06/iron-man-mask-thumbnail.png',
         answer: 'Yes, minimum number of passengers are allowed per ride.',

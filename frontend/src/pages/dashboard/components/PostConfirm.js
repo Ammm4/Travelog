@@ -50,22 +50,30 @@ const ImagePreview = styled.div`
   margin-top: 1rem;
   display: grid;
   grid-template-columns:1fr 1fr;
+  grid-column-gap: 2px;
 `
 const ImagePreviewImg = styled.div`
   position: relative; 
   width: 100%;
-  height: 200px;
+  height: auto;
     img {
       width: 100%;
-      height: 100%;
+      height: 200px;
       object-fit:cover;
     }
-    span {
-    position: absolute;
-    top: 5px; right: 5px;
-    font-size: 1.5rem;
-    color: #1e1e1e;
-    cursor: pointer;
+     h5 {
+      position: absolute;
+      width:auto;
+      max-width: 98%;
+      top: 45%;
+      word-break: break-all;
+      text-align: center;
+      border-radius: 5px;
+      left: 1%;
+      padding: 8px 5px;
+      background-color: rgba(0,0,0,0.5);
+      color:#fff;
+      letter-spacing: 1px;  
     }
 `
 const BtnGroup = styled.div`
@@ -103,6 +111,7 @@ export default function PostConfirm(props) {
          heritages,
          places,
          todos,
+         titles,
          toggleForm,
          handleSubmit
   } = props;
@@ -128,7 +137,8 @@ export default function PostConfirm(props) {
           { imgPreview && imgPreview.map((img, index) => {
                 return  <ImagePreviewImg key={img.name}>
                           <img src={ img } alt="preview"/>
-                        </ImagePreviewImg>
+                        { titles[index] && <h5> { titles[index] }</h5> }
+        </ImagePreviewImg>
               })
           }
         </ImagePreview>
@@ -158,7 +168,7 @@ export default function PostConfirm(props) {
           <InfoLabel>Heritages to See</InfoLabel>
           <List>
             {heritages.map((item, index) => {
-              return <li key={index}>{item.heritage}</li>
+              return <li key={index}>{item}</li>
             })}
           </List>
         </Infos>
@@ -166,7 +176,7 @@ export default function PostConfirm(props) {
           <InfoLabel>Places to Visit</InfoLabel>
           <List>
             { places.map((item, index) => {
-              return <li key={index}>{item.place}</li>
+              return <li key={index}>{item}</li>
             })}
           </List>
         </Infos>
@@ -174,7 +184,7 @@ export default function PostConfirm(props) {
           <InfoLabel>Things to Do</InfoLabel>
           <List>
             { todos.map((item, index) => {
-              return <li key={index}>{item.todo}</li>
+              return <li key={index}>{item}</li>
             })}
           </List>
         </Infos>

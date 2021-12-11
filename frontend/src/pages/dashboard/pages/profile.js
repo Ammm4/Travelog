@@ -8,6 +8,7 @@ import { PostsWrapper } from './home';
 import { BsFillGrid3X3GapFill } from "react-icons/bs";
 import { FaUserEdit } from "react-icons/fa";
 import { FcAbout } from "react-icons/fc";
+import Zeropost from '../components/zeropost';
 
 const sharedImgCss = css`
   display: inline-block;
@@ -16,17 +17,18 @@ const sharedImgCss = css`
   object-fit:cover;
 `
 export const sharedDivCss = css`
-  width: 98%;
+  width: 100%;
   max-width: 600px;
   border-radius: 8px;
   margin: 1rem auto 1.5rem auto;
-  background-color: #f3f3f3;
+  background-color: #fff;
   box-shadow: 2px 2px 4px rgba(0,0,0,0.5);
 `
 const sharedBtnCss = css `
   display: inline-block;
   outline: none;
-  border: 2px solid #ccc;
+  border: 2px solid #f1f1f1;
+  border-radius: 2px;
   cursor: pointer;
   font-size: 1.4rem;
   padding: 8px 16px;
@@ -194,9 +196,9 @@ export default function Profile({ user, setIsModal }) {
      </PostHeading>
      { user.posts.length > 0 ? 
         <PostsWrapper>
-          { user.posts.map(post => <Post post={post} key={post.id}/>) }
+          { user.posts.map(post => <Post post={post} key={post.id} user={user}/>) }
         </PostsWrapper>
-        : <h1>No posts Yet</h1>
+        : <Zeropost />
      }
     </ProfileContainer>
   )

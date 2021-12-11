@@ -28,6 +28,7 @@ const user = {
   posts: [ {
     id:'post_1',
     authorName: 'John',
+    authorId: 'user1',
     authorAvatar:'https://assets.mycast.io/characters/jerry-mouse-1236784-normal.jpg?1610584771',
     numPeople: 1,
     destination:'Barcelona',
@@ -66,11 +67,13 @@ const user = {
       { 
       comment_id: 'comment1',
       username: 'Max',
+      user_id: 'user3',
       userAvatar: 'https://www.oneindia.com/img/1200x80/2017/05/x05-1451993146-himalayas-mount-everest-latest-600-jpg-pagespeed-ic-dkoe-ed5xd1-22-1495457231.jpg',
       question: 'Are there any good hostels around??',
       likes:[],
       replies:[{
         username: 'John',
+        user_id: 'user1',
         userAvatar: 'https://assets.mycast.io/characters/jerry-mouse-1236784-normal.jpg?1610584771',
         answer: 'Yes, there are quite a few and are located in convenient places.',
         likes:[]
@@ -78,12 +81,14 @@ const user = {
     },
     {
       comment_id: 'comment2',
+      user_id: 'user2',
       username: 'Lewis',
       userAvatar: 'http://miftyisbored.com/wp-content/uploads/2013/06/iron-man-mask-thumbnail.png',
       question: 'Does public transports go everywhere?',
       likes:[],
       replies:[{
         username: 'John',
+        user_id: 'user1',
         userAvatar: 'https://assets.mycast.io/characters/jerry-mouse-1236784-normal.jpg?1610584771',
         answer: 'Yes, around Barcelona public transports are enough',
         likes:[]

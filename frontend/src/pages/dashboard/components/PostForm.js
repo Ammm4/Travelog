@@ -1,4 +1,4 @@
-import React from 'react';
+import React,{ useEffect } from 'react';
 import styled from 'styled-components';
 
 import { css } from 'styled-components';
@@ -26,7 +26,7 @@ const Container = styled.form`
     margin: 1.5rem auto 2rem auto;
     padding: 10px;
     width: 100%;
-    max-width: 400px;
+    max-width: 435px;
     label {
       font-size: 0.9rem;
       margin-bottom: 0.6rem;
@@ -60,6 +60,7 @@ const Container = styled.form`
       border: 1px solid #eee;
       padding: 10px 16px;
       border-radius: 14px;
+      font-family: inherit;
     }
     select {
       padding: 10px 16px;
@@ -98,23 +99,54 @@ const ImagePreview = styled.div`
   margin-top: 1rem;
   display: grid;
   grid-template-columns:1fr 1fr;
+ grid-column-gap: 2px;
 `
 const ImagePreviewImg = styled.div`
   position: relative; 
   width: 100%;
-  height: 200px;
-    img {
+  img {
+    width: 100%;
+    height: 200px;
+    object-fit:cover;
+  }
+  .remove-img {
+      position: absolute;
+      top: 5px; right: 5px;
+      font-size: 1.5rem;
+      color: #1e1e1e;
+      cursor: pointer;
+  }
+  h5 {
+      position: absolute;
+      width:auto;
+      max-width: 98%;
+      text-align:center;
+      top: 45%;
+      word-break: break-all;
+      border-radius: 5px;
+      left: 1%;
+      padding: 8px 5px;
+      background-color: rgba(0,0,0,0.5);
+      color:#fff;
+      letter-spacing: 1px;
+  }
+  label {
+      font-weight: 600;
+      padding: 8px;
+  }
+  textarea {
+      display: inline-block;
+      margin-top:0.5rem;
       width: 100%;
-      height: 100%;
-      object-fit:cover;
-    };
-    .remove-img {
-    position: absolute;
-    top: 5px; right: 5px;
-    font-size: 1.5rem;
-    color: #1e1e1e;
-    cursor: pointer;
-    }
+      height: 44px;
+      font-size: 0.9rem;
+      font-family: inherit;
+      outline: none;
+      border: 2px solid #ccc;
+      border-radius: 5px;
+      padding: 8px;
+      resize: none;
+  }
 `
 const ArrayOfInputs = styled.div`
   margin: 0.75rem auto;
@@ -154,13 +186,20 @@ export default function PostForm(props) {
          removeInput,
          handleChange,
          addMoreInput,
-         toggleForm
+         toggleForm,
+         titles,
+         handleTitle
   } = props;
-
+  
+  const handleKeyUp = (e) => {
+    e.target.style.height = '48px';
+    e.target.style.height = `${e.target.scrollHeight}px`;
+  }
+  
   return (
     <Container>
         <PostTitle>
-          Create Post
+          {props.modalName}
         </PostTitle>
         <div className="form-group">
           <InputsGroupHeading>Destination Info: </InputsGroupHeading>
@@ -195,7 +234,9 @@ export default function PostForm(props) {
             />
           </div>
           <div className="form-group-input">
-            <BtnImg htmlFor="images" onClick={imageUploader}><IoIosImages /> Upload Images</BtnImg>
+            <BtnImg htmlFor="images" onClick={imageUploader}><IoIosImages /> 
+              {imgPreview && imgPreview.length > 0 ? 'Add More Images' : 'Upload Images' }
+            </BtnImg>
             <input 
               id="images" 
               name="images" 
@@ -207,17 +248,29 @@ export default function PostForm(props) {
               onChange={(e) => handleFileUpload(e)}
             />
           </div>
-          { imgPreview && <label>Images({ imgPreview.length })</label>}
-          { imgPreview && 
-            <ImagePreview>
-              { imgPreview.map((img, index) => {
-                return  <ImagePreviewImg key={img.name}>
-                          <img src={ img } alt="preview"/>
-                          <span className="remove-img" onClick={ () => removeImg(index) }><MdClear/></span>
-                        </ImagePreviewImg>
-              })
-              }
-            </ImagePreview>
+          { imgPreview && imgPreview.length > 0 && 
+           <> 
+              <label>Images({ imgPreview.length })</label>
+              <ImagePreview>
+                { imgPreview.map((img, index) => {
+                  return  <ImagePreviewImg key={img.name || index}>  
+                            <img src={ img } alt="preview"/>
+                            <span className="remove-img" onClick={ () => removeImg(index) }><MdClear/></span>
+                            {titles[index] && <h5>{titles[index]}</h5>}
+                            <label>Add a Title</label>
+                            <textarea
+                                 type="text"
+                                 value={titles[index]}
+                                 maxLength="50" 
+                                 placeholder="Add a Title..."
+                                 onChange={(e) => handleTitle(e,index)}
+                                 onKeyUp={(e) => handleKeyUp(e) }
+                             />
+                          </ImagePreviewImg>
+                })
+                }
+              </ImagePreview>
+            </>
           }
         </div>
         
@@ -289,11 +342,11 @@ export default function PostForm(props) {
                          <input 
                           name="heritage" 
                           type="text"
-                          value={ item.heritage }
+                          value={ item }
                           onChange={ (e) => handleChange( e, index, 'heritage') }
                           placeholder="Athens, Stonehenge..."
                          />
-                        { item.heritage.trim() && <button onClick={ (e) => removeInput( e, index, 'heritage' ) }>Remove</button>}
+                        { item.trim() && <button onClick={ (e) => removeInput( e, index, 'heritage' ) }>Remove</button>}
                       </InputElement>
                 })
               }
@@ -308,11 +361,11 @@ export default function PostForm(props) {
                          <input 
                           name="place" 
                           type="text"
-                          value={ item.place }
+                          value={ item }
                           onChange={ (e) => handleChange( e, index, 'place') }
                           placeholder="Toledo, Venice ..."
                          />
-                        { item.place.trim() && <button onClick={ (e) => removeInput( e, index, 'place' ) }>Remove</button>}
+                        { item.trim() && <button onClick={ (e) => removeInput( e, index, 'place' ) }>Remove</button>}
                       </InputElement>
                 })
               }
@@ -327,11 +380,11 @@ export default function PostForm(props) {
                          <input 
                           name="todo" 
                           type="text"
-                          value={ item.todo }
+                          value={ item }
                           onChange={ (e) => handleChange( e, index, 'todo') }
                           placeholder="Surfing, Bus Tour..."
                          />
-                        { item.todo.trim() && <button onClick={ (e) => removeInput( e, index, 'todo' ) }>Remove</button>}
+                        { item.trim() && <button onClick={ (e) => removeInput( e, index, 'todo' ) }>Remove</button>}
                       </InputElement>
                 })
               }

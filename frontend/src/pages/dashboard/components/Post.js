@@ -1,14 +1,19 @@
 import React, { useState, useRef } from 'react';
-import { Link, useRouteMatch} from 'react-router-dom';
-import styled,{css} from 'styled-components';
+import { Switch, Route, Link, useRouteMatch } from 'react-router-dom';
+import styled,{ css } from 'styled-components';
 
 import PostImages from './PostImages';
 import PostDetails from './PostDetails';
 
-//Icons BsArrowReturnRight
+//Icons IoTrashBinSharp 
 import { BsFillInfoCircleFill } from "react-icons/bs";
 import { BsQuestionCircle } from "react-icons/bs";
+import { BsThreeDots } from "react-icons/bs";
 import { AiOutlineHeart } from "react-icons/ai";
+import { IoTrashBinOutline } from "react-icons/io5";
+import { GrEdit } from "react-icons/gr";
+
+
 
 const sharedBtnCss = css`
   outline: none;
@@ -23,7 +28,7 @@ const AvatarImage = styled.img`
   border-radius: 50%;
   margin-right: 0.25rem;
 `
-const AuthorName = styled.div`
+const AuthorName = styled.span`
  display: flex;
  align-items: center;
  font-weight: 600;
@@ -32,17 +37,17 @@ const PostWrapper = styled.article`
   width: 100%;
   border-radius: 8px;
   margin-bottom: 0.75rem;
-  background-color: #eeeeee;
+  background-color: #fff;
   box-shadow: 2px 2px 4px rgba(0,0,0,0.5);
   cursor:pointer;
 `
 const PostAuthor = styled.div`
   display: grid;
-  grid-template-columns: 45px 1fr;
+  grid-template-columns: 45px 1fr 40px;
   margin-bottom: 0.75rem;
   padding: 8px;
   letter-spacing: 1px;
-  border-bottom: 2px solid #fff;
+  border-bottom: 2px solid #f1f1f1;
   span {
     font-weight: 700;
   }
@@ -78,16 +83,17 @@ const Likes = styled(Link)`
 `
 const Button = styled.button`
   ${sharedBtnCss}
-  color: #888;
+  color: #111111;
   letter-spacing: 1px;
+  cursor:pointer;
   &:hover{
     color:#ccc
   }
 `
 
 const PostInteractions = styled.div`
-border-top: 1px solid #fff;
-border-bottom: 1px solid #fff;
+border-top: 1px solid #f1f1f1;
+border-bottom: 1px solid #f1f1f1;
 padding: 10px;
 cursor: pointer;
 
@@ -145,7 +151,7 @@ const Discussion = styled.div`
  display: grid;
  grid-row-gap:0.1rem;
  grid-template-columns: 45px 1fr 45px;
- background-color: #fefefe;
+ background-color: #f1f1f1;
  font-size: 0.9rem;
  padding: 6px 0 6px 6px;
  border-radius: 10px;
@@ -155,11 +161,27 @@ const ReplyContainer = styled.div`
   grid-column-start: 2;
   grid-column-end: 4;
 `
-export default function Post({ post }) {
+const ActionContainer = styled.div`
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`
+const EditLink = styled(Link)`
+  display: inline-block;
+  margin-right: 0.4rem;
+  text-decoration: none;
+`
+const DeleteButton = styled(Button)`
+  font-size: 1rem;
+`
+export default function Post({ post, user, setModal }) {
   const [showInfo, setShowInfo] = useState(false);
   const [comment, setComment] = useState('')
   const commentInputRef = useRef();
-  let match = useRouteMatch();
+  let showEditPostButton = post.authorId === user.user_id ? true : false;
+  let { url } = useRouteMatch();
   const postDetails = {
     numPeople: post.numPeople,
     numDays: post.numDays,
@@ -171,15 +193,25 @@ export default function Post({ post }) {
     todos: post.todos,
     others: post.others,
   }
-  
+ 
   return (
     <PostWrapper>
       <PostAuthor>
-        <Link to={`${match.url}/users/${post.authorId}`}><AvatarImage src={post.authorAvatar} alt="avatar"/></Link>
+        <Link to={`${url}/users/${post.authorId}`}>
+          <AvatarImage src={post.authorAvatar} alt="avatar"/>
+        </Link>
         <div>
           <AuthorName>{post.authorName}</AuthorName>
           <h5>{post.destination}, {post.country}</h5>
         </div>
+        { 
+          showEditPostButton && 
+           <ActionContainer>
+              <DeleteButton onClick={(e) => setModal(post.id)}><GrEdit /></DeleteButton>
+              <DeleteButton><IoTrashBinOutline /></DeleteButton>
+           </ActionContainer>
+        }
+        
       </PostAuthor>
       <PostImages images={ post.images } postId={post.id}/>
       <PostTitle>    
@@ -188,8 +220,8 @@ export default function Post({ post }) {
       </PostTitle>  
       { showInfo && <PostDetails data={postDetails}/> }
       <CommentLike>
-        <Likes to={`${match.url}/posts/1`}> 0 Likes</Likes>
-        <Comments to={`${match.url}/posts/1`}> 1 Q&A</Comments>
+        <Likes to={`${url}/posts/1`}> 0 Likes</Likes>
+        <Comments to={`${url}/posts/1`}> 1 Q&A</Comments>
       </CommentLike>
       <PostInteractions>
         <InteractionButton ><AiOutlineHeart /> </InteractionButton> 
@@ -199,7 +231,9 @@ export default function Post({ post }) {
         { post.comments.map(comment => {
           return (
         <Discussion key={comment.comment_id}>
-          <Link to={`${match.url}/users/${comment.user_id}`}><AvatarImage src={comment.userAvatar} alt="avatar"/></Link>
+          <Link to={`${url}/users/${comment.user_id}`}>
+            <AvatarImage src={comment.userAvatar} alt="avatar"/>
+          </Link>
           <p><AuthorName>{comment.username}</AuthorName> {comment.question}</p> 
           <CommentLike>
             <Button><AiOutlineHeart /></Button>
@@ -212,10 +246,12 @@ export default function Post({ post }) {
            </Count>
          
           <ReplyContainer>
-            {comment.replies.map(reply => {
+            { comment.replies.map(reply => {
               return (
-                <Discussion>
-                  <Link to={`${match.url}/users/${reply.user_id}`}><AvatarImage src={reply.userAvatar} alt="avatar"/></Link>
+                <Discussion key={reply.reply_id}>
+                  <Link to={`${url}/users/${reply.user_id}`}>
+                    <AvatarImage src={reply.userAvatar} alt="avatar"/>
+                  </Link>
                   <p><AuthorName>{reply.username}</AuthorName>{reply.answer}</p>
                   <CommentLike>
                     <Button><AiOutlineHeart /></Button>
@@ -225,11 +261,11 @@ export default function Post({ post }) {
                       {reply.likes.length > 0 ? <span>0 Likes</span>:''}
                       <Button>Reply</Button>  
                     </div>
-                  </Count>
-              
-            </Discussion>
+                  </Count>    
+                </Discussion>
               )
-            })}
+             })
+            }
           </ReplyContainer>
        </Discussion>
           )
@@ -237,7 +273,7 @@ export default function Post({ post }) {
       </PostDiscussion>
 
       <PostComment>
-        <AvatarImage src={post.authorAvatar} alt="avatar" />
+        <AvatarImage src={user.avatar} alt="avatar" />
         <input 
           ref={commentInputRef} 
           value={comment} 

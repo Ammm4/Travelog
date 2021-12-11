@@ -16,8 +16,8 @@ const ShareContainer = styled.article`
   padding: 8px;
   border-radius: 8px;
   margin: 5.5rem auto 1.35rem auto;
-  background-color: #f3f3f3;
-  box-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+  background-color: #fff;
+  box-shadow: 1px 1px 4px rgba(0,0,0,0.5);
   cursor:pointer;
 `
 const ShareTitle = styled.div`
@@ -25,7 +25,7 @@ const ShareTitle = styled.div`
   text-align: center;
   display:flex;
   align-items: center;
-  border-bottom: 2px solid #fff;
+  border-bottom: 2px solid #f1f1f1;
   img {
     width: 35px;
     height:35px;
@@ -55,7 +55,7 @@ const IconHolders =  styled.div`
 
 export default function Share({ user, setModal }) {
   return (
-    <ShareContainer onClick={() => setModal(true)}>
+    <ShareContainer onClick={() => setModal('create')}>
       <ShareTitle>
         <img src={user.avatar} alt="avatar"/>
         <input disabled placeholder="Got New Experiences to Share??"/> 

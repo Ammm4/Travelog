@@ -6,8 +6,9 @@ import { PostsWrapper } from './home';
 
 //Icons SiAboutdotme
 import { BsFillGrid3X3GapFill } from "react-icons/bs";
-import { FaUserEdit } from "react-icons/fa";
 import { FcAbout } from "react-icons/fc";
+
+import Zeropost from '../components/zeropost';
 
 const sharedImgCss = css`
   display: inline-block;
@@ -20,7 +21,7 @@ export const sharedDivCss = css`
   max-width: 600px;
   border-radius: 8px;
   margin: 1rem auto 1.5rem auto;
-  background-color: #f3f3f3;
+  background-color: #fff;
   box-shadow: 2px 2px 4px rgba(0,0,0,0.5);
 `
 const sharedBtnCss = css `
@@ -155,47 +156,47 @@ export const PostHeading = styled.div`
   }
 `
 
-export default function Userprofile() {
+export default function Userprofile({user}) {
   const history = useHistory;
   const { user_id } = useParams();
-  const user = users.find(user => user.user_id === user_id);
+  const userSelected = users.find(user => user.user_id === user_id);
 
   return (
     <ProfileContainer>
      <UserProfile>
        <UserImageContainer>   
         <UserCover>
-          <img src={user.cover} alt="cover"/>
+          <img src={userSelected.cover} alt="cover"/>
         </UserCover>
         <UserAvatar>
-          <img src={user.avatar} alt="cover"/>
+          <img src={userSelected.avatar} alt="cover"/>
         </UserAvatar>
-        <UserTitle>{ user.username }</UserTitle>
+        <UserTitle>{ userSelected.username }</UserTitle>
        </UserImageContainer>
        <UserInfo>
          <h3>Info</h3> 
          <div>
            <span><FcAbout /></span>
-           <p><b>About:</b> { user.about }</p>
+           <p><b>About:</b> { userSelected.about }</p>
          </div>
          <div>
           <span><FcAbout /></span>
-          <p><b>Hobbies:</b> { user.hobbies }</p>
+          <p><b>Hobbies:</b> { userSelected.hobbies }</p>
          </div>
          <div>
           <span><FcAbout /></span>
-          <p><b>Location:</b> { user.city }, { user.country }</p>
+          <p><b>Location:</b> { userSelected.city }, { userSelected.country }</p>
          </div>   
        </UserInfo>
      </UserProfile>
      <PostHeading>
        <BsFillGrid3X3GapFill />
      </PostHeading>
-     {user.posts.length > 0 ? 
+     { userSelected.posts.length > 0 ? 
         <PostsWrapper>
-          { user.posts.map(post => <Post post={post} key={post.id}/>) }
+          { userSelected.posts.map(post => <Post post={post} key={post.id} user={user}/>) }
         </PostsWrapper>
-        : <h1>No posts Yet</h1>
+        : <Zeropost />
      }
     
     </ProfileContainer>
@@ -216,6 +217,7 @@ const users = [
   email: 'hero@yahoo.com',
   posts: [ {
     id:'post_1',
+    authorId:'user1',
     authorName: 'John',
     authorAvatar:'https://assets.mycast.io/characters/jerry-mouse-1236784-normal.jpg?1610584771',
     numPeople: 1,
@@ -254,11 +256,13 @@ const users = [
     comments:[
       { 
       comment_id: 'comment1',
+      user_id:'user3',
       username: 'Max',
       userAvatar: 'https://www.oneindia.com/img/1200x80/2017/05/x05-1451993146-himalayas-mount-everest-latest-600-jpg-pagespeed-ic-dkoe-ed5xd1-22-1495457231.jpg',
       question: 'Are there any good hostels around??',
       likes:[],
       replies:[{
+        user_id:'user1',
         username: 'John',
         userAvatar: 'https://assets.mycast.io/characters/jerry-mouse-1236784-normal.jpg?1610584771',
         answer: 'Yes, there are quite a few and are located in convenient places.',
@@ -267,11 +271,13 @@ const users = [
     },
     {
       comment_id: 'comment2',
+      user_id:'user2',
       username: 'Lewis',
       userAvatar: 'http://miftyisbored.com/wp-content/uploads/2013/06/iron-man-mask-thumbnail.png',
       question: 'Does public transports go everywhere?',
       likes:[],
       replies:[{
+        user_id:'user1',
         username: 'John',
         userAvatar: 'https://assets.mycast.io/characters/jerry-mouse-1236784-normal.jpg?1610584771',
         answer: 'Yes, around Barcelona public transports are enough',
@@ -295,6 +301,7 @@ const users = [
 
   posts:[{
     id:'post_2',
+    authorId:'user2',
     authorName: 'Lewis',
     authorAvatar:'http://miftyisbored.com/wp-content/uploads/2013/06/iron-man-mask-thumbnail.png',
     destination:'Rome',
@@ -339,11 +346,13 @@ const users = [
     comments:[
       { 
       comment_id: 'comment1',
+      user_id: 'user3',
       username: 'Max',
       userAvatar: 'https://www.oneindia.com/img/1200x80/2017/05/x05-1451993146-himalayas-mount-everest-latest-600-jpg-pagespeed-ic-dkoe-ed5xd1-22-1495457231.jpg',
       question: 'Are there any good hostels around??',
       likes:[],
       replies:[{
+        user_id: 'user1',
         username: 'John',
         userAvatar: 'https://assets.mycast.io/characters/jerry-mouse-1236784-normal.jpg?1610584771',
         answer: 'Yes, there are quite a few and are located in convenient places.',
@@ -352,11 +361,13 @@ const users = [
     },
     {
       comment_id: 'comment2',
+      user_id: 'user2',
       username: 'Lewis',
       userAvatar: 'http://miftyisbored.com/wp-content/uploads/2013/06/iron-man-mask-thumbnail.png',
       question: 'Does public transports go everywhere?',
       likes:[],
       replies:[{
+        user_id: 'user1',
         username: 'John',
         userAvatar: 'https://assets.mycast.io/characters/jerry-mouse-1236784-normal.jpg?1610584771',
         answer: 'Yes, around Barcelona public transports are enough',
@@ -367,7 +378,7 @@ const users = [
   }]
 },
 {
- user_id:'user3',
+  user_id:'user3',
   username:'Max',
   avatar:'https://www.oneindia.com/img/1200x80/2017/05/x05-1451993146-himalayas-mount-everest-latest-600-jpg-pagespeed-ic-dkoe-ed5xd1-22-1495457231.jpg',
   cover:'https://london.ac.uk/sites/default/files/styles/max_1300x1300/public/2018-10/london-aerial-cityscape-river-thames_1.jpg?itok=6LenFxuz',
