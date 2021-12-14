@@ -1,7 +1,10 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import Share from '../components/Share';
 import Post from '../components/Post';
+import { getPosts } from '../../../redux/posts/postActions';
+
+import { useSelector, useDispatch } from 'react-redux';
 
 export const PostsWrapper = styled.section`
  margin: 1rem auto;
@@ -14,9 +17,14 @@ const HomeContainer = styled.section`
  color:#1e1e1e;
 `
 
+export default function Home({ setModal }) {
+  const dispatch = useDispatch();
+  const { loading, allPosts, error } = useSelector(state => state.Posts);
+  const { user } = useSelector(state => state.User);
+  useEffect(() => {
+    dispatch(getPosts())
+  },[dispatch]);
 
-export default function Home({ user, setModal }) {
-  
   return (
     <HomeContainer>
       <Share user={user} setModal={setModal}/>

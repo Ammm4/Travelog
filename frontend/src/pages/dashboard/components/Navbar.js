@@ -1,11 +1,13 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
+import { useDispatch } from 'react-redux';
+import { logout } from '../../../redux/users/userActions';
 import { SiYourtraveldottv } from "react-icons/si";
 import { BiMenuAltLeft } from "react-icons/bi";
 import { MdClear } from "react-icons/md";
 import { Link, useRouteMatch } from 'react-router-dom';
 import { AiFillHome } from "react-icons/ai";
-import { MdOutlineLogout } from "react-icons/md"
+import { MdOutlineLogout } from "react-icons/md";
 
 
 const NavContainer = styled.div`
@@ -180,7 +182,8 @@ const Img = styled.span`
 `
 
 export default function Navbar({ user, active }) {
-  const [menuBar, setMenubar] = useState(false)
+  const [menuBar, setMenubar] = useState(false);
+  const dispatch = useDispatch();
   const match = useRouteMatch();
   
   return (
@@ -209,7 +212,7 @@ export default function Navbar({ user, active }) {
               <span className="username">{user.username}</span>    
               </AvatarLink>  
           </div>
-          <Button>
+          <Button onClick={() => dispatch(logout())}>
             <span>
               <MdOutlineLogout />
             </span>

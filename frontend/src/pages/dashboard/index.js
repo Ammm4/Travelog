@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from './components/Navbar';
 import { Switch, Route, useRouteMatch, Redirect, useLocation } from 'react-router';
+import { useSelector } from 'react-redux';
 
 // ============ Pages ============= //
 import Home from './pages/home';
@@ -13,7 +14,8 @@ import Userprofile from './pages/userprofile';
 
 
 
-export default function Dashboard({ user }) {
+export default function Dashboard() {
+  const { user } = useSelector(state => state.User)
   const [active, setActive] = useState();
   const [isModal, setIsModal] = useState(null);
   const match = useRouteMatch();
