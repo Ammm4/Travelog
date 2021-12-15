@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import { useSelector } from 'react-redux';
 
 //Icons 
 import { ImImages } from "react-icons/im";
@@ -53,11 +54,12 @@ const IconHolders =  styled.div`
   }
 `
 
-export default function Share({ user, setModal }) {
+export default function Share({ setModal }) {
+  const { user } = useSelector(state => state.User);
   return (
     <ShareContainer onClick={() => setModal('create')}>
       <ShareTitle>
-        <img src={user.avatar} alt="avatar"/>
+        <img src={user.avatar.avatar_url} alt="avatar"/>
         <input disabled placeholder="Got New Experiences to Share??"/> 
       </ShareTitle>
       <IconHolders>

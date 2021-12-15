@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../../../redux/users/userActions';
 import { SiYourtraveldottv } from "react-icons/si";
 import { BiMenuAltLeft } from "react-icons/bi";
@@ -8,6 +8,7 @@ import { MdClear } from "react-icons/md";
 import { Link, useRouteMatch } from 'react-router-dom';
 import { AiFillHome } from "react-icons/ai";
 import { MdOutlineLogout } from "react-icons/md";
+
 
 
 const NavContainer = styled.div`
@@ -136,6 +137,7 @@ const AvatarLink = styled(Link)`
   }
   span {
     margin-left: 0.65rem;
+    text-transform: capitalize;
   }
   &:hover {
     &:after {
@@ -181,8 +183,9 @@ const Img = styled.span`
   }
 `
 
-export default function Navbar({ user, active }) {
+export default function Navbar({ active }) {
   const [menuBar, setMenubar] = useState(false);
+  const { user } = useSelector(state => state.User)
   const dispatch = useDispatch();
   const match = useRouteMatch();
   
@@ -207,7 +210,7 @@ export default function Navbar({ user, active }) {
           <div className="avatar" >
             <AvatarLink to={`${match.url}/profile`}>
               <Img>
-                  <img src={user.avatar} alt="avatar"/>
+                  <img src={user.avatar.avatar_url} alt="avatar"/>
               </Img>
               <span className="username">{user.username}</span>    
               </AvatarLink>  

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
+import { useSelector } from 'react-redux';
 import { UserImageContainer, UserAvatar, UserCover, UserTitle, UserInfo, sharedDivCss } from '../pages/profile';
 import { useHistory } from 'react-router-dom';
 
@@ -95,8 +96,8 @@ const initialState = (user) => {
   const { username, email, about, city, country, hobbies} = user;
    return { username, email, about, city, country, hobbies }
 }
-export default function ProfileEdit({ user }) {
-  const {avatar, cover } = user;
+export default function ProfileEdit() {
+  const { user } = useSelector(state => state.User)
   const [avatarFile, setAvatarFile] = useState(null);
   const [coverFile, setCoverFile] = useState(null);
   const [avatarImg, setAvatarImg] = useState();
@@ -159,7 +160,7 @@ export default function ProfileEdit({ user }) {
        <UserProfile>
         <UserImageContainer>
           <UserCover>
-            <img src={ coverImg || cover } alt="cover"/>
+            <img src={ coverImg || user.cover } alt="cover"/>
             <button onClick={(e) => handleClick(e, 'cover')}> <FaCamera/></button>
             <input 
                 name="coverImg" 
@@ -171,7 +172,7 @@ export default function ProfileEdit({ user }) {
               />
           </UserCover>
           <UserAvatar>
-            <img src={ avatarImg || avatar } alt="cover"/>
+            <img src={ avatarImg || user.avatar.avatar_url } alt="cover"/>
             <button onClick={(e) => handleClick(e, 'avatar')}> <FaCamera/></button>
             <input 
                 name="avatarImg" 
@@ -182,7 +183,7 @@ export default function ProfileEdit({ user }) {
                 onChange={(e) => handleFileUpload(e, 'avatar')}
               />
           </UserAvatar>
-          <UserTitle>{ infos.username }</UserTitle>
+          <UserTitle>{ user.username }</UserTitle>
         </UserImageContainer>
        </UserProfile>
        <EditButton 

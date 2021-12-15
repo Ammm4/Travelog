@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link, useRouteMatch } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import styled, {css} from 'styled-components';
 import Post from '../components/Post';
 import { PostsWrapper } from './home';
@@ -157,7 +158,8 @@ export const PostHeading = styled.div`
   }
 `
 
-export default function Profile({ user, setIsModal }) {
+export default function Profile({ setIsModal }) {
+  const { user } = useSelector(state => state.User);
   const match = useRouteMatch();
   return (
     <ProfileContainer>
@@ -167,7 +169,7 @@ export default function Profile({ user, setIsModal }) {
           <img src={user.cover} alt="cover"/>
         </UserCover>
         <UserAvatar>
-          <img src={user.avatar} alt="cover"/>
+          <img src={user.avatar.avatar_url} alt="cover"/>
         </UserAvatar>
         <UserTitle>{ user.username }</UserTitle>
        </UserImageContainer>

@@ -1,4 +1,5 @@
-import React from 'react';
+import React, {useEffect} from 'react';
+import { useDispatch } from 'react-redux';
 import { 
   BrowserRouter as Router, 
   Switch, 
@@ -6,7 +7,7 @@ import {
   Redirect
 } from 'react-router-dom';
 
-
+import { setuser } from './redux/users/userActions';
 
 // ============ Components ================ //
 import Homepage from './pages/homepage';
@@ -100,7 +101,11 @@ const user = {
 }
 
 function App() {
-  
+ const dispatch = useDispatch();
+ useEffect(() => {
+    dispatch(setuser())
+  },[dispatch]);
+
   return (
     <>
       <Router>

@@ -36,7 +36,10 @@ export default function PostModal({ setModal, postId}) {
       upLoading,
       msg, 
       titles, 
-      imgPreview, 
+      imgPreview,
+      destinationInfo, setDestinationInfo,
+      travellerInfo, setTravellerInfo,
+      recommendations, setRecommendations,
       heritages, 
       places, 
       todos, 
@@ -60,6 +63,12 @@ export default function PostModal({ setModal, postId}) {
          imgPreview={imgPreview}
          handleFileUpload={handleFileUpload}
          removeImg={removeImg}
+         destinationInfo={destinationInfo}
+         setDestinationInfo={setDestinationInfo}
+         travellerInfo={travellerInfo}
+         setTravellerInfo={setTravellerInfo}
+         recommendations={recommendations}
+         setRecommendations={setRecommendations}
          heritages={heritages}
          places={places}
          todos={todos}

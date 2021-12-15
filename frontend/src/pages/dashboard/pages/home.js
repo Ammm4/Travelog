@@ -129,7 +129,6 @@ const posts = [
     heritages: ['The Colosseum', 'The Pantheon', 'The Vatican Museums'],
     places: ['Vatican City', 'Roman Forum', 'Trevi Fountain', 'Santa Maria Maggoire'],
     todo:['Museums tour', "Climb the dome at St Peter's Basilica","Gaze at the heavens through the Pantheon's Oculus", 'Eat grattachecca on the banks of the Tiber River'],
-    transportation: 'Metros, Buses, trams reach to most of the popular destinations. Vispa are available cheaply',
     others:'Generally safe but pickpockets are active around.',
     images: [
       {

@@ -16,8 +16,8 @@ import Userprofile from './pages/userprofile';
 
 export default function Dashboard() {
   const { user } = useSelector(state => state.User)
-  const [active, setActive] = useState();
-  const [isModal, setIsModal] = useState(null);
+  const [ active, setActive ] = useState();
+  const [ isModal, setIsModal ] = useState(null);
   const match = useRouteMatch();
   const location = useLocation();
   
@@ -27,20 +27,24 @@ export default function Dashboard() {
     } else if( location.pathname.match(/\/dashboard\/profile/) ) {
       setActive('avatar')
     }
-  }, [location])
+  }, [location]);
+
+  if(!user) {
+    return <Redirect to ="/login" />
+  }
  
   return (
     <>
-      <Navbar user={user} active={active}/>
+      <Navbar active={active}/>
       <Switch>   
         <Route exact path={`${match.path}/home`}>
-          <Home user={user} setModal={setIsModal}/> 
+          <Home setModal={setIsModal}/> 
         </Route>
         <Route exact path={`${match.path}/profile`}>
-          <Profile user={user} setIsModal={setIsModal} /> 
+          <Profile setIsModal={setIsModal} /> 
         </Route>
         <Route exact path={`${match.path}/profile/edit`}>
-          <ProfileEdit user={user}  /> 
+          <ProfileEdit /> 
         </Route>
         <Route 
            exact 

@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { Switch, Route, Link, useRouteMatch } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import styled,{ css } from 'styled-components';
 
 import PostImages from './PostImages';
@@ -176,11 +177,12 @@ const EditLink = styled(Link)`
 const DeleteButton = styled(Button)`
   font-size: 1rem;
 `
-export default function Post({ post, user, setModal }) {
+export default function Post({ post, setModal }) {
   const [showInfo, setShowInfo] = useState(false);
-  const [comment, setComment] = useState('')
+  const [comment, setComment] = useState('');
   const commentInputRef = useRef();
-  let showEditPostButton = post.authorId === user.user_id ? true : false;
+  const { user } = useSelector(state => state.User);
+  let showEditPostButton = post.authorId === user._id ? true : false;
   let { url } = useRouteMatch();
   const postDetails = {
     numPeople: post.numPeople,
@@ -273,7 +275,7 @@ export default function Post({ post, user, setModal }) {
       </PostDiscussion>
 
       <PostComment>
-        <AvatarImage src={user.avatar} alt="avatar" />
+        <AvatarImage src={user.avatar.avatar_url} alt="avatar" />
         <input 
           ref={commentInputRef} 
           value={comment} 
@@ -287,3 +289,35 @@ export default function Post({ post, user, setModal }) {
 }
 
 
+/* { 
+      "comment_id": "comment1",
+      "user_id": "user3",
+      "username": "Max",
+      "userAvatar": "https://www.oneindia.com/img/1200x80/2017/05/x05-1451993146-himalayas-mount-everest-latest-600-jpg-pagespeed-ic-dkoe-ed5xd1-22-1495457231.jpg'",
+      "comment": "Are there any good hostels around??",
+      "likes":[],
+      "replies":[{
+        "reply_id": "reply4",
+        "user_id": "user1",
+        "username": "John",
+        "userAvatar": "https://assets.mycast.io/characters/jerry-mouse-1236784-normal.jpg?1610584771",
+        "answer": "Yes, there are quite a few and are located in convenient places.",
+        "likes":[]
+      }
+      {
+      "comment_id": "comment2",
+      "user_id": "user2",
+      "username": "Lewis",
+      "userAvatar": "http://miftyisbored.com/wp-content/uploads/2013/06/iron-man-mask-thumbnail.png",
+      "comment": "Does public transports go everywhere?",
+      "likes":[],
+      "replies":[{
+        "reply_id": "reply3",
+        "user_id": "user1",
+        "username": "John",
+        "userAvatar": "https://assets.mycast.io/characters/jerry-mouse-1236784-normal.jpg?1610584771",
+        "reply": "Yes, around Barcelona public transports are good enough",
+        "likes":[]
+      }
+      
+    */

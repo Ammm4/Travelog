@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { Link, useParams, useRouteMatch } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import styled, {css} from 'styled-components';
 
 import SinglePostImages from '../components/SinglePostImages';
@@ -212,7 +213,8 @@ const DeleteButton = styled(Button)`
 `
 
 // Single Post Extra Components 
-export default function Singlepost({user}) {
+export default function Singlepost() {
+  const { user } = useSelector(state => state.User);
   const [showInfo, setShowInfo] = useState(false);
   const [comment, setComment] = useState('');
   let match = useRouteMatch();
@@ -268,7 +270,7 @@ export default function Singlepost({user}) {
           <InteractionButton onClick={(e) => commentInputRef.current.focus()}><FaComments /></InteractionButton>
         </PostInteractions>
         <PostComment>
-          <AvatarImage src="https://assets.mycast.io/characters/jerry-mouse-1236784-normal.jpg?1610584771" alt="avatar"/>
+          <AvatarImage src={user.avatar.avatar_url} alt="avatar"/>
           <input 
             ref={commentInputRef} 
             value={comment} 

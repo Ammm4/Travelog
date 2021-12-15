@@ -175,6 +175,12 @@ export default function PostForm(props) {
   const {
          basicInfo, 
          setBasicInfo,
+         destinationInfo,
+         setDestinationInfo,
+         travellerInfo,
+         setTravellerInfo,
+         recommendations,
+         setRecommendations,
          imageInputRef,
          imageUploader, 
          imgPreview,
@@ -209,8 +215,8 @@ export default function PostForm(props) {
               id="destination" 
               name="destination" 
               type="text"
-              value = { basicInfo.destination }
-              onChange = {(e) => setBasicInfo({...basicInfo, [e.target.name] : e.target.value}) }
+              value = { destinationInfo.destination }
+              onChange = {(e) => setDestinationInfo({...destinationInfo, [e.target.name] : e.target.value}) }
               placeholder="Barcelona, Venice, Porto..."
               />
           </div>
@@ -220,8 +226,8 @@ export default function PostForm(props) {
               id="country" 
               name="country" 
               type="text"
-              value={ basicInfo.country }
-              onChange = {(e) => setBasicInfo({...basicInfo, [e.target.name] : e.target.value}) }
+              value = { destinationInfo.country }
+              onChange = {(e) => setDestinationInfo({...destinationInfo, [e.target.name] : e.target.value}) }
               placeholder="Italy, Greece, France..."/>
           </div>
           <div className="form-group-input">
@@ -229,8 +235,8 @@ export default function PostForm(props) {
             <textarea 
               id="summary"
               name="summary"
-              value={ basicInfo.summary }
-              onChange = {(e) => setBasicInfo({...basicInfo, [e.target.name] : e.target.value}) }
+              value = { destinationInfo.summary }
+              onChange = {(e) => setDestinationInfo({...destinationInfo, [e.target.name] : e.target.value}) }
             />
           </div>
           <div className="form-group-input">
@@ -278,10 +284,10 @@ export default function PostForm(props) {
           <InputsGroupHeading>Traveller's Info: </InputsGroupHeading>
           <div className="form-group-input">
             <label htmlFor="people">Number of Travellers</label>
-            <select id="people" 
-               name="people"
-               value={ basicInfo.people }
-               onChange = {(e) => setBasicInfo({...basicInfo, [e.target.name] : e.target.value}) }
+            <select id="numOfPeople" 
+               name="numOfPeople"
+               value={ travellerInfo.numOfPeople }
+               onChange = {(e) => setTravellerInfo({...travellerInfo, [e.target.name] : e.target.value}) }
                >
               <option value="1">1</option>
               <option value="2">2</option>
@@ -300,8 +306,8 @@ export default function PostForm(props) {
               id="cost" 
               name="cost" 
               type="number"
-              value={ basicInfo.cost }
-              onChange = {(e) => setBasicInfo({...basicInfo, [e.target.name] : e.target.value}) }
+              value={ travellerInfo.cost }
+              onChange = {(e) => setTravellerInfo({...travellerInfo, [e.target.name] : e.target.value}) }
               />
           </div>
         </div>
@@ -310,8 +316,8 @@ export default function PostForm(props) {
           <InputsGroupHeading>Recommendations: </InputsGroupHeading>
           <div className="form-group-input">
             <label htmlFor="days">Number of days To Spent</label>
-            <select id="days" name="days" value = { basicInfo.days } 
-              onChange = {(e) => setBasicInfo({...basicInfo, [e.target.name] : e.target.value}) }>
+            <select id="days" name="days" value = { recommendations.days } 
+              onChange = {(e) => setRecommendations({...recommendations, [e.target.name] : e.target.value}) }>
               <option value="1 day">1 day</option>
               <option value="2 days">2 days</option>
               <option value="3 days">3 days</option>
@@ -330,14 +336,14 @@ export default function PostForm(props) {
               id="budget" 
               name="budget" 
               type="number"
-              value={ basicInfo.budget }
-              onChange = {(e) => setBasicInfo({...basicInfo, [e.target.name] : e.target.value}) }
+              value={ recommendations.budget }
+              onChange = {(e) => setRecommendations({...recommendations, [e.target.name] : e.target.value}) }
               />
           </div>
           <div className="form-group-input">
             <label> Heritages To Visit</label>
             <ArrayOfInputs>
-              { heritages.map((item, index) => {
+              { recommendations.heritages.map((item, index) => {
                 return <InputElement key={index} >
                          <input 
                           name="heritage" 
@@ -356,7 +362,7 @@ export default function PostForm(props) {
           <div className="form-group-input">
             <label> Places To See</label>
             <ArrayOfInputs>
-              { places.map((item, index) => {
+              { recommendations.places.map((item, index) => {
                 return <InputElement key={index} >
                          <input 
                           name="place" 
@@ -375,7 +381,8 @@ export default function PostForm(props) {
           <div className="form-group-input">
             <label>Things To do </label>
             <ArrayOfInputs>
-              { todos.map((item, index) => {
+
+              { recommendations.todos.map((item, index) => {
                 return <InputElement key={index} >
                          <input 
                           name="todo" 
@@ -400,8 +407,8 @@ export default function PostForm(props) {
             <textarea 
               id="others" 
               name="others" 
-              value={ basicInfo.others }
-              onChange = {(e) => setBasicInfo({...basicInfo, [e.target.name] : e.target.value}) }
+              value={ recommendations.others }
+              onChange = {(e) => setRecommendations({...recommendations, [e.target.name] : e.target.value}) }
               />
           </div>
         </div>

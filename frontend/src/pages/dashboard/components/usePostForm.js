@@ -9,11 +9,9 @@ export default function usePostForm( setModal, postId ) {
   const [titles, setTitles] = useState([]);
   const [imgPreview, setImgPreview] = useState([]);
   const [finalImages, setFinalImages] = useState([]);
-  const [heritages, setHeritages] = useState(['']);
-  const [places, setPlaces] = useState(['']);
-  const [todos, setTodos] = useState(['']);
-  const [basicInfo, setBasicInfo] = useState({destination: '', country: '', summary: '', people: '1', cost: '', days: '1 day', budget: '', others: ''})
-
+  const [destinationInfo, setDestinationInfo] = useState({ destination: '', country: '', summary: ''  });
+  const [travellerInfo, setTravellerInfo] = useState({ numOfpeople: '1', cost:'' });
+  const [recommendations, setRecommendations] = useState({ days: '1 day', budget: '', heritages:[''],places:[''], todos:[''], others:'' });
   const imageInputRef = useRef();
 
    useEffect(() => {
@@ -25,25 +23,25 @@ export default function usePostForm( setModal, postId ) {
    setTitles([...post.images.map(image => image.imgName)]);
    setFinalImages([...post.images.map(image => image)]);
    setImgPreview([...post.images.map(image => image.imgURL)]);
-   setHeritages(post.heritages);
-   setPlaces(post.places);
-   setTodos(post.todos);
-   setBasicInfo({
-     destination:post.destination,
-     country: post.country,
-     cost: post.cost,
-     budget: post.budget,
-     summary: post.description,
-     people: post.numPeople,
-     days: post.numDays,
-     others: post.others
-   })
+   setDestinationInfo({ 
+     destination: post.destinationInfo.destination, 
+     country: post.destinationInfo.country, 
+     summary: post.destinationInfo.summary})
+   setTravellerInfo({ 
+     people: post.travellerInfo.numOfPeople, 
+     cost: post.travellerInfo.cost})
+   setRecommendations({
+     days:post.recommendations.days, 
+     budget: post.recommendations.budget, 
+     heritages: post.recommendations.heritages, 
+     places: post.recommendations.places, 
+     todos: post.recommendations.todos, 
+     others: post.recommendations.others});
    setUpLoading(false);
   },[postId])
   
   useEffect(() => {
    if(!imgFiles) return;
-   //let imgUrls = imgFiles.map(img => URL.createObjectURL(img));
    let imgUrls = imgFiles.map(file => {
                    if((typeof file) !== 'string') return URL.createObjectURL(file)
                    return file
@@ -91,58 +89,63 @@ export default function usePostForm( setModal, postId ) {
   const addMoreInput = (e, inputName) => {
     e.preventDefault();
     if(inputName === 'heritage'){
-      return setHeritages([...heritages,'']) 
+      return setRecommendations({...recommendations, heritages: [...recommendations.heritages,'']})
     }
+    
     if(inputName === 'place'){
-      return setPlaces([...places,'']) 
+      return setRecommendations({...recommendations, places: [...recommendations.places,'']})
     }
+
     if(inputName === 'todo'){
-      return setTodos([...todos, '']) 
+      return setRecommendations({...recommendations, todos: [...recommendations.todos,'']})
     }
   }
   const removeInput = (e, i, inputName) => {
     e.preventDefault(); 
     if(inputName === 'heritage') {
-      if(heritages.length === 1) return setHeritages([''])
-      let newInputs = heritages.filter((item, index) => index !== i)
-      return setHeritages(newInputs)
+      if(recommendations.heritages.length === 1) return setRecommendations({...recommendations, heritages: ['']})
+      let newInputs = recommendations.heritages.filter((item, index) => index !== i)
+      return setRecommendations({...recommendations, heritages: newInputs}) 
     }
+
     if(inputName === 'place') {
-      if(places.length === 1) return setPlaces([''])
-      let newInputs = places.filter((item, index) => index !== i)
-      return setPlaces(newInputs)
+      if(recommendations.places.length === 1) return setRecommendations({...recommendations, places: ['']})
+      let newInputs = recommendations.places.filter((item, index) => index !== i)
+      return  setRecommendations({...recommendations, places: newInputs})  
     }
+
     if(inputName === 'todo') {
-      if(todos.length === 1) return setTodos([['']])
-      let newInputs = todos.filter((item, index) => index !== i)
-      return setTodos(newInputs)
-    }
-    
+      if(recommendations.todos.length === 1) return setRecommendations({...recommendations, todos: ['']})
+      let newInputs = recommendations.todos.filter((item, index) => index !== i)
+      return  setRecommendations({...recommendations, todos: newInputs})  
+    }  
   }
 
   const handleChange = (e, i, inputName) => {
     if(inputName === 'heritage') {
-      const newValues = heritages.map((item, index) => {
+      const newValues = recommendations.heritages.map((item, index) => {
         if(index === i) return e.target.value
         return item
       })
-      setHeritages(newValues);
+      return setRecommendations({...recommendations, heritages: newValues});
+     
     }
+
     if(inputName === 'place') {
-      const newValues = places.map((item, index) => {
+      const newValues = recommendations.places.map((item, index) => {
         if(index === i) return e.target.value
         return item
       })
-      setPlaces(newValues);
+      return setRecommendations({...recommendations, places: newValues});
     }
+
     if(inputName === 'todo') {
-      const newValues = todos.map((item, index) => {
+      const newValues = recommendations.todos.map((item, index) => {
         if(index === i) return e.target.value
         return item
       })
-      setTodos(newValues);
-    }
-    
+      return setRecommendations({...recommendations, todos: newValues}); 
+    } 
   } 
 
   const toggleForm = (e, btnName) => { 
@@ -187,11 +190,10 @@ export default function usePostForm( setModal, postId ) {
       msg, 
       imgFiles,
       titles, 
-      imgPreview, 
-      heritages, 
-      places, 
-      todos,
-      basicInfo, setBasicInfo,
+      imgPreview,
+      destinationInfo, setDestinationInfo,
+      travellerInfo, setTravellerInfo,
+      recommendations, setRecommendations,
       imageUploader, handleFileUpload,
       handleTitle, removeImg,
       addMoreInput, removeInput,

@@ -156,8 +156,8 @@ export const PostHeading = styled.div`
   }
 `
 
-export default function Userprofile({user}) {
-  const history = useHistory;
+export default function Userprofile() {
+  const history = useHistory();
   const { user_id } = useParams();
   const userSelected = users.find(user => user.user_id === user_id);
 
@@ -194,7 +194,7 @@ export default function Userprofile({user}) {
      </PostHeading>
      { userSelected.posts.length > 0 ? 
         <PostsWrapper>
-          { userSelected.posts.map(post => <Post post={post} key={post.id} user={user}/>) }
+          { userSelected.posts.map(post => <Post post={post} key={post.id} />) }
         </PostsWrapper>
         : <Zeropost />
      }
