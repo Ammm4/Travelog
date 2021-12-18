@@ -66,14 +66,14 @@ const signUpUser = asyncFunctionWrapper(async (req, res, next) => {
 const loginUser = asyncFunctionWrapper(async (req, res, next) => {
   const { email, password } = req.body;
   if(!email || !password) {
-    return next(new ErrorHandler('Please Enter Email or Password'), 400)
+    return next(new ErrorHandler('Please Enter Email or Password', 400))
   }
   const user = await UserModel.findOne({ email: email }).select("+password");
   if(!user) return next(new ErrorHandler("User doesn't Exist", 501))
  
   const match = await bcrypt.compare(password, user.password);
   if(!match) {
-      return next(new ErrorHandler('Wrong Email or Password!!'))
+      return next(new ErrorHandler('Wrong Email or Password!!', 401))
     }
   //========== Create AccessToken ========= //
   const AccessToken = jwt.sign({ id: user._id }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: process.env.TOKEN_EXPIRES_IN });
@@ -94,6 +94,24 @@ const logOutUser = (req, res, next) => {
   })
 
 }
+
+const setUser = asyncFunctionWrapper(async(req, res, next) => {
+  const user_id = req.user.id;
+  const user = await UserModel.findById(user_id);
+  res.status(200).json({
+    success: true, 
+    user
+  })
+})
+
+const getSingleUser = asyncFunctionWrapper(async (req, res, next) => {
+  const user = await UserModel.findById(req.params.id); 
+  if(!user) return next(new ErrorHandler("User not found", 404))
+    res.status(200).json({
+      success: true,
+      user
+   })   
+})
 
 //======================= Forgot Password ==========================//
 
@@ -208,6 +226,8 @@ ADD LIKES
 module.exports = {
   signUpUser,
   loginUser,
-  logOutUser
+  logOutUser,
+  setUser,
+  getSingleUser
 }
 

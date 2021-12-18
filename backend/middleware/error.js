@@ -1,5 +1,3 @@
-const ErrorHandler = require("../utils/errorHandler");
-
 
 module.exports = ( err, req, res, next ) => {
 
@@ -13,5 +11,5 @@ module.exports = ( err, req, res, next ) => {
       err.statusCode = 400
    }
   
-   res.status(err.statusCode).send({ success: false, error: err.message})
+   res.status(err.statusCode).json({ success: false, error: err.message})
 }

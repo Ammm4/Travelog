@@ -1,8 +1,15 @@
 const router = require('express').Router();
 const { check } = require('express-validator');
+const is_User_Authenticated = require('../middleware/checkAuthentication');
 
 
-const { loginUser, signUpUser, logOutUser  } = require('../controllers/user/controller');
+const { 
+  loginUser, 
+  signUpUser, 
+  logOutUser, 
+  setUser,  
+  getSingleUser
+} = require('../controllers/user/controller');
 
 
 router.post('/signup',
@@ -11,10 +18,13 @@ router.post('/signup',
   ], 
 signUpUser);
 
+router.get('/users/:id', is_User_Authenticated, getSingleUser);
+
 router.post('/login', loginUser);
 
 router.post('/logout', logOutUser);
 
+router.post('/setuser', is_User_Authenticated, setUser);
 
 router.post('/forgot_password', (req, res) => {
 

@@ -28,17 +28,22 @@ const userSchema = new mongoose.Schema({
 
   avatar: { 
     avatar_id: { 
-      type: String, 
+      type: String,
+      default:'user1',
       required: true
     },
     avatar_url: {
-      type: String, 
+      type: String,
+      default:"https://st2.depositphotos.com/12103294/46860/v/950/depositphotos_468602444-stock-illustration-minimalistic-vector-illustration-cartoon-traveller.jpg",
       required: true
     }  
   },
 
-  about: { type:  String, default: "" },
-  cover: { type:  String, default: "" },
+  about: { type:  String, default: "Add Something about Yourself" },
+  hobbies: { type:  String, default: "Add Your Hobbies" },
+  cover: { type:  String, default: "https://ceblog.s3.amazonaws.com/wp-content/uploads/2012/05/20172622/ce-travel.jpg" },
+  city: { type:  String, default: "Add the City you Live" },
+  country: { type:  String, default: "Add the Country You Live" },
   posts: [Post],
   likes: [Like],
   comments: [Comment],

@@ -1,4 +1,6 @@
-const { PostModel }  = require("../../database/models/PostModel.js");
+const { PostModel }  = require("../../database/models/postModel.js");
+const { UserModel } = require("../../database/models/userModel.js");
+const { v4: uuidv4 } = require('uuid');
 const ErrorHandler = require("../../utils/errorHandler.js");
 
 const asyncFunctionWrapper =  require('../../utils/asyncFunctionWrapper');
@@ -12,7 +14,7 @@ const getAllPosts = asyncFunctionWrapper(async (req, res, next) => {
 });
 
 const getSinglePost = asyncFunctionWrapper(async (req, res, next) => {
-   const post = await PostModel.findById(req.params.id);
+   const post = await PostModel.findOne({ post_id: req.params.id});
    if(!post) return next(new ErrorHandler("Post not found", 404))
    res.status(200).json({
       success: true,
@@ -21,19 +23,27 @@ const getSinglePost = asyncFunctionWrapper(async (req, res, next) => {
 })
 
 const addPost = asyncFunctionWrapper( async ( req, res, next ) => {
-  const { author, title, destination, images, description, cost, attractions, todoList } = req.body;
+  const user_id = req.user.id;
+  const user = await UserModel.findById(user_id);
+  const post_id = uuidv4();
+  const author = {
+    authorId: user._id,
+    authorAvatar: user.avatar.avatar_url,
+    authorName: user.username,
+  }
+  const { destinationInfo, travellerInfo, recommendations, images } = req.body;
+  user.posts = [...user.posts, { post_id, author, destinationInfo, travellerInfo, recommendations, images }];
   const post = new PostModel({
+     post_id,
      author,
-     title,
-     destination,
+     destinationInfo,
+     travellerInfo,
+     recommendations,
      images,
-     description,
-     cost,
-     attractions,
-     todoList,
      likes:[],
      comments:[],
    })
+  await user.save();
   const result = await post.save();
   res.status(201).send({success: true, message: "Post successfully Created!!", result});
 })
