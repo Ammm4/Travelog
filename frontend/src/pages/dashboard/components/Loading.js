@@ -61,7 +61,7 @@ const Button = styled.button`
 `
 const msg = "error";
 export default function Loading(props) {
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const { handlePostSubmit } = props;
   
   /* useEffect(() => {

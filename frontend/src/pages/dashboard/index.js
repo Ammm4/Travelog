@@ -68,7 +68,7 @@ export default function Dashboard() {
               `${match.path}/profile/users/:user_id`,
             ]}  
         >
-          <Userprofile user={user}/>
+          <Userprofile />
         </Route>
         <Route exact path="/dashboard">
           <Redirect to={`${match.path}/home`} />

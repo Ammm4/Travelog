@@ -10,8 +10,8 @@ export default function usePostForm( setModal, postId ) {
   const [imgPreview, setImgPreview] = useState([]);
   const [finalImages, setFinalImages] = useState([]);
   const [destinationInfo, setDestinationInfo] = useState({ destination: '', country: '', summary: ''  });
-  const [travellerInfo, setTravellerInfo] = useState({ numOfpeople: '1', cost:'' });
-  const [recommendations, setRecommendations] = useState({ days: '1 day', budget: '', heritages:[''],places:[''], todos:[''], others:'' });
+  const [travellerInfo, setTravellerInfo] = useState({ numOfPeople: '1', cost:'' });
+  const [recommendations, setRecommendations] = useState({ numOfDays: '1 day', budget: '', heritages:[''], places:[''], todos:[''], others:'' });
   const imageInputRef = useRef();
 
    useEffect(() => {
@@ -28,10 +28,10 @@ export default function usePostForm( setModal, postId ) {
      country: post.destinationInfo.country, 
      summary: post.destinationInfo.summary})
    setTravellerInfo({ 
-     people: post.travellerInfo.numOfPeople, 
+     numOfPeople: post.travellerInfo.numOfPeople, 
      cost: post.travellerInfo.cost})
    setRecommendations({
-     days:post.recommendations.days, 
+     numOfDays:post.recommendations.days, 
      budget: post.recommendations.budget, 
      heritages: post.recommendations.heritages, 
      places: post.recommendations.places, 

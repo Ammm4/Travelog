@@ -56,8 +56,6 @@ export default function PostModal({ setModal, postId}) {
       <span onClick={ () => setModal(null) }><MdClear /></span>
 
      { showPostForm && <PostForm 
-         basicInfo={basicInfo}
-         setBasicInfo={setBasicInfo}
          imageInputRef={imageInputRef}
          imageUploader={imageUploader} 
          imgPreview={imgPreview}
@@ -69,9 +67,6 @@ export default function PostModal({ setModal, postId}) {
          setTravellerInfo={setTravellerInfo}
          recommendations={recommendations}
          setRecommendations={setRecommendations}
-         heritages={heritages}
-         places={places}
-         todos={todos}
          removeInput={removeInput}
          handleChange={handleChange}
          addMoreInput={addMoreInput} 

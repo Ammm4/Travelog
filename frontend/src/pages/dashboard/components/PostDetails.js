@@ -32,17 +32,18 @@ const PostRecommendation = styled.div`
 `
 
 export default function PostDetails({ data }) {
+  if(!data) return;
   return (
     <Container>
       <div className="traveller_info">
           <PostHeading>Travellers' Info:</PostHeading>
-          <p><h5>No. of people: </h5><span>{ data.numPeople}</span></p>
+          <p><h5>No. of people: </h5><span>{ data.numOfPeople}</span></p>
           <p><h5>Costs: </h5><span>£{ data.cost }</span> </p>     
         </div>
         <div className="recommendations">
           <PostHeading>Recommendations:</PostHeading>
           <PostRecommendation>
-            <p><h5>No. of days:</h5><span>{ data.numDays}</span></p> 
+            <p><h5>No. of days:</h5><span>{ data.numOfDays}</span></p> 
             <p><h5>Budget:</h5><span> £{ data.budget } pp.</span> </p>
             <h5>Heritages To See:</h5>
             <ul>

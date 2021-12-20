@@ -5,6 +5,7 @@ import Post from '../components/Post';
 import { getPosts } from '../../../redux/posts/postActions';
 
 import { useSelector, useDispatch } from 'react-redux';
+import Loading from '../components/Loading';
 
 export const PostsWrapper = styled.section`
  margin: 1rem auto;
@@ -19,19 +20,22 @@ const HomeContainer = styled.section`
 
 export default function Home({ setModal }) {
   const dispatch = useDispatch();
-  const { loading, allPosts, error } = useSelector(state => state.Posts);
+  const { loading, posts, error } = useSelector(state => state.Post);
   const { user } = useSelector(state => state.User);
   useEffect(() => {
     dispatch(getPosts())
   },[dispatch]);
 
+  if(loading) {
+    return <Loading />
+  }
   return (
     <HomeContainer>
       <Share user={user} setModal={setModal}/>
       <PostsWrapper>
-        {
+        { posts &&
           posts.map(post => {
-            return <Post key={post.id} post={post} user={user} setModal={setModal}/>
+            return <Post key={post._id} post={post} user={user} setModal={setModal}/>
           })
         }    
       </PostsWrapper>

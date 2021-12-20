@@ -1,5 +1,6 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Link, useHistory, useParams } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
 import styled, {css} from 'styled-components';
 import Post from '../components/Post';
 import { PostsWrapper } from './home';
@@ -9,6 +10,8 @@ import { BsFillGrid3X3GapFill } from "react-icons/bs";
 import { FcAbout } from "react-icons/fc";
 
 import Zeropost from '../components/zeropost';
+import Loading from '../components/Loading';
+import { getSingleUser } from '../../../redux/users/userActions';
 
 const sharedImgCss = css`
   display: inline-block;
@@ -158,43 +161,50 @@ export const PostHeading = styled.div`
 
 export default function Userprofile() {
   const history = useHistory();
+  const {loading, singleuser: user, error} = useSelector(state => state.SingleUser)
   const { user_id } = useParams();
-  const userSelected = users.find(user => user.user_id === user_id);
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(getSingleUser(user_id))
+  },[dispatch, user_id])
 
+  if(loading) {
+    return <Loading />
+  }
   return (
     <ProfileContainer>
      <UserProfile>
        <UserImageContainer>   
         <UserCover>
-          <img src={userSelected.cover} alt="cover"/>
+          <img src={user.cover} alt="cover"/>
         </UserCover>
         <UserAvatar>
-          <img src={userSelected.avatar} alt="cover"/>
+          <img src={user.avatar.avatar_url} alt="cover"/>
         </UserAvatar>
-        <UserTitle>{ userSelected.username }</UserTitle>
+        <UserTitle>{ user.username }</UserTitle>
        </UserImageContainer>
        <UserInfo>
          <h3>Info</h3> 
          <div>
            <span><FcAbout /></span>
-           <p><b>About:</b> { userSelected.about }</p>
+           <p><b>About:</b> { user.about }</p>
          </div>
          <div>
           <span><FcAbout /></span>
-          <p><b>Hobbies:</b> { userSelected.hobbies }</p>
+          <p><b>Hobbies:</b> { user.hobbies }</p>
          </div>
          <div>
           <span><FcAbout /></span>
-          <p><b>Location:</b> { userSelected.city }, { userSelected.country }</p>
+          <p><b>Location:</b> { user.city }, { user.country }</p>
          </div>   
        </UserInfo>
      </UserProfile>
      <PostHeading>
        <BsFillGrid3X3GapFill />
      </PostHeading>
-     { userSelected.posts.length > 0 ? 
+     { user.posts.length > 0 ? 
         <PostsWrapper>
-          { userSelected.posts.map(post => <Post post={post} key={post.id} />) }
+          { user.posts.map(post => <Post post={post} key={post.post_id} />) }
         </PostsWrapper>
         : <Zeropost />
      }

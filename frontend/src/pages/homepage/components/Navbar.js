@@ -93,15 +93,14 @@ const Button = styled.button`
   padding: 8px 16px;
   border-radius: 12px;
   letter-spacing: 1px;
-  font-family: 'Roboto', sans-serif;
+  font-family: inherit;
   color: var(--main-bg-color);
   font-size: 1rem;
-  font-weight: 700;
-  background-color: blue;
+  background: linear-gradient(#4671ea, #ac34e7);
   cursor: pointer;
   transition: .5s all ease-in;
   &:hover {
-    background-color: #888;
+    background: #888;
   }
 `
 export default function Navbar() {

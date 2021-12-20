@@ -1,6 +1,15 @@
 import React, { useState, useRef } from 'react';
 import { Switch, Route, Link, useRouteMatch } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+
+import Comment from './Comment';
+
+import { 
+  likeThePost, 
+  addCommentPost, 
+  replyPostComment
+} from '../../../redux/posts/postActions';
+
 import styled,{ css } from 'styled-components';
 
 import PostImages from './PostImages';
@@ -8,15 +17,18 @@ import PostDetails from './PostDetails';
 
 //Icons IoTrashBinSharp 
 import { BsFillInfoCircleFill } from "react-icons/bs";
-import { BsQuestionCircle } from "react-icons/bs";
+import { FaComments } from "react-icons/fa";
+import { MdClear } from "react-icons/md";
 import { BsThreeDots } from "react-icons/bs";
 import { AiOutlineHeart } from "react-icons/ai";
+import { AiFillHeart } from "react-icons/ai";
 import { IoTrashBinOutline } from "react-icons/io5";
 import { GrEdit } from "react-icons/gr";
 
 
 
 const sharedBtnCss = css`
+  display: inline-block;
   outline: none;
   border: none;
   background: transparent;
@@ -58,15 +70,19 @@ const PostTitle = styled.div`
  margin-bottom: 0.75rem;
  padding: 8px;
  letter-spacing: 1px;
- h3, p {
+ h4, p {
    margin-bottom: 0.5rem;
+ }
+ h4{
+   font-size: 0.95rem;
  }
  p {
    font-size: 0.8rem;
  }
 `
-const CommentLike = styled.div`
+const CommentsAndLikes = styled.div`
   font-size: 0.9rem;
+  padding: 8px;
   button {
     padding: 1rem 1rem 0 0 ;
   }
@@ -84,10 +100,13 @@ const Likes = styled(Link)`
 `
 const Button = styled.button`
   ${sharedBtnCss}
-  color: #111111;
+  display: inline-block;
+  margin-left: 0.35rem;
+  color: #888;
   letter-spacing: 1px;
   cursor:pointer;
-  &:hover{
+  font-size: 0.8rem;
+  &:hover {
     color:#ccc
   }
 `
@@ -110,54 +129,88 @@ const InteractionButton = styled.button`
 const Count = styled.div`
    grid-column-start: 2;
    grid-column-end: 3; 
+   display: flex;
+   justify-content: space-between;
+   color: #888;
    div {
      display: inline-block;
      padding: 4px 6px;
      border-radius: 8px;
    }
-`
-
-const PostComment = styled(PostAuthor)`
-  position: relative;
-  border-bottom: none;
-  margin-bottom: 0;
-  padding: 8px;
-  input {
-    flex: 1;
-    height: 35px;
-    border: 1px solid #888;
-    font-size: 0.9rem;
-    padding: 6px 50px 6px 12px;
-    border-radius: 25px;
-    letter-spacing: 1px;
-    &:focus {
-      outline: none;
-      box-shadow: 0px 0px 5px rgba(0,0,0,0.5)
-    }
+   span {
+     display: inline-block;
+     margin-right: 0.65rem;
+     font-size: 0.825rem;
+     letter-spacing: 1px;
    }
    button {
-     ${sharedBtnCss}
-     display: inline-block;
-     position: absolute;
-     font-weight: 600;
-     right: 1.375rem;
-     cursor: pointer;
+     font-size: 0.8rem;
+   }
+`
+
+const CommentPost = styled.div` 
+  padding: 8px;
+  div {
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+
+      input {
+        width: calc( 100% - 39px);
+        height: 35px;
+        border: 1px solid #888;
+        font-size: 0.9rem;
+        padding: 6px 50px 6px 12px;
+        border-radius: 25px;
+        letter-spacing: 1px;
+        &:focus {
+          outline: none;
+          box-shadow: 0px 0px 5px rgba(0,0,0,0.5)
+        }
+     }
+
+      button {
+        ${sharedBtnCss}
+        position: absolute;
+        display: inline-block;
+        font-weight: 600;
+        top:50%;
+        transform: translateY(-50%);
+        right: 0.75rem;
+        cursor: pointer;
+     }
   }
+  
 `
-const PostDiscussion = styled.div`
- padding: 8px;
+const ReplyBanner = styled.div`
+  flex: 1;
+  background-color: #f5f5f5;
+  padding: 5px;
+  margin-bottom: 0.25rem;
 `
-const Discussion = styled.div`
+const PostComments = styled.div`
+  padding: 8px;
+`
+/* const Comment = styled.div`
  margin-bottom: 0.5rem;
  display: grid;
- grid-row-gap:0.1rem;
+ grid-row-gap:0.08rem;
  grid-template-columns: 45px 1fr 45px;
- background-color: #f1f1f1;
  font-size: 0.9rem;
- padding: 6px 0 6px 6px;
- border-radius: 10px;
+ padding: 6px 0 0px 6px;
  line-height: 20px;
-`
+ p {
+   background-color: #f1f1f1;
+   padding: 8px;
+   border-radius: 10px;
+ }
+` */
+//const Comment = styled.div``
+/* const Reply = styled(Comment)`
+ margin-top: 0.1rem;
+ margin-bottom: 0;
+` */
 const ReplyContainer = styled.div`
   grid-column-start: 2;
   grid-column-end: 4;
@@ -177,147 +230,154 @@ const EditLink = styled(Link)`
 const DeleteButton = styled(Button)`
   font-size: 1rem;
 `
+const Line = styled.span`
+  display: inline-block;
+  width: 50px;
+  height: 2px;
+  margin-right: 0.5rem;
+  vertical-align: middle;
+  background-color: #333;
+`
 export default function Post({ post, setModal }) {
   const [showInfo, setShowInfo] = useState(false);
-  const [comment, setComment] = useState('');
+  const [text, setText] = useState('');
+  const [postComment, setPostComment] = useState(true);
+  const [replyInfo, setReplyInfo] = useState({ replyTo: null, commentId: null });
   const commentInputRef = useRef();
   const { user } = useSelector(state => state.User);
-  let showEditPostButton = post.authorId === user._id ? true : false;
+  const dispatch = useDispatch();
   let { url } = useRouteMatch();
+
   const postDetails = {
-    numPeople: post.numPeople,
-    numDays: post.numDays,
-    description: post.description,
-    cost: post.cost,
-    budget: post.budget,
-    heritages: post.heritages,
-    places: post.places,
-    todos: post.todos,
-    others: post.others,
+    numOfPeople: post.travellerInfo.numOfPeople,
+    cost: post.travellerInfo.cost,
+    numOfDays: post.recommendations.numOfDays,
+    budget: post.recommendations.budget,
+    heritages: post.recommendations.heritages,
+    places: post.recommendations.places,
+    todos: post.recommendations.todos,
+    others: post.recommendations.others,
   }
- 
+
+  const handleClick = (e) => {
+    e.preventDefault();
+    if(postComment) {
+      dispatch(addCommentPost(post.post_id, { text }))
+    } else {
+      dispatch(replyPostComment(post.post_id, replyInfo.commentId, { text }))
+    }
+    setText('');
+  }
+  const handleComment = (e) => {
+    e.preventDefault();
+    commentInputRef.current.focus();
+    setPostComment(true);
+    setReplyInfo({...replyInfo, replyTo: null, commentId: null })
+  }
+
+  const handleReply = (e, commentAuthor, commentId) => {
+    e.preventDefault();
+    commentInputRef.current.focus();
+    setReplyInfo({ ...replyInfo, replyTo: commentAuthor, commentId })
+    setText(`@${commentAuthor} `)
+    setPostComment(false);
+  }
+
+  const handleClear = (e) => {
+    e.preventDefault();
+    setPostComment(true);
+    setReplyInfo({ ...replyInfo, replyTo: null, commentId: null })
+    setText('')
+  }
+  
   return (
     <PostWrapper>
       <PostAuthor>
-        <Link to={`${url}/users/${post.authorId}`}>
-          <AvatarImage src={post.authorAvatar} alt="avatar"/>
+        <Link to={ `${url}/users/${post.author.authorId}` }>
+          <AvatarImage src={ post.author.authorAvatar } alt="avatar"/>
         </Link>
         <div>
-          <AuthorName>{post.authorName}</AuthorName>
-          <h5>{post.destination}, {post.country}</h5>
+          <AuthorName>{ post.author.authorName }</AuthorName>
+          <h5>{ post.destinationInfo.destination }, { post.destinationInfo.country }</h5>
         </div>
         { 
-          showEditPostButton && 
+          post.author.authorId === user._id && 
            <ActionContainer>
-              <DeleteButton onClick={(e) => setModal(post.id)}><GrEdit /></DeleteButton>
+              <DeleteButton onClick={ (e) => setModal(post.post_id) }><GrEdit /></DeleteButton>
               <DeleteButton><IoTrashBinOutline /></DeleteButton>
            </ActionContainer>
         }
-        
       </PostAuthor>
-      <PostImages images={ post.images } postId={post.id}/>
-      <PostTitle>    
-        <p><b>###</b> {post.description}</p>
-        <Button onClick={() => setShowInfo(!showInfo)}> <BsFillInfoCircleFill/> {showInfo ? 'Less Info... ': 'More Info...'}</Button>
+      <PostImages images={ post.images } postId={ post.post_id } />
+      <PostTitle>
+        <h4>Summary</h4>    
+        <p> { post.destinationInfo.summary }</p>
+        <Button 
+          onClick={ () => setShowInfo(!showInfo) } > 
+          <BsFillInfoCircleFill/> { showInfo ? 'Less Info... ': 'More Info...' }
+        </Button>
       </PostTitle>  
-      { showInfo && <PostDetails data={postDetails}/> }
-      <CommentLike>
-        <Likes to={`${url}/posts/1`}> 0 Likes</Likes>
-        <Comments to={`${url}/posts/1`}> 1 Q&A</Comments>
-      </CommentLike>
+      { showInfo && <PostDetails data={ postDetails }/> }
+      <CommentsAndLikes>
+        { post.likes.length > 0 && 
+          <Likes to={ `${url}/posts/1` } >
+            { post.likes.length ===  1 ? '1 Like' : `${ post.likes.length } Likes` } 
+          </Likes>
+        }
+        { post.comments.length > 0 &&
+          <Comments to={ `${url}/posts/1` }> 
+            { post.comments.length ===  1 ? '1 comment' : `${ post.comments.length } comments` }
+          </Comments>
+        }
+      </CommentsAndLikes>
       <PostInteractions>
-        <InteractionButton ><AiOutlineHeart /> </InteractionButton> 
-        <InteractionButton onClick={(e) => commentInputRef.current.focus()}><BsQuestionCircle /> Ask John</InteractionButton> 
+        <InteractionButton 
+          onClick={ (e) => dispatch(likeThePost(post.post_id)) } >
+            { 
+              post.likes.find(like => like.user_id === user._id) ? 
+               <AiFillHeart /> 
+                 :
+               <AiOutlineHeart /> 
+            } 
+        </InteractionButton> 
+        <InteractionButton 
+          onClick={ (e) => handleComment(e) } >
+           <FaComments/> 
+        </InteractionButton> 
       </PostInteractions>
-      <PostDiscussion>
+      <PostComments>
         { post.comments.map(comment => {
           return (
-        <Discussion key={comment.comment_id}>
-          <Link to={`${url}/users/${comment.user_id}`}>
-            <AvatarImage src={comment.userAvatar} alt="avatar"/>
-          </Link>
-          <p><AuthorName>{comment.username}</AuthorName> {comment.question}</p> 
-          <CommentLike>
-            <Button><AiOutlineHeart /></Button>
-          </CommentLike>
-          <Count>
-              <div>
-                {comment.likes.length > 0 ? <span>0 Likes</span>:''}
-                <Button>Reply</Button>  
-              </div>
-           </Count>
-         
-          <ReplyContainer>
-            { comment.replies.map(reply => {
-              return (
-                <Discussion key={reply.reply_id}>
-                  <Link to={`${url}/users/${reply.user_id}`}>
-                    <AvatarImage src={reply.userAvatar} alt="avatar"/>
-                  </Link>
-                  <p><AuthorName>{reply.username}</AuthorName>{reply.answer}</p>
-                  <CommentLike>
-                    <Button><AiOutlineHeart /></Button>
-                  </CommentLike>
-                  <Count>
-                    <div>
-                      {reply.likes.length > 0 ? <span>0 Likes</span>:''}
-                      <Button>Reply</Button>  
-                    </div>
-                  </Count>    
-                </Discussion>
-              )
-             })
-            }
-          </ReplyContainer>
-       </Discussion>
-          )
-        })}
-      </PostDiscussion>
+            <Comment 
+              post_id={ post.post_id }
+              url={ url }
+              comment={ comment }
+              handleReply={ handleReply }
+            />
+           )
+          })}
+      </PostComments>
 
-      <PostComment>
-        <AvatarImage src={user.avatar.avatar_url} alt="avatar" />
-        <input 
-          ref={commentInputRef} 
-          value={comment} 
-          placeholder="Got a question??, Ask John!"
-          onChange={(e) => setComment(e.target.value)}
-          />
-        <button disabled={!comment ? true: false} >Post</button>
-      </PostComment>
+      <CommentPost>
+        { !postComment && <ReplyBanner>{`Replying to @${replyInfo.replyTo}`} <button onClick={(e) => handleClear(e)}><MdClear /></button></ReplyBanner> }
+        <div>
+          <AvatarImage src={ user.avatar.avatar_url } alt="avatar" />
+          <input 
+            ref={ commentInputRef } 
+            value={ text } 
+            placeholder="Got a question??, Ask John!"
+            onChange={ (e) => setText(e.target.value) }
+            />
+          <button 
+            disabled={ !text.trim() ? true : false } 
+            onClick={ (e) => handleClick(e)}>
+              Post
+          </button>
+        </div>
+      </CommentPost>
     </PostWrapper>
   )
 }
 
 
-/* { 
-      "comment_id": "comment1",
-      "user_id": "user3",
-      "username": "Max",
-      "userAvatar": "https://www.oneindia.com/img/1200x80/2017/05/x05-1451993146-himalayas-mount-everest-latest-600-jpg-pagespeed-ic-dkoe-ed5xd1-22-1495457231.jpg'",
-      "comment": "Are there any good hostels around??",
-      "likes":[],
-      "replies":[{
-        "reply_id": "reply4",
-        "user_id": "user1",
-        "username": "John",
-        "userAvatar": "https://assets.mycast.io/characters/jerry-mouse-1236784-normal.jpg?1610584771",
-        "answer": "Yes, there are quite a few and are located in convenient places.",
-        "likes":[]
-      }
-      {
-      "comment_id": "comment2",
-      "user_id": "user2",
-      "username": "Lewis",
-      "userAvatar": "http://miftyisbored.com/wp-content/uploads/2013/06/iron-man-mask-thumbnail.png",
-      "comment": "Does public transports go everywhere?",
-      "likes":[],
-      "replies":[{
-        "reply_id": "reply3",
-        "user_id": "user1",
-        "username": "John",
-        "userAvatar": "https://assets.mycast.io/characters/jerry-mouse-1236784-normal.jpg?1610584771",
-        "reply": "Yes, around Barcelona public transports are good enough",
-        "likes":[]
-      }
-      
-    */
+

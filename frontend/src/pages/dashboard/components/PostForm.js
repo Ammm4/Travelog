@@ -173,8 +173,6 @@ color: #fff;
 
 export default function PostForm(props) {
   const {
-         basicInfo, 
-         setBasicInfo,
          destinationInfo,
          setDestinationInfo,
          travellerInfo,
@@ -186,9 +184,6 @@ export default function PostForm(props) {
          imgPreview,
          handleFileUpload,
          removeImg,
-         heritages,
-         places,
-         todos,
          removeInput,
          handleChange,
          addMoreInput,
@@ -283,7 +278,7 @@ export default function PostForm(props) {
         <div className="form-group">
           <InputsGroupHeading>Traveller's Info: </InputsGroupHeading>
           <div className="form-group-input">
-            <label htmlFor="people">Number of Travellers</label>
+            <label htmlFor="numOfPeople">Number of Travellers</label>
             <select id="numOfPeople" 
                name="numOfPeople"
                value={ travellerInfo.numOfPeople }
@@ -315,8 +310,8 @@ export default function PostForm(props) {
         <div className="form-group">
           <InputsGroupHeading>Recommendations: </InputsGroupHeading>
           <div className="form-group-input">
-            <label htmlFor="days">Number of days To Spent</label>
-            <select id="days" name="days" value = { recommendations.days } 
+            <label htmlFor="numOfDays">Number of days To Spent</label>
+            <select id="numOfDays" name="numOfDays" value = { recommendations.numOfDays } 
               onChange = {(e) => setRecommendations({...recommendations, [e.target.name] : e.target.value}) }>
               <option value="1 day">1 day</option>
               <option value="2 days">2 days</option>

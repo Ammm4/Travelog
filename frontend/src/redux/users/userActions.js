@@ -3,7 +3,11 @@ import {
     LOG_IN_SUCCESS,
     LOG_IN_ERROR,
     LOG_OUT_USER,
-    SET_USER
+    SET_USER,
+    GET_SINGLE_USER_REQUEST,
+    GET_SINGLE_USER_SUCCESS,
+    GET_SINGLE_USER_ERROR
+
   } from './userTypes';
 
 import axios from 'axios';
@@ -40,6 +44,26 @@ const setUser = (user) => {
   }
 }
 
+const getSingleUserRequest = () => {
+  return {
+    type: GET_SINGLE_USER_REQUEST
+  }
+}
+
+const getSingleUserSuccess = (user) => {
+  return {
+    type: GET_SINGLE_USER_SUCCESS,
+    payload: user
+  }
+}
+
+const getSingleUserError = (error) => {
+  return {
+    type: GET_SINGLE_USER_ERROR,
+    payload: error
+  }
+}
+
 export const login = (body) => {
   return (dispatch) => {
     dispatch(loginRequest());
@@ -70,5 +94,17 @@ export const setuser = () => {
     .then(response => {
       dispatch(setUser(response.data.user))
     })
+  }
+}
+
+export const getSingleUser = (user_id) => {
+  return async (dispatch) => {
+    dispatch(getSingleUserRequest);
+    try {
+      const { data } = await axios.get(`/api/v1/users/${user_id}`);
+      dispatch(getSingleUserSuccess(data.user))
+    } catch(error) {
+      dispatch(getSingleUserError(error.response.data.error))
+    }
   }
 }
