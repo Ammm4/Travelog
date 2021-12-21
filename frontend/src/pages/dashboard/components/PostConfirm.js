@@ -105,15 +105,14 @@ const List = styled.ul`
   }
 `
 export default function PostConfirm(props) {
-  const {
-         basicInfo, 
-         imgPreview,
-         heritages,
-         places,
-         todos,
-         titles,
-         toggleForm,
-         handleSubmit
+  const {     
+    imgPreview,
+    travellerInfo,
+    destinationInfo,
+    recommendations,
+    titles,
+    toggleForm,
+    handleSubmit
   } = props;
   return (
     <PostWrapper>
@@ -122,15 +121,15 @@ export default function PostConfirm(props) {
         <InputsGroupHeading>Destination</InputsGroupHeading>
         <Infos>
           <InfoLabel>Place</InfoLabel>
-          <Answer>{basicInfo.destination}</Answer>
+          <Answer>{destinationInfo.destination}</Answer>
         </Infos>
         <Infos>
           <InfoLabel>Country</InfoLabel>
-          <Answer>{basicInfo.country}</Answer>
+          <Answer>{destinationInfo.country}</Answer>
         </Infos>
         <Infos>
           <InfoLabel>Summary</InfoLabel>
-          <Answer>{basicInfo.summary}</Answer>
+          <Answer>{destinationInfo.summary}</Answer>
         </Infos>
         <InfoLabel>Images({imgPreview.length})</InfoLabel>
         <ImagePreview>
@@ -147,27 +146,27 @@ export default function PostConfirm(props) {
         <InputsGroupHeading>Traveller</InputsGroupHeading>
         <Infos>
           <InfoLabel>No. of People</InfoLabel>
-          <Answer>{basicInfo.people}</Answer>
+          <Answer>{travellerInfo.people}</Answer>
         </Infos>
         <Infos>
           <InfoLabel>Cost- £/p</InfoLabel>
-          <Answer>{basicInfo.cost}</Answer>
+          <Answer>{travellerInfo.cost}</Answer>
         </Infos>
       </InfoGroup>
       <InfoGroup>
         <InputsGroupHeading>Recommendations</InputsGroupHeading>
         <Infos>
           <InfoLabel>No. of Days</InfoLabel>
-          <Answer>{basicInfo.days}</Answer>
+          <Answer>{recommendations.days}</Answer>
         </Infos>
         <Infos>
           <InfoLabel>Budget- £/p</InfoLabel>
-          <Answer>{basicInfo.budget}</Answer>
+          <Answer>{recommendations.budget}</Answer>
         </Infos>
         <Infos>
           <InfoLabel>Heritages to See</InfoLabel>
           <List>
-            {heritages.map((item, index) => {
+            {recommendations.heritages.map((item, index) => {
               return <li key={index}>{item}</li>
             })}
           </List>
@@ -175,7 +174,7 @@ export default function PostConfirm(props) {
         <Infos>
           <InfoLabel>Places to Visit</InfoLabel>
           <List>
-            { places.map((item, index) => {
+            { recommendations.places.map((item, index) => {
               return <li key={index}>{item}</li>
             })}
           </List>
@@ -183,7 +182,7 @@ export default function PostConfirm(props) {
         <Infos>
           <InfoLabel>Things to Do</InfoLabel>
           <List>
-            { todos.map((item, index) => {
+            { recommendations.todos.map((item, index) => {
               return <li key={index}>{item}</li>
             })}
           </List>
@@ -193,7 +192,7 @@ export default function PostConfirm(props) {
         <InputsGroupHeading>Others</InputsGroupHeading>
         <Infos>
           <InfoLabel>Transportations, Amneties, Safety, etc.</InfoLabel>
-          <Answer>{basicInfo.others}</Answer>
+          <Answer>{recommendations.others}</Answer>
         </Infos>
       </InfoGroup>
       <BtnGroup>

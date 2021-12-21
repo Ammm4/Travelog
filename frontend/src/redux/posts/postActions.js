@@ -67,7 +67,7 @@ const getSinglePostError = ( error ) => {
 export const getSinglePost = ( postId ) => {
   return (dispatch) => {
      dispatch(getSinglePostRequest());
-     axios.get(`/api/v1/posts/${postId}`)
+     axios.get(`/api/v1/posts/${ postId }`)
      .then(response => {
        dispatch(getSinglePostSuccess(response.data.post))})
      .catch(error => dispatch(getSinglePostError(error.message)))
@@ -187,7 +187,7 @@ export const addCommentPost = ( postId, body ) => {
   return async (dispatch) => {
     dispatch(getPostsRequest())
     try {
-      await axios.put(`/api/v1/posts/${ postId }/comments/${ commentId }/edit_comment`, body);
+      await axios.patch(`/api/v1/posts/${ postId }/comments/${ commentId }/edit_comment`, body);
       let { data } = await axios.get('/api/v1/posts');
       dispatch(getPostsSuccess(data.posts))
     } catch(error) {
@@ -202,7 +202,7 @@ export const addCommentPost = ( postId, body ) => {
   return async (dispatch) => {
     dispatch(getPostsRequest())
     try {
-      await axios.put(`/api/v1/posts/${ postId }/comments/${ commentId }/replies/${replyId}/edit_comment_reply`, body);
+      await axios.patch(`/api/v1/posts/${ postId }/comments/${ commentId }/replies/${replyId}/edit_comment_reply`, body);
       let { data } = await axios.get('/api/v1/posts');
       dispatch(getPostsSuccess(data.posts))
     } catch(error) {

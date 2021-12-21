@@ -50,12 +50,7 @@ const CommentContainer = styled.div`
  padding: 6px 0 0px 6px;
  line-height: 20px;
 `
-const Likes = styled(Link)`
-  //flex: 1 1 50%; 
-  display: inline-block;
-  margin-right: 1rem;
-  text-decoration: none; 
-`
+
 const Button = styled.button`
   ${sharedBtnCss}
   display: inline-block;
@@ -91,13 +86,6 @@ const Count = styled.div`
    }
 `
 
-const ReplyBanner = styled.div`
-  flex: 1;
-  background-color: #f5f5f5;
-  padding: 5px;
-  margin-bottom: 0.25rem;
-`
-
 const ReplyContainer = styled.div`
   grid-column-start: 2;
   grid-column-end: 4;
@@ -117,7 +105,7 @@ const Line = styled.span`
   height: 2px;
   margin-right: 0.5rem;
   vertical-align: middle;
-  background-color: #333;
+  background-color: #f1f1f1;
 `
 const CommentText = styled.p`
   display: ${ props => props.isEdit? 'none' : 'block' };
@@ -133,11 +121,27 @@ const EditBox = styled.textarea`
   resize: none;
 `
 
+
 export default function Comment({ post_id, url, comment, handleReply }) {
   const [ isEdit, setIsEdit ] = useState(false);
+  const [showReply, setShowReply] = useState(false);
   const [text, setText] = useState(comment.text);
   const { user } = useSelector(state => state.User);
   const dispatch = useDispatch();
+
+  const handleKeyUp = (e) => {
+    e.target.style.height = '48px';
+    e.target.style.height = `${e.target.scrollHeight}px`;
+ }
+
+  const handleEdit = (e) => {
+    e.preventDefault();
+    if (!isEdit) {
+      return setIsEdit(true)
+    }
+    setText(comment.text);
+    setIsEdit(false);
+  }
   return (
     <CommentContainer>
        <Link to={ `${url}/users/${ comment.user_id }` }>
@@ -153,8 +157,9 @@ export default function Comment({ post_id, url, comment, handleReply }) {
            &&
            <EditBox 
              isEdit={ isEdit } 
-             value={text}
+             value={ text }
              onChange={ (e) => setText(e.target.value)}
+             onKeyUp={ (e) => handleKeyUp(e)}
            />
          }
               <Count>
@@ -173,8 +178,13 @@ export default function Comment({ post_id, url, comment, handleReply }) {
                 {
                    comment.user_id === user._id &&
                    <div>
-                     { isEdit && <Button>Done</Button> }
-                     <Button onClick={ (e) => setIsEdit(!isEdit) }> 
+                     { isEdit 
+                       && 
+                       <Button onClick={ (e) => dispatch(editComment(post_id, comment.comment_id, { text }))}>
+                         Done
+                       </Button> 
+                     }
+                     <Button onClick={ (e) => handleEdit(e) }> 
                        { isEdit ? `Cancel` : `Edit` } 
                       </Button>
                      {!isEdit && <Button onClick={ (e) => dispatch(deleteComment(post_id, comment.comment_id)) }> Delete </Button>}
@@ -186,11 +196,14 @@ export default function Comment({ post_id, url, comment, handleReply }) {
                   && 
                 <>
                   <Line/>
-                  <Button>
-                    Show { comment.replies.length } { comment.replies.length === 1 ? 'Reply' : 'Replies' }
+                  <Button onClick={(e) => setShowReply(!showReply)}>
+                    {`${showReply ? 'Hide' : 'Show'} 
+                      ${ comment.replies.length } 
+                      ${ comment.replies.length === 1 ? 'Reply' : 'Replies' }
+                      `}  
                   </Button>
-                </>
-               } 
+                 </>
+              } 
             </div>
             <CommentLike>
               <Button 
@@ -205,20 +218,22 @@ export default function Comment({ post_id, url, comment, handleReply }) {
             </CommentLike>
             
            { 
-             comment.replies.length > 0 
+             showReply 
                &&
              <ReplyContainer>
-                { comment.replies.map(reply => {
-                  return (
-                    <Reply key={ reply.reply_id }
-                      post_id={ post_id }
-                      handleReply={ handleReply }
-                      url= { url }
-                      comment_id={ comment.comment_id }
-                      reply={ reply }
-                    />
-                    )
-                 })
+                { 
+                  comment.replies.map(reply => {
+                    return (
+                      <Reply 
+                      key={ reply.reply_id }
+                        post_id={ post_id }
+                        handleReply={ handleReply }
+                        url= { url }
+                        comment_id={ comment.comment_id }
+                        reply={ reply }
+                      />
+                      )
+                  })
                 }
             </ReplyContainer>
           }

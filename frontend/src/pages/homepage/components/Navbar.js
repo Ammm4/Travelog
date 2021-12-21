@@ -119,7 +119,7 @@ export default function Navbar() {
         <NavMenu menuBar={ menuBar }>
           <ul className="nav-list">
             <li className="nav-item">
-                <Button>Demo</Button>
+                <Button>DEMO</Button>
             </li>
             <li className="nav-item">
               <NavLink to="/signup">

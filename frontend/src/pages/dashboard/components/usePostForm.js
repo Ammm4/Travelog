@@ -1,6 +1,9 @@
 import React, {useState, useEffect, useRef} from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { getSinglePost } from '../../../redux/posts/postActions';
 
 export default function usePostForm( setModal, postId ) {
+  const {singlepost: post} = useSelector(state => state.SinglePost)
   const [showPostForm, setShowPostForm] = useState(true);
   const [showReview, setShowReview] = useState(false);
   const [upLoading, setUpLoading] = useState(false);
@@ -13,10 +16,14 @@ export default function usePostForm( setModal, postId ) {
   const [travellerInfo, setTravellerInfo] = useState({ numOfPeople: '1', cost:'' });
   const [recommendations, setRecommendations] = useState({ numOfDays: '1 day', budget: '', heritages:[''], places:[''], todos:[''], others:'' });
   const imageInputRef = useRef();
+  const dispatch = useDispatch();
 
+   useEffect (() => {
+    if(!postId || postId === 'create') return;
+    dispatch(getSinglePost(postId));
+   },[dispatch, postId])
+   
    useEffect(() => {
-   if(!postId || postId === 'create') return;
-   const post = posts.find(post => post.id === postId);
    if(!post) return;
    setUpLoading(true);
    setImgFiles([...post.images.map(image => image.imgURL)]);
@@ -38,7 +45,9 @@ export default function usePostForm( setModal, postId ) {
      todos: post.recommendations.todos, 
      others: post.recommendations.others});
    setUpLoading(false);
-  },[postId])
+  },[post]);
+
+ 
   
   useEffect(() => {
    if(!imgFiles) return;
@@ -200,8 +209,6 @@ export default function usePostForm( setModal, postId ) {
       handleChange, toggleForm,
       handleSubmit, handlePostSubmit
     }
-      
-    
   )
 }
 

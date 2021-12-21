@@ -1,12 +1,18 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useParams, useRouteMatch } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { likeThePost } from '../../../redux/posts/postActions';
-import { getSinglePost } from '../../../redux/posts/postActions';
+import { 
+  likeThePost, 
+  getSinglePost ,
+  addCommentPost, 
+  replyPostComment
+} from '../../../redux/posts/postActions';
+
 import styled, { css } from 'styled-components';
 
 import SinglePostImages from '../components/SinglePostImages';
 import PostDetails from '../components/PostDetails';
+import Comment from '../components/Comment';
 
 //Icons
 import { BiLike } from "react-icons/bi";
@@ -15,6 +21,7 @@ import { AiOutlineHeart } from "react-icons/ai";
 import { AiFillHeart } from "react-icons/ai";
 import { IoTrashBinOutline } from "react-icons/io5";
 import { GrEdit } from "react-icons/gr";
+import { MdClear } from "react-icons/md";
 import Loading from '../components/Loading';
 
 
@@ -108,8 +115,8 @@ const Button = styled.button`
   }
 `
 const PostInteractions = styled.div`
-border-top: 1px solid #888;
-border-bottom: 1px solid #888;
+border-top: 1px solid #f1f1f1;
+border-bottom: 1px solid #f1f1f1;
 padding: 6px;
 `
 const InteractionButton = styled.button`
@@ -120,40 +127,33 @@ const InteractionButton = styled.button`
   display: inline-block;
   margin-right: 10px;
 `
-const Count = styled.div`
-   grid-column-start: 2;
-   grid-column-end: 3; 
-   display: flex;
-   justify-content: space-between;
-   div {
-     display: inline-block;
-     padding: 4px 6px;
-     border-radius: 8px;
-   }
-   `
-  const PostComment = styled(PostAuthor)`
+const CommentPost = styled.div`
   position: fixed;
   width:32.5vw;
-  background-color: red;
   bottom: 0;
   right:0;
   background-color: #fff;
   padding: 8px;
-  border-top: 1px solid #888;
-  input {
-    flex: 1;
-    height: 35px;
-    border: 1px solid #888;
-    font-size: 0.9rem;
-    padding: 6px 50px 6px 12px;
-    border-radius: 25px;
-    letter-spacing: 1px;
-    &:focus {
-      outline: none;
-      box-shadow: 0px 0px 5px rgba(0,0,0,0.5)
+  border-top: 1px solid #f1f1f1;
+  div {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    textarea {
+        width: calc( 100% - 39px);
+        height: 35px;
+        resize: none;
+        border: 1px solid #888;
+        font-size: 0.9rem;
+        padding: 6px 50px 6px 12px;
+        border-radius: 15px;
+        letter-spacing: 1px;
+        &:focus {
+          outline: none;
+          box-shadow: 0px 0px 5px rgba(0,0,0,0.5)
+        }
     }
-   }
-   button {
+    button {
      ${sharedBtnCss}
      display: inline-block;
      position: absolute;
@@ -161,6 +161,9 @@ const Count = styled.div`
      right: 1.375rem;
      cursor: pointer;
   }
+  }
+  
+   
    @media only screen and (max-width: 600px) {
     width: 100vw;
     }
@@ -183,40 +186,14 @@ const Likes = styled.span`
   margin-right: 1rem;
   text-decoration: none; 
 `
-
+const ReplyBanner = styled.div`
+  background-color: #fafafa;
+  font-size: 0.85rem;
+  padding: 5px;
+  margin-bottom: 0.25rem;
+`
 const PostComments = styled.div`
  padding: 8px;
-`
-const Comment = styled.div`
-  margin-bottom: 0.5rem;
-  display: grid;
-  grid-row-gap:0.085rem;
-  grid-template-columns: 45px 1fr 45px;
-  font-size: 0.9rem;
-  padding: 6px 0 0px 6px;
-  line-height: 20px;
-  p {
-   background-color: #f1f1f1;
-   padding: 8px;
-   border-radius: 10px;
-  }
-  div {
-    span {
-      display: inline-block;
-      letter-spacing: 1px;
-      color: #888;
-      font-size: 0.8rem;
-    }
-  }
-
-`
-const Reply = styled(Comment)`
- margin-top: 0.1rem;
- margin-bottom: 0;
-`
-const ReplyContainer = styled.div`
-  grid-column-start: 2;
-  grid-column-end: 4;
 `
 const ActionContainer = styled.div`
   position: relative;
@@ -239,7 +216,7 @@ const Line = styled.span`
   height: 2px;
   margin-right: 0.5rem;
   vertical-align: middle;
-  background-color: #333;
+  background-color: #f1f1f1;
 `
 const usePostDetails= (post) => {
   const [details, setDetails] = useState(null);
@@ -258,15 +235,17 @@ const usePostDetails= (post) => {
   }, [post])
   return {details}
 }
-//handleReply(e, comment.username, comment.comment_id)
-// Single Post Extra Components 
-//dispatch(likePostComment(post.post_id, comment.comment_id))
+
 export default function Singlepost() {
   const { user } = useSelector(state => state.User);
-  const { loading, singlepost, error } = useSelector(state => state.SinglePost);
-  const { details } = usePostDetails(singlepost);
+  const { loading, singlepost: post, error } = useSelector(state => state.SinglePost);
+  const [text, setText] = useState('');
+  const { details } = usePostDetails(post);
   const [showInfo, setShowInfo] = useState(false);
-  const [comment, setComment] = useState('');
+  const [showComment, setShowComment] = useState(false)
+  const [postComment, setPostComment] = useState(true);
+  const [replyInfo, setReplyInfo] = useState({ replyTo: null, commentId: null });
+  
   const commentInputRef = useRef();
   const dispatch = useDispatch();
   const { post_id } = useParams();
@@ -276,22 +255,57 @@ export default function Singlepost() {
     dispatch(getSinglePost(post_id))
   },[dispatch, post_id])
   
+  const handleClick = (e) => {
+    e.preventDefault();
+    if(postComment) {
+      dispatch(addCommentPost(post.post_id, { text }))
+    } else {
+      dispatch(replyPostComment(post.post_id, replyInfo.commentId, { text }))
+    }
+    setText('');
+  }
+  const handleComment = (e) => {
+    e.preventDefault();
+    commentInputRef.current.focus();
+    setPostComment(true);
+    setReplyInfo({...replyInfo, replyTo: null, commentId: null })
+  }
+
+  const handleReply = (e, commentAuthor, commentId) => {
+    e.preventDefault();
+    commentInputRef.current.focus();
+    setReplyInfo({ ...replyInfo, replyTo: commentAuthor, commentId })
+    setText(`@${commentAuthor} `)
+    setPostComment(false);
+  }
+
+  const handleKeyUp = (e) => {
+    e.target.style.height = '35px';
+    e.target.style.height = `${e.target.scrollHeight}px`;
+  }
+  const handleClear = (e) => {
+    e.preventDefault();
+    setPostComment(true);
+    setReplyInfo({ ...replyInfo, replyTo: null, commentId: null })
+    setText('')
+  }
+  
   if(loading) {
     return <Loading />
   }
   return (
     <SinglePostContainer>
       <ImageGridWrapper>
-        <SinglePostImages imgs={singlepost.images}/>
+        <SinglePostImages imgs={post.images}/>
       </ImageGridWrapper>
       <PostWrapper>
         <PostAuthor>
-          <Link to={`${match.url}/users/${singlepost.author.authorId}`}>
-            <AvatarImage src={singlepost.author.authorAvatar} alt="avatar"/>
+          <Link to={`${match.url}/users/${post.author.authorId}`}>
+            <AvatarImage src={post.author.authorAvatar} alt="avatar"/>
           </Link>
-          <AuthorName>{singlepost.author.authorName}</AuthorName>
+          <AuthorName>{post.author.authorName}</AuthorName>
           { 
-          singlepost.author.authorId === user.user_id && 
+          post.author.authorId === user.user_id && 
           <ActionContainer>
             <EditLink><GrEdit /></EditLink>
             <DeleteButton><IoTrashBinOutline /></DeleteButton>
@@ -299,154 +313,84 @@ export default function Singlepost() {
         }
         </PostAuthor>
         <PostTitle>
-          <h3>{ singlepost.destinationInfo.destination}, { singlepost.destinationInfo.country}</h3>
-          <p>{  singlepost.destinationInfo.summary}</p>
-          <Button onClick={() => setShowInfo(!showInfo)}> {showInfo ? 'Less Info... ': 'More Info...'}</Button>
+          <h3>{ post.destinationInfo.destination}, { post.destinationInfo.country}</h3>
+          <p>{  post.destinationInfo.summary}</p>
+          <Button onClick={() => setShowInfo(!showInfo)}> { showInfo ? 'Less Info... ': 'More Info...' }</Button>
         </PostTitle>
       
         { showInfo && <PostDetails data={ details }/> }
 
         <CommentLike>
-          { singlepost.likes.length > 0 && 
+          { post.likes.length > 0 && 
             <Likes to={ `/posts/1` } >
-               { singlepost.likes.length ===  1 ? '1 Like' : `${ singlepost.likes.length } Likes` } 
+               { post.likes.length ===  1 ? '1 Like' : `${ post.likes.length } Likes` } 
             </Likes>
           }
           <Comments> 
-             { singlepost.comments.length ===  1 ? '1 comment' : `${ singlepost.comments.length } comments` }
+             { post.comments.length ===  1 ? '1 comment' : `${ post.comments.length } comments` }
           </Comments>
         </CommentLike>
         
         <PostInteractions>
           <InteractionButton 
-           onClick={() => dispatch(likeThePost(singlepost.post_id))} >
+           onClick={() => dispatch(likeThePost(post.post_id))} >
             { 
-              singlepost.likes.find(like => like.user_id === user._id) ?
+              post.likes.find(like => like.user_id === user._id) ?
                 <AiFillHeart /> 
                   :
                 <AiOutlineHeart />
             }
           </InteractionButton> 
           <InteractionButton 
-            onClick={(e) => commentInputRef.current.focus()} >
+            onClick={ (e) => handleComment(e) } >
             <FaComments />
           </InteractionButton>
         </PostInteractions>
-        <PostComment>
-          <AvatarImage src={ user.avatar.avatar_url } alt="avatar"/>
-          <input 
-            ref={commentInputRef} 
-            value={comment} 
-            placeholder="Add a comment"
-            onChange={ (e) => setComment(e.target.value) }
-            />
-          <button 
-            disabled={!comment ? true: false}
-            onClick={(e) => console.log('hi')}
-            >
-              Post
-          </button>
-       </PostComment>
-       <PostComments>
-        { singlepost.comments.map(comment => {
-          return (
-            <Comment key={comment.comment_id}>
-              <Link to={`${match.url}/users/${comment.user_id}`}>
-                <AvatarImage src={comment.userAvatar} alt="avatar"/>
-              </Link>
-              <div>
-                 <p>
-                   <AuthorName>{ comment.username }</AuthorName> 
-                   { comment.text }
-                 </p>
-                <Count>
-                  <div>
-                    { 
-                      comment.likes.length > 0 
-                        && 
-                      <span>
-                        { comment.likes.length } { comment.likes.length === 1 ? 'Like' : 'Likes' }
-                      </span> 
-                    }
-                    <Button onClick={ (e) => console.log(e) }> Reply </Button>
-                   </div>
-                  {
-                   comment.user_id === user._id &&
-                   <div>
-                     <Button onClick={ (e) => console.log(e) }> Edit </Button>
-                     <Button onClick={ (e) => console.log(e) }> Delete </Button>
-                   </div>
-                 }
-               </Count>
-               { 
-                comment.replies.length > 0 
-                  && 
-                <>
-                  <Line/>
-                  <Button>
-                    Show { comment.replies.length } { comment.replies.length === 1 ? 'Reply' : 'Replies' }
-                  </Button>
-                </>
-               } 
-              </div>
-              <CommentLike>
-                 <Button 
-                   onClick= { (e) => console.log(e)  } >
-                  { 
-                    comment.likes.find(like => like.user_id === user._id) ? 
-                    <AiFillHeart /> 
-                      :
-                    <AiOutlineHeart /> 
-                  } 
-                </Button>
-              </CommentLike>
-              <ReplyContainer>
-                { 
-                  comment.replies.map(reply => {
-                  return (
-                   <Reply key={reply.reply_id}>
-                     <Link to={ `${match.url}/users/${reply.user_id}` }>
-                       <AvatarImage src={ reply.userAvatar } alt="avatar"/>
-                     </Link>
-                     <p>
-                       <AuthorName>{ reply.username }</AuthorName>
-                        { reply.text }
-                    </p>
-                     <CommentLike>
-                        { 
-                          reply.likes.find(like => like.user_id === user._id) ? 
-                          <AiFillHeart /> 
-                          :
-                          <AiOutlineHeart /> 
-                        } 
-                     </CommentLike>
-                     <Count>
-                      <div>
-                        { 
-                          reply.likes.length > 0 
-                           && 
-                          <span>
-                            { reply.likes.length } { reply.likes.length === 1 ? 'Like' : 'Likes' }
-                          </span> 
-                        }
-                           <Button onClick={ (e) => console.log(e) }> Reply </Button> 
-                      </div>
-                      {
-                        reply.user_id === user._id &&
-                        <div>
-                          <Button onClick={ (e) => console.log(e) }> Edit </Button>
-                          <Button onClick={ (e) => console.log(e) }> Delete </Button>
-                         </div>
-                 }
-                     </Count> 
-                 </Reply>
-                )
-               })}
-            </ReplyContainer>
-          </Comment>
-          )
-        })}
-      </PostComments>
+        { 
+          post.comments.length > 0 
+            && 
+          <PostComments>
+            <Line/>
+            <Button onClick={ (e) => setShowComment(!showComment) }>
+              { showComment ? 'Hide' : 'Show' } { post.comments.length } { post.comments.length === 1 ? 'Comment' : 'Comments' }
+            </Button>
+          </PostComments>
+       } 
+        <CommentPost>
+          { !postComment && <ReplyBanner>{`Replying to @${replyInfo.replyTo}`} <button onClick={(e) => handleClear(e)}><MdClear /></button></ReplyBanner> }
+          <div>
+            <AvatarImage src={ user.avatar.avatar_url } alt="avatar"/>
+            <textarea 
+              ref={commentInputRef} 
+              value={text} 
+              placeholder="Add a comment"
+              onChange={ (e) => setText(e.target.value) }
+              onKeyUp={(e) => handleKeyUp(e)}
+              />
+            <button 
+              disabled={ !text.trim() ? true: false }
+              onClick={(e) => handleClick(e)}
+              >
+                Post
+            </button>
+          </div>
+       </CommentPost>
+       {
+         showComment 
+          &&
+         <PostComments>
+          { post.comments.map(comment => {
+            return (
+              <Comment 
+                key={ comment.comment_id }
+                post_id={ post.post_id }
+                url={ match.url }
+                comment={ comment }
+                handleReply={ handleReply }
+              />
+            )
+          })}
+      </PostComments>}
       </PostWrapper>
     </SinglePostContainer>
   )

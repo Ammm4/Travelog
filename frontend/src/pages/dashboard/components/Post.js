@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Switch, Route, Link, useRouteMatch } from 'react-router-dom';
+import { Link, useRouteMatch } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 
 import Comment from './Comment';
@@ -88,12 +88,9 @@ const CommentsAndLikes = styled.div`
   }
 `
 const Comments = styled(Link)`
-  //flex: 1 1 50%;
-  //text-align: right;
   text-decoration: none;
   `
 const Likes = styled(Link)`
-  //flex: 1 1 50%; 
   display: inline-block;
   margin-right: 1rem;
   text-decoration: none; 
@@ -126,27 +123,6 @@ const InteractionButton = styled.button`
   display: inline-block;
   margin-right: 5px;
 `
-const Count = styled.div`
-   grid-column-start: 2;
-   grid-column-end: 3; 
-   display: flex;
-   justify-content: space-between;
-   color: #888;
-   div {
-     display: inline-block;
-     padding: 4px 6px;
-     border-radius: 8px;
-   }
-   span {
-     display: inline-block;
-     margin-right: 0.65rem;
-     font-size: 0.825rem;
-     letter-spacing: 1px;
-   }
-   button {
-     font-size: 0.8rem;
-   }
-`
 
 const CommentPost = styled.div` 
   padding: 8px;
@@ -155,14 +131,14 @@ const CommentPost = styled.div`
     width: 100%;
     display: flex;
     align-items: center;
-
-      input {
+      textarea {
         width: calc( 100% - 39px);
         height: 35px;
+        resize: none;
         border: 1px solid #888;
         font-size: 0.9rem;
         padding: 6px 50px 6px 12px;
-        border-radius: 25px;
+        border-radius: 15px;
         letter-spacing: 1px;
         &:focus {
           outline: none;
@@ -192,29 +168,7 @@ const ReplyBanner = styled.div`
 const PostComments = styled.div`
   padding: 8px;
 `
-/* const Comment = styled.div`
- margin-bottom: 0.5rem;
- display: grid;
- grid-row-gap:0.08rem;
- grid-template-columns: 45px 1fr 45px;
- font-size: 0.9rem;
- padding: 6px 0 0px 6px;
- line-height: 20px;
- p {
-   background-color: #f1f1f1;
-   padding: 8px;
-   border-radius: 10px;
- }
-` */
-//const Comment = styled.div``
-/* const Reply = styled(Comment)`
- margin-top: 0.1rem;
- margin-bottom: 0;
-` */
-const ReplyContainer = styled.div`
-  grid-column-start: 2;
-  grid-column-end: 4;
-`
+
 const ActionContainer = styled.div`
   position: relative;
   overflow: hidden;
@@ -222,25 +176,23 @@ const ActionContainer = styled.div`
   align-items: center;
   justify-content: center;
 `
-const EditLink = styled(Link)`
-  display: inline-block;
-  margin-right: 0.4rem;
-  text-decoration: none;
-`
+
 const DeleteButton = styled(Button)`
   font-size: 1rem;
 `
+
 const Line = styled.span`
   display: inline-block;
   width: 50px;
   height: 2px;
   margin-right: 0.5rem;
   vertical-align: middle;
-  background-color: #333;
+  background-color: #f1f1f1;
 `
 export default function Post({ post, setModal }) {
   const [showInfo, setShowInfo] = useState(false);
   const [text, setText] = useState('');
+  const [showComment, setShowComment] = useState(false);
   const [postComment, setPostComment] = useState(true);
   const [replyInfo, setReplyInfo] = useState({ replyTo: null, commentId: null });
   const commentInputRef = useRef();
@@ -288,6 +240,11 @@ export default function Post({ post, setModal }) {
     setPostComment(true);
     setReplyInfo({ ...replyInfo, replyTo: null, commentId: null })
     setText('')
+  }
+
+  const handleKeyUp = (e) => {
+    e.target.style.height = '35px';
+    e.target.style.height = `${e.target.scrollHeight}px`;
   }
   
   return (
@@ -345,32 +302,49 @@ export default function Post({ post, setModal }) {
            <FaComments/> 
         </InteractionButton> 
       </PostInteractions>
-      <PostComments>
-        { post.comments.map(comment => {
-          return (
-            <Comment 
-              post_id={ post.post_id }
-              url={ url }
-              comment={ comment }
-              handleReply={ handleReply }
-            />
-           )
+      { 
+        post.comments.length > 0 
+          && 
+        <PostComments>
+          <Line/>
+          <Button onClick={ (e) => setShowComment(!showComment) }>
+            { showComment ? 'Hide' : 'Show' } { post.comments.length } { post.comments.length === 1 ? 'Comment' : 'Comments' }
+          </Button>
+        </PostComments>
+      } 
+      { 
+        showComment &&
+        <PostComments>
+        { 
+          post.comments.map(comment => {
+            return (
+              <Comment
+                key={comment.comment_id}
+                post_id={ post.post_id }
+                url={ url }
+                comment={ comment }
+                handleReply={ handleReply }
+              />
+            )
           })}
-      </PostComments>
+        </PostComments>
+      }
 
       <CommentPost>
         { !postComment && <ReplyBanner>{`Replying to @${replyInfo.replyTo}`} <button onClick={(e) => handleClear(e)}><MdClear /></button></ReplyBanner> }
         <div>
           <AvatarImage src={ user.avatar.avatar_url } alt="avatar" />
-          <input 
+          <textarea 
             ref={ commentInputRef } 
             value={ text } 
             placeholder="Got a question??, Ask John!"
             onChange={ (e) => setText(e.target.value) }
+            onKeyUp={ (e) => handleKeyUp(e) }
             />
           <button 
             disabled={ !text.trim() ? true : false } 
-            onClick={ (e) => handleClick(e)}>
+            onClick={ (e) => handleClick(e) }
+            >
               Post
           </button>
         </div>

@@ -104,7 +104,20 @@ export default function Reply({ post_id, url, comment_id, reply, handleReply }) 
   const [isEdit, setIsEdit] = useState(false);
   const [text, setText] = useState(reply.text);
   const { user } = useSelector(state => state.User);
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
+
+  const handleKeyUp = (e) => {
+    e.target.style.height = '48px';
+    e.target.style.height = `${e.target.scrollHeight}px`;
+}
+  const handleEdit = (e) => {
+    e.preventDefault();
+    if (!isEdit) {
+      return setIsEdit(true)
+    }
+    setText(reply.text);
+    setIsEdit(false);
+  }
   return (
       <Container key={ reply.reply_id }>
         <Link to={`${url}/users/${ reply.user_id }`}>
@@ -121,6 +134,7 @@ export default function Reply({ post_id, url, comment_id, reply, handleReply }) 
              isEdit={ isEdit } 
              value={text}
              onChange={ (e) => setText(e.target.value) }
+             onKeyUp={ (e) => handleKeyUp(e)}
              />
          }
         <CommentsAndLikes>
@@ -144,16 +158,20 @@ export default function Reply({ post_id, url, comment_id, reply, handleReply }) 
                 </span> 
               }  
               <Button 
-                onClick={(e) => handleReply(e, reply.username, comment_id)} >
+                onClick={ (e) => handleReply(e, reply.username, comment_id) } >
                 Reply
               </Button>  
             </div>
                {
                 reply.user_id === user._id &&
                   <div>
-                     { isEdit && <Button>Done</Button> }
-                     <Button onClick={ (e) => setIsEdit(!isEdit) }> { isEdit ? 'Cancel' : 'Edit' } </Button>
-                      {!isEdit && 
+                     { isEdit && 
+                      <Button onClick={(e) => dispatch(editReply(post_id, comment_id, reply.reply_id, { text }))} >
+                        Done
+                      </Button> 
+                     }
+                     <Button onClick={ (e) => handleEdit(e) }> { isEdit ? 'Cancel' : 'Edit' } </Button>
+                      { !isEdit && 
                        <Button 
                         onClick={ (e) => dispatch(deleteReply(post_id, comment_id, reply.reply_id)) } > 
                         Delete 

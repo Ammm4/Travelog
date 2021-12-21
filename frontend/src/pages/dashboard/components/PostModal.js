@@ -28,7 +28,7 @@ const Container = styled.div`
  }
 `
 
-export default function PostModal({ setModal, postId}) {
+export default function PostModal({ setModal, postId }) {
   const {
       imageInputRef,
       showPostForm,
@@ -40,10 +40,6 @@ export default function PostModal({ setModal, postId}) {
       destinationInfo, setDestinationInfo,
       travellerInfo, setTravellerInfo,
       recommendations, setRecommendations,
-      heritages, 
-      places, 
-      todos, 
-      basicInfo, setBasicInfo,
       imageUploader, handleFileUpload,
       handleTitle, removeImg,
       addMoreInput, removeInput,
@@ -77,12 +73,11 @@ export default function PostModal({ setModal, postId}) {
       />}
 
       { showReview && <PostConfirm 
-         basicInfo={basicInfo}     
-         imgPreview={imgPreview}        
-         heritages={heritages}
-         places={places}
+         imgPreview={imgPreview}
+         destinationInfo={destinationInfo}       
+         travellerInfo={travellerInfo}
+         recommendations={recommendations}
          titles={titles}
-         todos={todos}
          toggleForm={toggleForm}
          handleSubmit={handleSubmit}
       /> }
