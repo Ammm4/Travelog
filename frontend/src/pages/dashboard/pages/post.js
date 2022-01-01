@@ -1,6 +1,9 @@
+import ReactStars from 'react-rating-stars-component';
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useParams, useRouteMatch } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
+import axios from 'axios';
+import usePost from '../components/usePost';
 import { 
   likeThePost, 
   getSinglePost ,
@@ -11,8 +14,9 @@ import {
 import styled, { css } from 'styled-components';
 
 import SinglePostImages from '../components/SinglePostImages';
-import PostDetails from '../components/PostDetails';
-import Comment from '../components/Comment';
+import PostDetails, { usePostDetails } from '../components/PostDetails';
+import Comments from '../components/Comments';
+
 
 //Icons
 import { BiLike } from "react-icons/bi";
@@ -173,24 +177,11 @@ const CommentLike = styled.div`
   display: flex;
   font-size: 0.8rem;
 `
-const Comments = styled.span`
-  //flex: 1 1 50%;
-  //text-align: right;
-  
-  text-decoration: none;
-  `
 
 const Likes = styled.span`
-  //flex: 1 1 50%; 
   display: inline-block;
   margin-right: 1rem;
   text-decoration: none; 
-`
-const ReplyBanner = styled.div`
-  background-color: #fafafa;
-  font-size: 0.85rem;
-  padding: 5px;
-  margin-bottom: 0.25rem;
 `
 const PostComments = styled.div`
  padding: 8px;
@@ -218,32 +209,16 @@ const Line = styled.span`
   vertical-align: middle;
   background-color: #f1f1f1;
 `
-const usePostDetails= (post) => {
-  const [details, setDetails] = useState(null);
-  useEffect(() => {
-    if(!post) return;
-    setDetails({
-      numOfPeople: post.travellerInfo.numOfPeople,
-      cost: post.travellerInfo.cost,
-      numOfDays: post.recommendations.numOfDays,
-      budget: post.recommendations.budget,
-      heritages: post.recommendations.heritages,
-      places: post.recommendations.places,
-      todos: post.recommendations.todos,
-      others: post.recommendations.others, 
-    })
-  }, [post])
-  return {details}
-}
 
 export default function Singlepost() {
-  const { user } = useSelector(state => state.User);
-  const { loading, singlepost: post, error } = useSelector(state => state.SinglePost);
-  const [text, setText] = useState('');
+   const { user } = useSelector(state => state.User);
+  const { loading, singlepost, error } = useSelector(state => state.SinglePost);
+  const [post, setPost] = useState(null);
+  
+  const [commentText, setCommentText] = useState('');
   const { details } = usePostDetails(post);
   const [showInfo, setShowInfo] = useState(false);
   const [showComment, setShowComment] = useState(false)
-  const [postComment, setPostComment] = useState(true);
   const [replyInfo, setReplyInfo] = useState({ replyTo: null, commentId: null });
   
   const commentInputRef = useRef();
@@ -253,57 +228,78 @@ export default function Singlepost() {
   
   useEffect(() => {
     dispatch(getSinglePost(post_id))
-  },[dispatch, post_id])
-  
-  const handleClick = (e) => {
+  },[dispatch, post_id]);
+
+  useEffect(() => {
+    if(!singlepost || error) return;
+    setPost(singlepost);
+  }, [singlepost, error])
+
+  const handlePostLike = async (e, postId) => {
+     e.preventDefault();
+     try {
+        await axios.put(`/api/v1/posts/${ postId }/like_post`);
+        dispatch(getSinglePost(postId))
+      } catch(error) {
+        //setPostLoadingError(error);
+      }
+  } 
+
+  const handlePostComment = async (e, postId) => {
+     e.preventDefault();
+     let trimmedText = commentText.trim();
+     try {
+        const response = await axios.put(`/api/v1/posts/${ postId }/comment_post`, { text: trimmedText });
+        setPost(response.data.post);
+        //dispatch(getSinglePost(postId))
+      } catch(error) {
+        
+      }
+     setCommentText('')
+
+  }
+
+  /* const handleClick = (e) => {
     e.preventDefault();
     if(postComment) {
-      dispatch(addCommentPost(post.post_id, { text }))
+      dispatch(addCommentPost(post.post_id, { commentText }))
     } else {
-      dispatch(replyPostComment(post.post_id, replyInfo.commentId, { text }))
+      dispatch(replyPostComment(post.post_id, replyInfo.commentId, { commentText }))
     }
-    setText('');
-  }
+    setCommentText('');
+  } */
   const handleComment = (e) => {
     e.preventDefault();
     commentInputRef.current.focus();
-    setPostComment(true);
     setReplyInfo({...replyInfo, replyTo: null, commentId: null })
   }
 
-  const handleReply = (e, commentAuthor, commentId) => {
-    e.preventDefault();
-    commentInputRef.current.focus();
-    setReplyInfo({ ...replyInfo, replyTo: commentAuthor, commentId })
-    setText(`@${commentAuthor} `)
-    setPostComment(false);
-  }
-
+  
   const handleKeyUp = (e) => {
     e.target.style.height = '35px';
     e.target.style.height = `${e.target.scrollHeight}px`;
   }
+
   const handleClear = (e) => {
     e.preventDefault();
-    setPostComment(true);
     setReplyInfo({ ...replyInfo, replyTo: null, commentId: null })
-    setText('')
+    setCommentText('')
   }
   
-  if(loading) {
+  if(loading || !post) {
     return <Loading />
   }
   return (
     <SinglePostContainer>
       <ImageGridWrapper>
-        <SinglePostImages imgs={post.images}/>
+        <SinglePostImages imgs={ post.images }/>
       </ImageGridWrapper>
       <PostWrapper>
         <PostAuthor>
-          <Link to={`${match.url}/users/${post.author.authorId}`}>
-            <AvatarImage src={post.author.authorAvatar} alt="avatar"/>
+          <Link to={ `${ match.url }/users/${ post.author.authorId }` }>
+            <AvatarImage src={ post.author.authorAvatar } alt="avatar"/>
           </Link>
-          <AuthorName>{post.author.authorName}</AuthorName>
+          <AuthorName>{ post.author.authorName }</AuthorName>
           { 
           post.author.authorId === user.user_id && 
           <ActionContainer>
@@ -313,9 +309,18 @@ export default function Singlepost() {
         }
         </PostAuthor>
         <PostTitle>
-          <h3>{ post.destinationInfo.destination}, { post.destinationInfo.country}</h3>
-          <p>{  post.destinationInfo.summary}</p>
-          <Button onClick={() => setShowInfo(!showInfo)}> { showInfo ? 'Less Info... ': 'More Info...' }</Button>
+          <h3>{ post.destinationInfo.destination }, { post.destinationInfo.country }</h3>
+          <ReactStars 
+              count={5}
+              isHalf={true}
+              value={4.5}
+            />
+          <p>{  post.destinationInfo.summary }</p>
+          
+          <Button 
+            onClick={ () => setShowInfo(!showInfo) }> 
+            { showInfo ? 'Less Info... ': 'More Info...' }
+          </Button>
         </PostTitle>
       
         { showInfo && <PostDetails data={ details }/> }
@@ -326,14 +331,14 @@ export default function Singlepost() {
                { post.likes.length ===  1 ? '1 Like' : `${ post.likes.length } Likes` } 
             </Likes>
           }
-          <Comments> 
+          <span> 
              { post.comments.length ===  1 ? '1 comment' : `${ post.comments.length } comments` }
-          </Comments>
+          </span>
         </CommentLike>
         
         <PostInteractions>
           <InteractionButton 
-           onClick={() => dispatch(likeThePost(post.post_id))} >
+           onClick={ (e) => handlePostLike(e, post.post_id) } >
             { 
               post.likes.find(like => like.user_id === user._id) ?
                 <AiFillHeart /> 
@@ -357,19 +362,18 @@ export default function Singlepost() {
           </PostComments>
        } 
         <CommentPost>
-          { !postComment && <ReplyBanner>{`Replying to @${replyInfo.replyTo}`} <button onClick={(e) => handleClear(e)}><MdClear /></button></ReplyBanner> }
           <div>
             <AvatarImage src={ user.avatar.avatar_url } alt="avatar"/>
             <textarea 
               ref={commentInputRef} 
-              value={text} 
+              value={commentText} 
               placeholder="Add a comment"
-              onChange={ (e) => setText(e.target.value) }
+              onChange={ (e) => setCommentText(e.target.value) }
               onKeyUp={(e) => handleKeyUp(e)}
               />
             <button 
-              disabled={ !text.trim() ? true: false }
-              onClick={(e) => handleClick(e)}
+              disabled={ !commentText.trim() ? true: false }
+              onClick={(e) => handlePostComment(e, post.post_id)}
               >
                 Post
             </button>
@@ -378,19 +382,8 @@ export default function Singlepost() {
        {
          showComment 
           &&
-         <PostComments>
-          { post.comments.map(comment => {
-            return (
-              <Comment 
-                key={ comment.comment_id }
-                post_id={ post.post_id }
-                url={ match.url }
-                comment={ comment }
-                handleReply={ handleReply }
-              />
-            )
-          })}
-      </PostComments>}
+         <Comments postId={ post.post_id } setPost={setPost} comments={post.comments}/>
+       }
       </PostWrapper>
     </SinglePostContainer>
   )

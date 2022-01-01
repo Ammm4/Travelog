@@ -1,17 +1,22 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useContext } from 'react';
+import { Link, useRouteMatch } from 'react-router-dom';
 import styled,{ css } from 'styled-components';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
+import { usePostAPI } from './Post';
+import useComment from './useComment';
+import Replies from './Replies';
 import Reply from './Reply';
-
-import { 
-  likePostComment, 
-  deleteComment,
-  editComment 
-} from '../../../redux/posts/postActions';
-
 import { AiOutlineHeart } from "react-icons/ai";
 import { AiFillHeart } from "react-icons/ai";
+import { MdClear } from "react-icons/md";
+import Loading1 from './Loading1';
+
+
+const ContextCommentAPI = React.createContext();
+
+export const useCommentAPI = () => {
+  return useContext(ContextCommentAPI)
+};
 
 
 const sharedBtnCss = css`
@@ -25,6 +30,14 @@ const AvatarImage = styled.img`
   display: inline-block;
   width: 35px;
   height: 35px;
+  border-radius: 50%;
+  margin-right: 0.25rem;
+`
+const AvatarImage1 = styled.img`
+  src: ${props => props.src};
+  display: inline-block;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   margin-right: 0.25rem;
 `
@@ -85,20 +98,6 @@ const Count = styled.div`
      font-size: 0.8rem;
    }
 `
-
-const ReplyContainer = styled.div`
-  grid-column-start: 2;
-  grid-column-end: 4;
-`
-
-const EditLink = styled(Link)`
-  display: inline-block;
-  margin-right: 0.4rem;
-  text-decoration: none;
-`
-const DeleteButton = styled(Button)`
-  font-size: 1rem;
-`
 const Line = styled.span`
   display: inline-block;
   width: 50px;
@@ -110,133 +109,233 @@ const Line = styled.span`
 const CommentText = styled.p`
   display: ${ props => props.isEdit? 'none' : 'block' };
   background-color: #f1f1f1;
+  font-size: 0.825rem;
   padding: 8px;
   border-radius: 10px;
+  letter-spacing: 1px;
 `
 const EditBox = styled.textarea`
   display: ${ props => props.isEdit? 'block' : 'none' };
+  font-family: inherit;
   width: 100%;
   padding: 8px;
   border-radius: 10px;
   resize: none;
 `
-
-
-export default function Comment({ post_id, url, comment, handleReply }) {
-  const [ isEdit, setIsEdit ] = useState(false);
-  const [showReply, setShowReply] = useState(false);
-  const [text, setText] = useState(comment.text);
-  const { user } = useSelector(state => state.User);
-  const dispatch = useDispatch();
-
-  const handleKeyUp = (e) => {
-    e.target.style.height = '48px';
-    e.target.style.height = `${e.target.scrollHeight}px`;
- }
-
-  const handleEdit = (e) => {
-    e.preventDefault();
-    if (!isEdit) {
-      return setIsEdit(true)
-    }
-    setText(comment.text);
-    setIsEdit(false);
+//======== Reply =============//
+const CommentPost = styled.div` 
+  padding: 8px;
+  display: grid;
+  grid-template-columns: 32px 1fr 45px;
+  align-items:center;
+  a {
+    align-self: end;
   }
+  div {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 38px;
+    grid-column-gap: 4px;
+    textarea {
+        width: 100%;
+        height: 28px;
+        resize: none;
+        font-family: inherit;
+        border: 1px solid #888;
+        font-size: 0.8rem;
+        padding: 6px;
+        border-radius: 10px;
+        letter-spacing: 1px;
+        &:focus {
+          outline: none;
+          box-shadow: 0px 0px 5px rgba(0,0,0,0.5)
+        }
+     }
+      button {
+        ${sharedBtnCss}
+        display: inline-block;
+        background-color: #0275d8;
+        color: #fff;
+        height: 28px;
+        border-radius: 5px;
+        font-weight: 600;
+        cursor: pointer;
+        align-self: end;
+        &:disabled {
+          background-color: #f1f1f1;
+          color: #aaa;
+        }
+     }
+  }
+`
+const ReplyContainer = styled.div`
+  grid-column-start: 2;
+  grid-column-end: 4;
+`
+const SpinnerContainer = styled.div`
+  grid-column-start: 2;
+  grid-column-end: 4;
+`
+
+export default function Comment({ comment }) {
+  const { postId } = usePostAPI();
+  const { user } = useSelector(state => state.User);
+  let { url } = useRouteMatch();
+  const {
+    isEdit,
+    showReplyInput, setShowReplyInput,
+    newReplies, setNewReplies,
+    editText, setEditText,
+    text, setText,
+    showReply,
+    showSpinner,
+    handleDelete,
+    handleDone,
+    handleEdit,
+    handleKeyUp,
+    handleLike,
+    handleReply,
+    toggleHideShow,
+    handlePost
+  } = useComment(comment)
+  
   return (
-    <CommentContainer>
-       <Link to={ `${url}/users/${ comment.user_id }` }>
-         <AvatarImage src={ comment.userAvatar } alt="avatar"/>
-       </Link>
-       <div>
-         <CommentText isEdit={ isEdit }>
-           <AuthorName>{ comment.username }</AuthorName> 
-            { comment.text }            
-         </CommentText>
-         { 
-           comment.user_id === user._id 
-           &&
-           <EditBox 
-             isEdit={ isEdit } 
-             value={ text }
-             onChange={ (e) => setText(e.target.value)}
-             onKeyUp={ (e) => handleKeyUp(e)}
-           />
-         }
-              <Count>
-                <div>
-                  { 
-                    comment.likes.length > 0 
-                      && 
-                    <span>{ comment.likes.length } { comment.likes.length === 1 ? 'Like' : 'Likes' }
-                    </span> 
-                  }
-                    <Button 
-                      onClick={(e) => handleReply(e, comment.username, comment.comment_id)} >
-                      Reply
-                    </Button>
-                </div>
-                {
-                   comment.user_id === user._id &&
-                   <div>
-                     { isEdit 
-                       && 
-                       <Button onClick={ (e) => dispatch(editComment(post_id, comment.comment_id, { text }))}>
-                         Done
-                       </Button> 
-                     }
-                     <Button onClick={ (e) => handleEdit(e) }> 
-                       { isEdit ? `Cancel` : `Edit` } 
-                      </Button>
-                     {!isEdit && <Button onClick={ (e) => dispatch(deleteComment(post_id, comment.comment_id)) }> Delete </Button>}
-                   </div>
-                 }
-              </Count>
-              { 
-                comment.replies.length > 0 
-                  && 
-                <>
-                  <Line/>
-                  <Button onClick={(e) => setShowReply(!showReply)}>
-                    {`${showReply ? 'Hide' : 'Show'} 
-                      ${ comment.replies.length } 
-                      ${ comment.replies.length === 1 ? 'Reply' : 'Replies' }
-                      `}  
-                  </Button>
-                 </>
-              } 
+    <ContextCommentAPI.Provider value={{
+      newReplies, setNewReplies,
+      commentId: comment.comment_id,
+      replies: comment.replies,
+      handleReply
+    }}>
+      <CommentContainer>
+        <Link to={ `${url}/users/${ comment.user_id }` }>
+          <AvatarImage src={ comment.userAvatar } alt="avatar"/>
+        </Link>
+        <div>
+          <CommentText isEdit={ isEdit }>
+            <AuthorName>{ comment.username }</AuthorName> 
+              { comment.text }            
+          </CommentText>
+          { 
+            comment.user_id === user._id 
+              &&
+            <EditBox 
+              isEdit={ isEdit } 
+              value={ editText }
+              onChange={ (e) => setEditText(e.target.value) }
+              onKeyUp={ (e) => handleKeyUp(e) }
+            />
+          }
+          <Count>
+            <div>
+            { 
+              comment.likes.length > 0 
+                && 
+              <span>{ comment.likes.length } { comment.likes.length === 1 ? 'Like' : 'Likes' }
+                      </span> 
+            }
+            <Button 
+              onClick={(e) => handleReply(e, comment.username)} >
+              Reply
+            </Button>
             </div>
-            <CommentLike>
-              <Button 
-                onClick= { (e) => dispatch(likePostComment(post_id, comment.comment_id)) } >
-               { 
-                 comment.likes.find(like => like.user_id === user._id) ? 
-                 <AiFillHeart /> 
-                   :
-                 <AiOutlineHeart /> 
-               } 
-              </Button>
-            </CommentLike>
-            
-           { 
-             showReply 
-               &&
-             <ReplyContainer>
+            {
+              comment.user_id === user._id &&
+                <div>
+                { isEdit 
+                  && 
+                  <Button onClick={ (e) => handleDone(e, postId, comment.comment_id)}>
+                    Done
+                  </Button> 
+                }
+                    <Button onClick={ (e) => handleEdit(e) }> 
+                        { isEdit ? `Cancel` : `Edit` } 
+                        </Button>
+                      {!isEdit && <Button onClick={ (e) => handleDelete(e, postId, comment.comment_id) }> Delete </Button>}
+                    </div>
+                  }
+                </Count>
                 { 
-                  comment.replies.map(reply => {
-                    return (
-                      <Reply 
-                      key={ reply.reply_id }
-                        post_id={ post_id }
-                        handleReply={ handleReply }
-                        url= { url }
-                        comment_id={ comment.comment_id }
-                        reply={ reply }
-                      />
-                      )
+                  comment.replies.length > 0 
+                    && 
+                  <>
+                    <Line/>
+                    <Button onClick={(e) => toggleHideShow(e)}>
+                      {`${ showReply ? 'Hide' : 'Show' } 
+                        ${ comment.replies.length } 
+                        ${ comment.replies.length === 1 ? 'Reply' : 'Replies' }
+                        `}  
+                    </Button>
+                  </>
+                } 
+              </div>
+              <CommentLike>
+                <Button 
+                  onClick= { (e) => handleLike(e, postId, comment.comment_id)} >
+                { 
+                  comment.likes.find(like => like.user_id === user._id) ? 
+                  <AiFillHeart /> 
+                    :
+                  <AiOutlineHeart /> 
+                } 
+                </Button>
+              </CommentLike>
+              
+            {     
+              showReply 
+                &&
+              <Replies replies={ comment.replies } />
+            }
+
+            {  
+              newReplies.length > 0
+                &&
+              <ReplyContainer>
+                { 
+                  newReplies.map(reply => {
+                  return <Reply reply={ reply }/>
                   })
                 }
+                </ReplyContainer>
+            }
+            
+            {
+              showSpinner 
+                &&
+                <SpinnerContainer>
+                  <Loading1 />
+                </SpinnerContainer>   
+            }
+
+            { 
+              showReplyInput 
+                &&
+              <ReplyContainer>
+                <CommentPost>
+                  <Link>
+                    <AvatarImage1 src={ user.avatar.avatar_url } alt="avatar" />
+                  </Link>
+                  <div>
+                    <textarea            
+                      placeholder="Got a question??, Ask John!"
+                      value={ text }
+                      onChange={ (e) => setText(e.target.value) }
+                      onKeyUp={ (e) => handleKeyUp(e) }
+                      autoFocus
+                    />
+                    <button 
+                      disabled={ !text.trim() ? true : false } 
+                      onClick={ (e) => handlePost(e, postId, comment.comment_id) }
+                      >
+                      Post
+                    </button>
+                  </div>
+                  <Button onClick={(e) => setShowReplyInput(false)}><MdClear /></Button>
+              </CommentPost>
             </ReplyContainer>
-          }
-    </CommentContainer>
+            }
+      </CommentContainer>
+    </ContextCommentAPI.Provider>
   )
 }
+
+

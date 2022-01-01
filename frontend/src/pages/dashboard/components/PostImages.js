@@ -1,5 +1,6 @@
 import React, { useState, useEffect} from 'react';
 import styled, {css} from 'styled-components';
+import { usePostAPI } from './Post';
 import { useLocation, useHistory } from 'react-router-dom';
 
 import { GrPrevious } from "react-icons/gr";
@@ -80,7 +81,8 @@ const ImgContainer = styled.div`
   }
 `
 
-export default function PostImages({ images, postId}) {
+export default function PostImages({ images }) {
+  const { postId } = usePostAPI()
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showPrevBtn, setShowPrevBtn] = useState(false);
   const [showNextBtn, setShowNextBtn] = useState(true);

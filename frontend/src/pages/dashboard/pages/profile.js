@@ -198,7 +198,7 @@ export default function Profile({ setIsModal }) {
      </PostHeading>
      { user.posts.length > 0 ? 
         <PostsWrapper>
-          { user.posts.map(post => <Post post={ post } key={post.post_id} user={ user }/>) }
+          { user.posts.map(post => <Post postId={ post.post_id } key={post.post_id} />) }
         </PostsWrapper>
         : <Zeropost />
      }

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 
 const Container = styled.div`
@@ -30,7 +30,23 @@ const PostRecommendation = styled.div`
     padding-left: 1.5rem;
   }
 `
-
+export const usePostDetails= (post) => {
+  const [details, setDetails] = useState(null);
+  useEffect(() => {
+    if(!post || post.length === 0) return;
+    setDetails({
+      numOfPeople: post.travellerInfo.numOfPeople,
+      cost: post.travellerInfo.cost,
+      numOfDays: post.recommendations.numOfDays,
+      budget: post.recommendations.budget,
+      heritages: post.recommendations.heritages,
+      places: post.recommendations.places,
+      todos: post.recommendations.todos,
+      others: post.recommendations.others, 
+    })
+  }, [post])
+  return { details }
+}
 export default function PostDetails({ data }) {
   if(!data) return;
   return (
