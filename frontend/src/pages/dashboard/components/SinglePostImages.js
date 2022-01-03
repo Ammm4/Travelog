@@ -128,7 +128,7 @@ export default function SinglePostImages({ imgs }) {
   if(imgs.length === 1) {
    return <Container>
             <ImgContainer>
-              <img src={ imgs[0].imgURL } alt="barcelona" />
+              <img src={ imgs[0].imgURL } alt="pics" />
             </ImgContainer>  
            </Container>
   }

@@ -57,7 +57,7 @@ export default function Dashboard() {
              ]
              }
          >
-           <Singlepost user={user}  /> 
+           <Singlepost setModal={ setIsModal }  /> 
         </Route>
         <Route exact 
           path= {

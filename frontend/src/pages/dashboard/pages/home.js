@@ -22,7 +22,6 @@ const HomeContainer = styled.section`
 export default function Home({ setModal }) {
   const dispatch = useDispatch();
   const { loading, posts, error } = useSelector(state => state.Post);
-  const { user } = useSelector(state => state.User);
   useEffect(() => {
     dispatch(getPosts())
   },[dispatch]);
@@ -35,7 +34,7 @@ export default function Home({ setModal }) {
       <Share setModal={setModal}/>
       <PostsWrapper>
         { posts &&
-          posts.map(post => <Post key={post.post_id} postId={post.post_id} setModal={setModal}/>)
+          posts.map(post => <Post key={post.post_id} postId={post.post_id} setModal={setModal} singlePost={false}/>)
         }    
       </PostsWrapper>
     </HomeContainer>

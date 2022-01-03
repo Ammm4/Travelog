@@ -53,11 +53,17 @@ const AuthorName = styled.span`
 `
 const PostWrapper = styled.article`
   width: 100%;
+  height: 100%;
   border-radius: 8px;
-  margin-bottom: 0.75rem;
+  margin: ${props => props.singlePost ? '0' : '0 0 0.75rem 0' };
+  padding: ${props => props.singlePost ? '4rem 0 0 0' : '0' };
   background-color: #fff;
-  box-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+  box-shadow:${props => props.singlePost ? 'none' : '2px 2px 4px rgba(0,0,0,0.5)' };
   cursor:pointer;
+  overflow: auto;
+  @media only screen and (max-width: 600px) {
+     padding: ${props => props.singlePost ? '0 0 2.75rem 0' : '0' };
+  }
 `
 const PostAuthor = styled.div`
   display: grid;
@@ -78,7 +84,7 @@ const PostTitle = styled.div`
  h4, p {
    margin-bottom: 0.5rem;
  }
- h4{
+ h4 {
    font-size: 0.95rem;
  }
  p {
@@ -131,6 +137,10 @@ const InteractionButton = styled.button`
 
 const CommentPost = styled.div` 
   padding: 8px;
+  position: -webkit-sticky;
+  position: sticky;
+  bottom: 0;
+  background-color: #fff;
   display: grid;
   grid-template-columns: 45px 1fr 45px;
   img {
@@ -167,6 +177,10 @@ const CommentPost = styled.div`
           color: #aaa;
         }
      } 
+     @media only screen and (max-width: 600px) {
+      position: ${props => props.singlePost ? 'fixed': 'sticky'};
+      width:100%;
+  } 
 `
 
 const PostComments = styled.div`
@@ -194,7 +208,7 @@ const Line = styled.span`
   background-color: #f1f1f1;
 `
 
-export default function Post({ postId, setModal }) {
+export default function Post({ postId, setModal, singlePost }) {
   const { 
     post,
     setPost,
@@ -242,7 +256,7 @@ export default function Post({ postId, setModal }) {
 
   return (
      <ContextAPI.Provider value={{ setPost, postId, newComments, setNewComments, comments: post.comments }}>
-        <PostWrapper>
+        <PostWrapper singlePost={singlePost}>
           <PostAuthor>
             <Link to={ `${ url }/users/${ post.author.authorId }` }>
               <AvatarImage src={ post.author.authorAvatar } alt="avatar"/>
@@ -264,7 +278,11 @@ export default function Post({ postId, setModal }) {
               </ActionContainer>
             }
           </PostAuthor>
-          <PostImages images={ post.images } />
+          { 
+            !singlePost 
+             &&
+            <PostImages images={ post.images } />
+          } 
           <PostTitle>
             <h4>Summary</h4>    
             <p> { post.destinationInfo.summary }</p>
@@ -326,7 +344,7 @@ export default function Post({ postId, setModal }) {
           
           { commentPosting && <Loading1 /> }
           
-          <CommentPost>
+          <CommentPost singlePost={singlePost}>
               <AvatarImage src={ user.avatar.avatar_url } alt="avatar" />
               <textarea 
                 ref={ commentInputRef } 
@@ -340,8 +358,7 @@ export default function Post({ postId, setModal }) {
                 onClick={ (e) => handlePostComment(e, post.post_id) }
                 >
                   Post
-              </button>
-          
+              </button>        
           </CommentPost>
         </PostWrapper>
      </ContextAPI.Provider>
