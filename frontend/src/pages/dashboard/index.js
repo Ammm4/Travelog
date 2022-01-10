@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from './components/Navbar';
 import { Switch, Route, useRouteMatch, Redirect, useLocation } from 'react-router';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import { useAlert } from 'react-alert';
+import { NEW_POST_RESET } from '../../redux/posts/postTypes';
+import { LOG_IN_SUCCESS_RESET } from '../../redux/users/userTypes';
 
 // ============ Pages ============= //
 import Home from './pages/home';
@@ -10,14 +13,16 @@ import ProfileEdit from './components/profileEdit';
 import Singlepost from './pages/post';
 import PostModal from './components/PostModal';
 import Userprofile from './pages/userprofile';
-
-
+import { clearError } from '../../redux/posts/postActions';
 
 
 export default function Dashboard() {
   const { user } = useSelector(state => state.User)
+  const { loading, error, success } = useSelector(state => state.NewPost);
   const [ active, setActive ] = useState();
   const [ isModal, setIsModal ] = useState(null);
+  const alert = useAlert();
+  const dispatch = useDispatch();
   const match = useRouteMatch();
   const location = useLocation();
   
@@ -28,6 +33,17 @@ export default function Dashboard() {
       setActive('avatar')
     }
   }, [location]);
+
+  useEffect(() => {
+    if(error) {
+      alert.error(error)
+      dispatch(clearError())
+    }
+    if(success) {
+      alert.success(success);
+      dispatch({ type: NEW_POST_RESET })
+    }
+  }, [alert, dispatch, success, error])
 
   if(!user) {
     return <Redirect to ="/login" />

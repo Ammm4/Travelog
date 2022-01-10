@@ -1,14 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import styled,{ keyframes } from 'styled-components';
 
-
-import { TiTickOutline } from "react-icons/ti";
-import { BiMessageAltError } from "react-icons/bi";
 const rotateAnimation = keyframes`
  100% { transform: rotate(360deg); }
 `
-
-
 const Container = styled.div`
  position: absolute;
  top: 0; left: 0;
@@ -29,6 +24,28 @@ const Spinner = styled.div`
  animation-duration: 1s;
  animation-iteration-count: infinite;
 `
+
+const LoadingText = styled.h2`
+ margin-top: 2rem;
+ font-family: 'Montserrat Alternates', sans-serif;
+ color: #fff;
+`
+
+
+export default function Loading() {
+    return ( <Container>
+                <Spinner>
+                </Spinner>
+                <LoadingText>Post Uploading...</LoadingText>
+             </Container>   
+          )
+  } 
+  
+
+
+/* 
+import { TiTickOutline } from "react-icons/ti";
+import { BiMessageAltError } from "react-icons/bi";
 const IconWrapper = styled.div`
   width: 120px;
   height: 120px;
@@ -41,11 +58,6 @@ const IconWrapper = styled.div`
     font-size: 3.5rem;
     color: #fff
   }
-`
-const LoadingText = styled.h2`
- margin-top: 2rem;
- font-family: 'Montserrat Alternates', sans-serif;
- color: #fff;
 `
 const Button = styled.button`
   outline: none;
@@ -60,25 +72,7 @@ const Button = styled.button`
   }
 `
 const msg = "error";
-export default function Loading(props) {
-  const [isLoading, setIsLoading] = useState(true);
-  const { handlePostSubmit } = props;
-  
-  /* useEffect(() => {
-    setIsLoading(true);
-    if(error){
-      setIsLoading(false)
-    } 
-  },[error, success]) */
-
-  if(isLoading) {
-    return ( <Container>
-                <Spinner>
-                </Spinner>
-                <LoadingText>Post Uploading...</LoadingText>
-             </Container>   
-          )
-  } else {
+else {
     return ( <Container>
                 <IconWrapper>
                   {msg === 'success'? <TiTickOutline />:<BiMessageAltError />}
@@ -87,6 +81,4 @@ export default function Loading(props) {
                 <Button onClick={(e) => handlePostSubmit(e, msg)}>{msg === 'success'? 'Close': 'Try Again'}</Button>
              </Container>   
           )
-  }
-  
-}
+  } */

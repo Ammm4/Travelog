@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from 'styled-components';
 import Comment from './Comment';
-import { usePostAPI } from './Post';
+import { usePostAPI } from './SinglePost';
 
 const PostComments = styled.div`
   padding: 8px;

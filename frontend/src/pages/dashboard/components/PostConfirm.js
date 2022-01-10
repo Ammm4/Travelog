@@ -110,10 +110,10 @@ export default function PostConfirm(props) {
     travellerInfo,
     destinationInfo,
     recommendations,
-    titles,
     toggleForm,
     handleSubmit
   } = props;
+  
   return (
     <PostWrapper>
       <PostTitle>Review & Submit</PostTitle>
@@ -135,8 +135,8 @@ export default function PostConfirm(props) {
         <ImagePreview>
           { imgPreview && imgPreview.map((img, index) => {
                 return  <ImagePreviewImg key={img.name}>
-                          <img src={ img } alt="preview"/>
-                        { titles[index] && <h5> { titles[index] }</h5> }
+                          <img src={ img.imgFile } alt="preview"/>
+                        { img.imgTitle && <h5> { img.imgTitle }</h5> }
         </ImagePreviewImg>
               })
           }

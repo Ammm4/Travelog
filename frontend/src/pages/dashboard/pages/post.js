@@ -2,16 +2,13 @@ import React, { useEffect } from 'react';
 import {  useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
-import { getSinglePost } from '../../../redux/posts/postActions';
+import { useAlert } from 'react-alert';
+import { getSinglePost, clearError } from '../../../redux/posts/postActions';
 
-
-import Post from '../components/Post';
+//import Post from '../components/Post';
+import SinglePost from '../components/SinglePost';
 import SinglePostImages from '../components/SinglePostImages';
 import Loading from '../components/Loading';
-
-
-
-
 
 const SinglePostContainer = styled.div`
   width: 100%;
@@ -33,37 +30,35 @@ const ImageGridWrapper = styled.div`
   padding: 0%;
 `
 
-
-
-
-
-
-
-
-
 export default function Singlepost({ setModal }) {
   const { post_id } = useParams();
-  const { loading, singlepost, error } = useSelector(state => state.SinglePost);
+  const { loading, singlepost:post, error } = useSelector(state => state.SinglePost);
   const dispatch = useDispatch();
-  
+  const alert = useAlert();
   
   useEffect(() => {
-    dispatch(getSinglePost(post_id))
+    dispatch(getSinglePost(post_id));
   }, [post_id, dispatch])
- 
   
-  if(loading) {
+  useEffect(() => {
+   if(error){
+    alert.error(error);
+    dispatch(clearError());
+   }
+  },[dispatch, alert, error])
+
+  if(loading || Object.keys(post).length < 1) {
     return <Loading />
   }
   return (
     <SinglePostContainer>
       <ImageGridWrapper>
-        <SinglePostImages imgs={ singlepost.images }/>
+        <SinglePostImages images={ post.images }/>
       </ImageGridWrapper>
-      <Post postId={singlepost.post_id} setModal={setModal} singlePost={true} />
+      <SinglePost post={post} setModal={ setModal } singlePost={ true } />
     </SinglePostContainer>
   )
 }
 
-
+//<Post postId={ post_id } setModal={ setModal } singlePost={ true } />
 

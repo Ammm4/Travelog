@@ -1,17 +1,16 @@
-import React, {useState, useEffect, useRef} from 'react';
+import {useState, useEffect, useRef} from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { getSinglePost } from '../../../redux/posts/postActions';
+import { addPost } from '../../../redux/posts/postActions';
 
 export default function usePostForm( setModal, postId ) {
-  const {singlepost: post} = useSelector(state => state.SinglePost)
+  const {singlepost: post} = useSelector(state => state.SinglePost);
   const [showPostForm, setShowPostForm] = useState(true);
   const [showReview, setShowReview] = useState(false);
   const [upLoading, setUpLoading] = useState(false);
-  const [msg, setMsg] = useState('');
-  const [imgFiles, setImgFiles] = useState([]);
-  const [titles, setTitles] = useState([]);
+  const [images, setImages] = useState([]);
+  const [deletedImageIDs, setDeletedImageIDs] = useState([]);
   const [imgPreview, setImgPreview] = useState([]);
-  const [finalImages, setFinalImages] = useState([]);
   const [destinationInfo, setDestinationInfo] = useState({ destination: '', country: '', summary: ''  });
   const [travellerInfo, setTravellerInfo] = useState({ numOfPeople: '1', cost:'' });
   const [recommendations, setRecommendations] = useState({ numOfDays: '1 day', budget: '', heritages:[''], places:[''], todos:[''], others:'' });
@@ -24,12 +23,10 @@ export default function usePostForm( setModal, postId ) {
    },[dispatch, postId])
    
    useEffect(() => {
-   if(!post) return;
+   if(!Object.keys(post).length || postId === 'create') return;
    setUpLoading(true);
-   setImgFiles([...post.images.map(image => image.imgURL)]);
-   setTitles([...post.images.map(image => image.imgName)]);
-   setFinalImages([...post.images.map(image => image)]);
-   setImgPreview([...post.images.map(image => image.imgURL)]);
+   setImages([...post.images.map(image => ({ public_id: image.img_id, imgFile: image.imgURL, imgTitle : image.imgName}))])
+   setImgPreview([...post.images.map(image => ({ public_id: image.img_id, imgFile: image.imgURL, imgTitle : image.imgName}))]);
    setDestinationInfo({ 
      destination: post.destinationInfo.destination, 
      country: post.destinationInfo.country, 
@@ -45,22 +42,10 @@ export default function usePostForm( setModal, postId ) {
      todos: post.recommendations.todos, 
      others: post.recommendations.others});
    setUpLoading(false);
-  },[post]);
+  },[post, postId]);
 
  
-  
-  useEffect(() => {
-   if(!imgFiles) return;
-   let imgUrls = imgFiles.map(file => {
-                   if((typeof file) !== 'string') return URL.createObjectURL(file)
-                   return file
-               });
-   setImgPreview(imgUrls);
-   setImgPreview(imgUrls);
-  }, [imgFiles]);
-
-
-
+ 
 
  //=================== Images ===============//
   const imageUploader = (e) => {
@@ -68,28 +53,56 @@ export default function usePostForm( setModal, postId ) {
     imageInputRef.current.click();
   }
   const handleTitle = (e,i) => {
-    const newTitles = titles.map((title,index) => {
-       if(index === i) return e.target.value
-       return title
+    const newImages = images.map((image,index) => {
+      if(index === i) return { ...image, imgTitle: e.target.value }
+      return image
     })
-    setTitles(newTitles);
-  }
-  const handleFileUpload = (e) => {
-     let files = e.target.files;
-     let extractedFiles = []
-     for(let i = 0; i < files.length; i++) {
-       extractedFiles.push(files[i]);
-   } 
-   if(!imgFiles) return setImgFiles(extractedFiles);
-   setImgFiles([...imgFiles, ...extractedFiles]);
-   setTitles([...titles, ...Array(extractedFiles.length).fill('')])
+    setImages(newImages);
+    setImgPreview(newImages)
   }
 
+  const handleFileUpload = (e) => {
+   let files = Array.from(e.target.files);
+   files.forEach(file => {
+     var reader = new FileReader();
+     reader.addEventListener("load", function () {
+       let newImage = {
+         imgFile: reader.result,
+         imgTitle: ''
+       }
+       setImages(prev => [...prev, newImage ])
+       setImgPreview(prev => [...prev, newImage ])
+      }, false);
+      reader.readAsDataURL(file);
+    })
+   }
+  const saveEdit = (e) => {
+    e.preventDefault();
+    setShowPostForm(false);
+    setShowReview(false);
+    //setUpLoading(true);
+    let newPostData = {
+      travellerInfo,
+      recommendations,
+      destinationInfo,
+      images,
+      deletedImageIDs
+    }
+    
+    //dispatch(editPost(postData));
+  }
+   
+  
+
+
   const removeImg = (i) => {
-    let newFiles = imgFiles.filter(( img, index) => index !== i);
-     setTitles([...titles.filter((title,index) => index !== i)])
-     setFinalImages(finalImages.filter((img, index) => index !== i))
-     setImgFiles(newFiles);
+    let newImages = images.filter(( img, index) => index !== i);
+    let deletedImage = images.find((img,index) => index === i);
+    if (deletedImage.hasOwnProperty('public_id')) {
+      setDeletedImageIDs(prev => [...prev, deletedImage.public_id]);
+    }
+    setImages(newImages);
+    setImgPreview(newImages)
   }
   //=================== Images =================//
 
@@ -176,7 +189,14 @@ export default function usePostForm( setModal, postId ) {
     e.preventDefault();
     setShowPostForm(false);
     setShowReview(false);
-    setUpLoading(true);
+    //setUpLoading(true);
+    let postData = {
+      travellerInfo,
+      recommendations,
+      destinationInfo,
+      images
+    }
+    dispatch(addPost(postData));
   }
   
   const handlePostSubmit = ( e, result ) => {
@@ -196,9 +216,7 @@ export default function usePostForm( setModal, postId ) {
       showPostForm,
       showReview, 
       upLoading,
-      msg, 
-      imgFiles,
-      titles, 
+      images,
       imgPreview,
       destinationInfo, setDestinationInfo,
       travellerInfo, setTravellerInfo,

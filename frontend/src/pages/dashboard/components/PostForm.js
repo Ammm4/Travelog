@@ -1,18 +1,19 @@
-import React,{ useEffect } from 'react';
-import styled from 'styled-components';
+import React from 'react';
+import styled, { css } from 'styled-components';
+import { addPost } from '../../../redux/posts/postActions';
+import { useSelector, useDispatch } from 'react-redux'
 
-import { css } from 'styled-components';
-
-import { MdClear } from "react-icons/md";
+import Loading from './Loading';
 
 //Icons
 import { IoIosImages } from "react-icons/io";
+import { MdClear } from "react-icons/md";
+
 const commonBtnStyle = css`
   border: none;
   outline: none;
   background-color: transparent;
 `
-
 const Container = styled.form`
   margin: auto;
   margin-top: 6rem;
@@ -172,6 +173,8 @@ color: #fff;
 `
 
 export default function PostForm(props) {
+  //const {loading, singlepost, error} = useSelector(state => state.SinglePost);
+  const dispatch = useDispatch();
   const {
          destinationInfo,
          setDestinationInfo,
@@ -182,6 +185,7 @@ export default function PostForm(props) {
          imageInputRef,
          imageUploader, 
          imgPreview,
+         imgFiles,
          handleFileUpload,
          removeImg,
          removeInput,
@@ -196,9 +200,23 @@ export default function PostForm(props) {
     e.target.style.height = '48px';
     e.target.style.height = `${e.target.scrollHeight}px`;
   }
-  
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const postData = new FormData();
+    postData.set("travellerInfo",travellerInfo);
+    postData.set("recommendations",recommendations);
+    postData.set("destinationInfo", destinationInfo);
+    imgFiles.forEach(imgFile => {
+      postData.append("images", imgFile);
+    })
+    dispatch(addPost(postData));
+  }
+  /* if(loading) {
+    return <Loading />
+  } */
   return (
-    <Container>
+    <Container encType="multipart/form-data" onSubmit={(e) => handleSubmit(e)}>
         <PostTitle>
           {props.modalName}
         </PostTitle>
@@ -236,7 +254,7 @@ export default function PostForm(props) {
           </div>
           <div className="form-group-input">
             <BtnImg htmlFor="images" onClick={imageUploader}><IoIosImages /> 
-              {imgPreview && imgPreview.length > 0 ? 'Add More Images' : 'Upload Images' }
+              { imgPreview.length > 0 ? 'Add More Images' : 'Upload Images' }
             </BtnImg>
             <input 
               id="images" 
@@ -249,19 +267,19 @@ export default function PostForm(props) {
               onChange={(e) => handleFileUpload(e)}
             />
           </div>
-          { imgPreview && imgPreview.length > 0 && 
+          { imgPreview.length > 0 && 
            <> 
               <label>Images({ imgPreview.length })</label>
               <ImagePreview>
                 { imgPreview.map((img, index) => {
-                  return  <ImagePreviewImg key={img.name || index}>  
-                            <img src={ img } alt="preview"/>
+                  return  <ImagePreviewImg key={ img.name || index }>  
+                            <img src={ img.imgFile } alt="preview"/>
                             <span className="remove-img" onClick={ () => removeImg(index) }><MdClear/></span>
-                            {titles[index] && <h5>{titles[index]}</h5>}
+                            { img.imgTitle  && <h5>{img.imgTitle}</h5> }
                             <label>Add a Title</label>
                             <textarea
                                  type="text"
-                                 value={titles[index]}
+                                 value={img.imgTitle}
                                  maxLength="50" 
                                  placeholder="Add a Title..."
                                  onChange={(e) => handleTitle(e,index)}

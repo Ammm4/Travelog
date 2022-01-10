@@ -1,5 +1,8 @@
 import React, { useState }from 'react';
+import { useDispatch } from 'react-redux';
+import { signUpUser } from '../../../redux/users/userActions';
 import styled from 'styled-components';
+
 import { Link } from 'react-router-dom';
 import  validator  from 'validator';
 
@@ -51,22 +54,25 @@ const ErrorDisplay = styled.p`
 export default function SignupForm() {
   const [signUpDetails, setSignUpDetails] = useState({ username:"", email:"", password:"", confirmpassword:"" });
   const [errors, setErrors] = useState({});
+  const dispatch = useDispatch();
+  
 
   const handleChange = (e) => {
      setSignUpDetails({...signUpDetails, [e.target.name]: e.target.value });
   }
+
   const handleSubmit = (e) => {
     e.preventDefault();
     let err = errorHandler(signUpDetails)
     if(Object.keys(err).length !== 0) {
       setErrors(err);
     } else {
-      //
-      setSignUpDetails({username:"", email:"", password:"", confirmpassword:"" });
+      dispatch(signUpUser(signUpDetails))
+      setSignUpDetails({ username:"", email:"", password:"", confirmpassword:"" });
       setErrors({})
     }
-  
   }
+  
   return (
     <FormContainer>
       <h1>Sign Up</h1>
@@ -118,7 +124,7 @@ export default function SignupForm() {
           />
         </InputContainer>
         {errors.confirmpassword && <ErrorDisplay>{errors.confirmpassword}</ErrorDisplay>}
-        <input type="submit" value="Log In" />
+        <input type="submit" value="Sign Up" />
       </Form>
      <p>Already Signed Up <Link to="/login">Login</Link></p> 
     </FormContainer>

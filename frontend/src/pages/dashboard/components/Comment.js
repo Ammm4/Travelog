@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import { Link, useRouteMatch } from 'react-router-dom';
 import styled,{ css } from 'styled-components';
 import { useSelector } from 'react-redux';
-import { usePostAPI } from './Post';
+import { usePostAPI } from './SinglePost';
 import useComment from './useComment';
 import Replies from './Replies';
 import Reply from './Reply';
@@ -180,15 +180,14 @@ const SpinnerContainer = styled.div`
 export default function Comment({ comment }) {
   const { postId } = usePostAPI();
   const { user } = useSelector(state => state.User);
+  const { replyLoading } = useSelector(state => state.SinglePost)
   let { url } = useRouteMatch();
   const {
     isEdit,
     showReplyInput, setShowReplyInput,
-    newReplies, setNewReplies,
     editText, setEditText,
     text, setText,
     showReply,
-    showSpinner,
     handleDelete,
     handleDone,
     handleEdit,
@@ -201,9 +200,7 @@ export default function Comment({ comment }) {
   
   return (
     <ContextCommentAPI.Provider value={{
-      newReplies, setNewReplies,
       commentId: comment.comment_id,
-      replies: comment.replies,
       handleReply
     }}>
       <CommentContainer>
@@ -279,32 +276,22 @@ export default function Comment({ comment }) {
                 } 
                 </Button>
               </CommentLike>
-              
-            {     
-              showReply 
-                &&
-              <Replies replies={ comment.replies } />
-            }
 
-            {  
-              newReplies.length > 0
-                &&
-              <ReplyContainer>
-                { 
-                  newReplies.map(reply => {
-                  return <Reply reply={ reply }/>
-                  })
-                }
-                </ReplyContainer>
-            }
-            
             {
-              showSpinner 
+              replyLoading 
                 &&
                 <SpinnerContainer>
                   <Loading1 />
                 </SpinnerContainer>   
+            }       
+            {     
+              showReply 
+                &&
+              <Replies />
             }
+
+        
+            
 
             { 
               showReplyInput 

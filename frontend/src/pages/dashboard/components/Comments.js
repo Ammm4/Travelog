@@ -1,20 +1,25 @@
 import React from 'react';
 import styled from 'styled-components';
 import Comment from './Comment';
-import { usePostAPI } from './Post';
-
+import { useSelector } from 'react-redux';
 
 
 const PostComments = styled.div`
   padding: 8px;
+  margin-right: 5px;
+  min-height: 250px;
+  flex: 1 1 auto;
+  overflow: auto;
 `
 
 export default function Comments() {
-  const { comments } = usePostAPI();
+  const { singlepost: post } = useSelector(state => state.SinglePost);
+  let comments = [...post.comments]
+  const reversedComments = comments.reverse();
   return (
     <PostComments>
         { 
-          comments.map(comment => {
+          reversedComments.map(comment => {
             return (
                 <Comment
                   key={ comment.comment_id }       
@@ -23,6 +28,6 @@ export default function Comments() {
               )
           })
         }
-      </PostComments>
+    </PostComments>
   )
 }

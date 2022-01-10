@@ -166,7 +166,7 @@ export default function Profile({ setIsModal }) {
      <UserProfile>
        <UserImageContainer>   
         <UserCover>
-          <img src={user.cover} alt="cover"/>
+          <img src={user.cover.cover_url} alt="cover"/>
         </UserCover>
         <UserAvatar>
           <img src={user.avatar.avatar_url} alt="cover"/>

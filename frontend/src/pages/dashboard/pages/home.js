@@ -10,7 +10,7 @@ import Loading from '../components/Loading';
 
 export const PostsWrapper = styled.section`
  margin: 1rem auto;
- width: 98%;
+ width: 100%;
  max-width: 600px;
 `
 
@@ -34,10 +34,11 @@ export default function Home({ setModal }) {
       <Share setModal={setModal}/>
       <PostsWrapper>
         { posts &&
-          posts.map(post => <Post key={post.post_id} postId={post.post_id} setModal={setModal} singlePost={false}/>)
+          posts.map(post => <Post key={post.post_id} post={post} setModal={setModal} singlePost={false}/>)
         }    
       </PostsWrapper>
     </HomeContainer>
   )
 }
 
+//<Post key={post.post_id} postId={post.post_id} setModal={setModal} singlePost={false}/>

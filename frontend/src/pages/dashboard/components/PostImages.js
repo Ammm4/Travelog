@@ -1,6 +1,5 @@
 import React, { useState, useEffect} from 'react';
 import styled, {css} from 'styled-components';
-import { usePostAPI } from './Post';
 import { useLocation, useHistory } from 'react-router-dom';
 
 import { GrPrevious } from "react-icons/gr";
@@ -81,8 +80,7 @@ const ImgContainer = styled.div`
   }
 `
 
-export default function PostImages({ images }) {
-  const { postId } = usePostAPI()
+export default function PostImages({ images, postId }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showPrevBtn, setShowPrevBtn] = useState(false);
   const [showNextBtn, setShowNextBtn] = useState(true);
@@ -90,8 +88,9 @@ export default function PostImages({ images }) {
   const location = useLocation();
   const history = useHistory();
 
-  const handleImageClick = (e, id) => {
-    history.push(`${location.pathname}/posts/${id}`)
+  const handleImageClick = (e) => {
+    e.preventDefault();
+    history.push(`${location.pathname}/posts/${postId}`)
   }
 
   useEffect(() => {
@@ -129,10 +128,10 @@ export default function PostImages({ images }) {
               key={index} 
               index={index} 
               currentIndex={currentIndex}
-              onClick={(e) => handleImageClick(e, postId)}
+              onClick={(e) => handleImageClick(e)}
             >
               <img src={ image.imgURL } alt="barcelona"/>
-              <span className="image_number">{`${index + 1}/${images.length}`}</span>
+              <span className="image_number">{`${index + 1}/${ images.length }`}</span>
               <span className="image_name">{image.imgName}</span>
             </ImgContainer>)  
         })}

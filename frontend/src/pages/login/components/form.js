@@ -1,8 +1,10 @@
 import React, { useState }from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { login } from '../../../redux/users/userActions';
+
+import Loading from '../../dashboard/components/Loading';
 const FormContainer =  styled.div`
   height: 100%;
   width: 100%;
@@ -50,8 +52,11 @@ const LoginErr = styled.p`
 `
 export default function LoginForm() {
   const [loginDetails, setLoginDetails] = useState({ email:"", password:"" });
+  const { loading } = useSelector(state => state.User)
   const [error, setError] = useState("");
   const dispatch = useDispatch();
+  
+
   const handleChange = (e) => {
      setLoginDetails({...loginDetails, [e.target.name]: e.target.value });
   }
@@ -61,7 +66,12 @@ export default function LoginForm() {
       return setError('Please enter email or password!');
     }
     dispatch(login(loginDetails));
+    setLoginDetails({ email:"", password:"" })
     setError('')
+  }
+
+  if(loading) {
+    return <Loading />
   }
 
   return (

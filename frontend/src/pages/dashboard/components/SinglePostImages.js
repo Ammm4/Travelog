@@ -6,6 +6,7 @@ import { useHistory } from 'react-router-dom';
 import { GrPrevious } from "react-icons/gr";
 import { GrNext } from "react-icons/gr";
 import { GrClose } from "react-icons/gr";
+
 const sharedBtnCss = css`
   position: absolute;
   top: 50%;
@@ -100,7 +101,7 @@ const ImgContainer = styled.div`
 `
 
 
-export default function SinglePostImages({ imgs }) {
+export default function SinglePostImages({ images }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showPrevBtn, setShowPrevBtn] = useState(false);
   const [showNextBtn, setShowNextBtn] = useState(true);
@@ -110,12 +111,12 @@ export default function SinglePostImages({ imgs }) {
     if(currentIndex === 0) {
       return setShowPrevBtn(false)
     } 
-    if(currentIndex === imgs.length - 1){
+    if(currentIndex === images.length - 1){
       return setShowNextBtn(false)
     }
     setShowPrevBtn(true);
     setShowNextBtn(true)
-  }, [currentIndex, imgs]);
+  }, [currentIndex, images]);
 
   const handlePrevClick = () => {
     setCurrentIndex(currentIndex - 1);
@@ -125,19 +126,19 @@ export default function SinglePostImages({ imgs }) {
     setCurrentIndex(currentIndex + 1);
   }
   
-  if(imgs.length === 1) {
+  if(images && images.length === 1) {
    return <Container>
             <ImgContainer>
-              <img src={ imgs[0].imgURL } alt="pics" />
+              <img src={ images[0].imgURL } alt="pics" />
             </ImgContainer>  
            </Container>
   }
   //
   return (
     <Container>
-        { imgs.map((img, index) => {
+        {images && images.map((img, index) => {
           return (<ImgContainer key={ index } index={index} currentIndex={currentIndex} url={img.imgURL}>
-                  <span className="image_number">{`${index + 1}/${imgs.length}`}</span>
+                  <span className="image_number">{`${index + 1}/${images.length}`}</span>
                   <span className="image_name">{img.imgName}</span>
           </ImgContainer>)  
         })}

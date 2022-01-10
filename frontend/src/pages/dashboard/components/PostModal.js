@@ -1,9 +1,10 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
-
+import { useSelector, useDispatch } from 'react-redux';
+import { useAlert } from 'react-alert';
+import { clearError } from '../../../redux/posts/postActions';
+import { NEW_POST_RESET } from '../../../redux/posts/postTypes'
 import usePostForm from './usePostForm';
-
-
 import PostForm from './PostForm';
 import PostConfirm from './PostConfirm';
 import Loading from './Loading';
@@ -29,13 +30,27 @@ const Container = styled.div`
 `
 
 export default function PostModal({ setModal, postId }) {
+  const { loading, error, success } = useSelector(state => state.NewPost);
+  const alert = useAlert();
+  const dispatch = useDispatch();
+  
+  useEffect(() => {
+    if(error) {
+      alert.error(error)
+      dispatch(clearError())
+    }
+     if(success) {
+      alert.success('Post Successfully Created');
+      dispatch({ type: NEW_POST_RESET})
+    }
+  }, [error, success, alert, dispatch]); 
+
   const {
       imageInputRef,
       showPostForm,
       showReview, 
       upLoading,
-      msg, 
-      titles, 
+      msg,
       imgPreview,
       destinationInfo, setDestinationInfo,
       travellerInfo, setTravellerInfo,
@@ -45,15 +60,19 @@ export default function PostModal({ setModal, postId }) {
       addMoreInput, removeInput,
       handleChange, toggleForm,
       handleSubmit, handlePostSubmit
-  } = usePostForm(setModal, postId)
+  } = usePostForm(setModal, postId);
+  
+  if(loading) {
+    return <Loading />
+  }
   
   return (
     <Container>
-      <span onClick={ () => setModal(null) }><MdClear /></span>
+     <span onClick={ () => setModal(null) }><MdClear /></span>
 
      { showPostForm && <PostForm 
          imageInputRef={imageInputRef}
-         imageUploader={imageUploader} 
+         imageUploader={imageUploader}
          imgPreview={imgPreview}
          handleFileUpload={handleFileUpload}
          removeImg={removeImg}
@@ -67,7 +86,6 @@ export default function PostModal({ setModal, postId }) {
          handleChange={handleChange}
          addMoreInput={addMoreInput} 
          toggleForm={toggleForm}
-         titles={titles}
          handleTitle={handleTitle}
          modalName={postId === 'create' ? 'Create Post' : 'Edit Post'}
       />}
@@ -77,7 +95,6 @@ export default function PostModal({ setModal, postId }) {
          destinationInfo={destinationInfo}       
          travellerInfo={travellerInfo}
          recommendations={recommendations}
-         titles={titles}
          toggleForm={toggleForm}
          handleSubmit={handleSubmit}
       /> }
