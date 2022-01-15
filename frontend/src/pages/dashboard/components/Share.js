@@ -57,7 +57,7 @@ const IconHolders =  styled.div`
 export default function Share({ setModal }) {
   const { user } = useSelector(state => state.User);
   return (
-    <ShareContainer onClick={() => setModal('create')}>
+    <ShareContainer onClick={() => setModal({ postId: null, action: 'Create Post' })}>
       <ShareTitle>
         <img src={user.avatar.avatar_url} alt="avatar"/>
         <input disabled placeholder="Got New Experiences to Share??"/> 

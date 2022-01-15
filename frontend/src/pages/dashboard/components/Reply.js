@@ -11,7 +11,6 @@ import { AiFillHeart } from "react-icons/ai";
 
 
 
-
 const sharedBtnCss = css`
   display: inline-block;
   outline: none;

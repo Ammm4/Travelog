@@ -1,37 +1,24 @@
 import ReactStars from "react-rating-stars-component";
-import React, { useState, useRef, useContext } from 'react';
+import React, { useState, } from 'react';
 import { Link, useRouteMatch, useLocation } from 'react-router-dom';
 import styled,{ css } from 'styled-components';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { deletePost } from "../../../redux/posts/postActions";
 
-
+// Components
 import PostImages from './PostImages';
-import Comments from './Comments';
-import NewComments from './NewComments';
 import PostDetails, { usePostDetails } from './PostDetails';
 
-import Loading1 from './Loading1';
 
-//Icons IoTrashBinSharp  MdDeleteForever AiOutlineEdit AiFillEdit
+//Icons 
 import { BsFillInfoCircleFill } from "react-icons/bs";
 import { FaComments } from "react-icons/fa";
-import { MdClear } from "react-icons/md";
-import { BsThreeDots } from "react-icons/bs";
 import { AiOutlineHeart } from "react-icons/ai";
 import { AiFillHeart } from "react-icons/ai";
 import { AiFillEdit } from "react-icons/ai";
-import { IoTrashBinOutline } from "react-icons/io5";
-
 import { MdDelete } from "react-icons/md";
-import { GrEdit } from "react-icons/gr";
 
-import usePost from "./usePost";
 
-const ContextAPI = React.createContext();
-
-export const usePostAPI = () => {
-  return useContext(ContextAPI)
-}
 
 export const sharedBtnCss = css`
   display: inline-block;
@@ -221,13 +208,17 @@ export const LinkToPostDetails = styled(Link)`
 `
 
 export default function Post({ post, setModal, singlePost }) {
-  
   const { details } = usePostDetails(post);
   const { user } = useSelector(state => state.User);
   const location = useLocation();
   const [showInfo, setShowInfo] = useState(false);
+  const dispatch = useDispatch()
   let { url } = useRouteMatch();
-
+  
+  const handleDelete = (e, postId) => {
+    e.preventDefault();
+    dispatch(deletePost(postId))
+  }
   
   return (
         <PostWrapper singlePost={singlePost}>
@@ -247,8 +238,8 @@ export default function Post({ post, setModal, singlePost }) {
             { 
               post.author.authorId === user._id && 
               <ActionContainer>
-                  <DeleteButton onClick={ (e) => setModal(post.post_id) }><AiFillEdit /></DeleteButton>
-                  <DeleteButton><MdDelete /></DeleteButton>
+                  <DeleteButton onClick={ (e) => setModal({ postId: post.post_id, action: 'Edit Post' }) }><AiFillEdit /></DeleteButton>
+                  <DeleteButton onClick={ (e) => setModal({ postId: post.post_id, action: 'delete' })}><MdDelete /></DeleteButton>
               </ActionContainer>
             }
           </PostAuthor>
@@ -317,229 +308,7 @@ export default function Post({ post, setModal, singlePost }) {
                 </button>        
             </CommentPost>          
            </LinkToPostDetails>
-           
-         
         </PostWrapper>
   )
 }
 
-/* export default function Post({ postId, setModal, singlePost }) {
-  const { 
-    post,
-    setPost,
-    commentPosting,
-    postLoading,
-    showComment,
-    setShowComment,
-    newComments,
-    setNewComments,
-    postLoadingError,
-    handlePostLike,
-    commentText,
-    setCommentText,
-    handlePostComment
-  } = usePost(postId);
-
-  const { details } = usePostDetails(post);
-  const { user } = useSelector(state => state.User);
-  const location = useLocation();
-  //const [error, setError] = useState(null);
-  const [showInfo, setShowInfo] = useState(false);
-  const [replyInfo, setReplyInfo] = useState({ replyTo: null, commentId: null });
-  const commentInputRef = useRef();
-  let { url } = useRouteMatch();
-
-  const handleCommentIconClick = (e) => {
-    e.preventDefault();
-    commentInputRef.current.focus();
-    setReplyInfo({...replyInfo, replyTo: null, commentId: null })
-  }
-
-  const handleKeyUp = (e) => {
-    e.target.style.height = '35px';
-    e.target.style.height = `${ e.target.scrollHeight }px`;
-  }
-  
-  const toggleHideShow = (e) => {
-    e.preventDefault();
-    setShowComment(!showComment);
-    setNewComments([])
-  }
- 
-  if(postLoading) {
-    return <Loading1 />
-  }
-
-  return (
-     <ContextAPI.Provider value={{ setPost, postId, newComments, setNewComments, comments: post.comments }}>
-        <PostWrapper singlePost={singlePost}>
-          <PostAuthor>
-            <Link to={ `${ url }/users/${ post.author.authorId }` }>
-              <AvatarImage src={ post.author.authorAvatar } alt="avatar"/>
-            </Link>
-            <div>
-              <AuthorName>{ post.author.authorName }</AuthorName>
-              <h5>{ post.destinationInfo.destination }, { post.destinationInfo.country }</h5>
-              <ReactStars 
-                count={5}
-                isHalf={true}
-                value={4.5}
-              />
-            </div>
-            { 
-              post.author.authorId === user._id && 
-              <ActionContainer>
-                  <DeleteButton onClick={ (e) => setModal(post.post_id) }><AiFillEdit /></DeleteButton>
-                  <DeleteButton><MdDelete /></DeleteButton>
-              </ActionContainer>
-            }
-          </PostAuthor>
-          { 
-            !singlePost 
-             &&
-            <PostImages images={ post.images } />
-          } 
-          <PostTitle>
-            <h4>Summary</h4>    
-            <p> { post.destinationInfo.summary }</p>
-            <Button 
-              onClick={ () => setShowInfo(!showInfo) } > 
-              <BsFillInfoCircleFill/> { showInfo ? 'Less Info... ': 'More Info...' }
-            </Button>
-          </PostTitle>  
-          { showInfo && <PostDetails data={ details }/> }
-          
-          <>
-           { singlePost ? 
-             <>
-               <CommentsAndLikes>
-                 { post.likes.length > 0 && 
-                   <TotalLikes to={ `${ url }/posts/1` } >
-                     { post.likes.length ===  1 ? '1 Like' : `${ post.likes.length } Likes` } 
-                   </TotalLikes>
-                 }
-                 { post.comments.length > 0 &&
-                    <TotalComments to={ `${ url }/posts/1` }> 
-                      { post.comments.length ===  1 ? '1 comment' : `${ post.comments.length } comments` }
-                    </TotalComments>
-                 }
-               </CommentsAndLikes>
-               <PostInteractions>
-                  <InteractionButton 
-                    onClick={ (e) => handlePostLike(e) } >
-                    { 
-                      post.likes.find(like => like.user_id === user._id) ? 
-                      <AiFillHeart /> 
-                       :
-                      <AiOutlineHeart /> 
-                    } 
-                  </InteractionButton> 
-                  <InteractionButton 
-                    onClick={ (e) => handleCommentIconClick(e) } >
-                    <FaComments/> 
-                  </InteractionButton> 
-                </PostInteractions>
-
-                { 
-                  post.comments.length > 0 && 
-                  <PostComments>
-                    <Line/>
-                    <Button onClick={ (e) => toggleHideShow(e) }>
-                     { showComment ? 'Hide' : 'Show' } { post.comments.length } { post.comments.length === 1 ? 'Comment' : 'Comments' }
-                    </Button>
-                  </PostComments>
-                }
-
-                { 
-                  newComments.length > 0
-                  &&
-                  <NewComments />
-                }
-
-                {
-                  showComment 
-                  &&
-                  <Comments />
-                }
-          
-                { commentPosting && <Loading1 /> }
-          
-                <CommentPost singlePost={singlePost}>
-                  <AvatarImage src={ user.avatar.avatar_url } alt="avatar" />
-                    <textarea 
-                      ref={ commentInputRef } 
-                      value={ commentText } 
-                      placeholder="Got a question??, Ask John!"
-                      onChange={ (e) => setCommentText(e.target.value) }
-                      onKeyUp={ (e) => handleKeyUp(e) }
-                      disabled={!singlePost}
-                    />
-                    <button 
-                      disabled={ !commentText.trim() ? true : false } 
-                      onClick={ (e) => handlePostComment(e, post.post_id) }
-                    >
-                     Post
-                    </button>        
-                </CommentPost>
-             </> 
-            :  
-             <LinkToPostDetails to={`${location.pathname}/posts/${post.post_id}`}>
-               <CommentsAndLikes>
-                 { post.likes.length > 0 && 
-                   <span >
-                     { post.likes.length ===  1 ? '1 Like' : `${ post.likes.length } Likes` } 
-                   </span>
-                 }
-                 { post.comments.length > 0 &&
-                   <span > 
-                    { post.comments.length ===  1 ? '1 comment' : `${ post.comments.length } comments` }
-                   </span>
-                 }
-               </CommentsAndLikes>
-               <PostInteractions>
-                 <InteractionButton 
-                  disabled={true}>
-                   { 
-                     post.likes.find(like => like.user_id === user._id) ? 
-                     <AiFillHeart /> 
-                     :
-                     <AiOutlineHeart /> 
-                   } 
-                 </InteractionButton> 
-                 <InteractionButton 
-                   disabled={true}  >
-                  <FaComments/> 
-                 </InteractionButton> 
-              </PostInteractions>
-
-             { 
-               post.comments.length > 0 && 
-                 <PostComments>
-                   <Line/>
-                   <Button disabled={true}>
-                     { showComment ? 'Hide' : 'Show' } { post.comments.length } { post.comments.length === 1 ? 'Comment' : 'Comments' }
-                   </Button>
-                </PostComments>
-             }
-  
-             <CommentPost singlePost={singlePost}>
-                <AvatarImage src={ user.avatar.avatar_url } alt="avatar" />
-                <textarea 
-                  ref={ commentInputRef } 
-                  value={ commentText } 
-                  placeholder="Got a question??, Ask John!"
-                  disabled={true}
-                />
-                <button 
-                disabled={true}
-                >
-                  Post
-                </button>        
-            </CommentPost>          
-           </LinkToPostDetails>
-           }
-          </>
-        </PostWrapper>
-     </ContextAPI.Provider>
-  )
-} */

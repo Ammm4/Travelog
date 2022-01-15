@@ -159,17 +159,24 @@ export const PostHeading = styled.div`
   }
 `
 
-export default function Userprofile() {
+export default function Userprofile({ setModal }) {
   const history = useHistory();
   const {loading, singleUser: user, error} = useSelector(state => state.SingleUser)
   const { user_id } = useParams();
   const dispatch = useDispatch();
+
   useEffect(() => {
     dispatch(getSingleUser(user_id))
   },[dispatch, user_id])
 
+  useEffect(() => {
+    if(error) {
+      history.goBack()
+    }
+  },[error, history])
+
   if(loading || Object.keys(user).length < 1) {
-    return <Loading />
+    return <Loading msg="Profile Loading"/>
   }
   return (
     <ProfileContainer>
@@ -204,7 +211,7 @@ export default function Userprofile() {
      </PostHeading>
      { user.posts.length > 0 ? 
         <PostsWrapper>
-          { user.posts.map(post => <Post postId={post.post_id} key={post.post_id} />) }
+          { user.posts.map(post => <Post key={ post.post_id } post={ post } setModal={ setModal } singlePost={false} />) }
         </PostsWrapper>
         : <Zeropost />
      }

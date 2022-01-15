@@ -1,10 +1,7 @@
 import React from 'react';
 import styled, { css } from 'styled-components';
-import { addPost } from '../../../redux/posts/postActions';
-import { useSelector, useDispatch } from 'react-redux'
 
-import Loading from './Loading';
-
+import { ErrorDisplay } from '../../signup/components/form';
 //Icons
 import { IoIosImages } from "react-icons/io";
 import { MdClear } from "react-icons/md";
@@ -71,7 +68,7 @@ const Container = styled.form`
     
   }
 `
-const PostTitle = styled.h1`
+export const PostTitle = styled.h1`
   width: 100%;
   margin: 1rem auto;
   letter-spacing: 1px;
@@ -172,27 +169,25 @@ background-color: #000;
 color: #fff;
 `
 
+
 export default function PostForm(props) {
-  //const {loading, singlepost, error} = useSelector(state => state.SinglePost);
-  const dispatch = useDispatch();
   const {
+         errors,
          destinationInfo,
-         setDestinationInfo,
+         handleDestinationInfo,
          travellerInfo,
-         setTravellerInfo,
+         handleTravellerInfo,
          recommendations,
-         setRecommendations,
+         handleRecommendations,
          imageInputRef,
          imageUploader, 
          imgPreview,
-         imgFiles,
          handleFileUpload,
          removeImg,
          removeInput,
          handleChange,
          addMoreInput,
          toggleForm,
-         titles,
          handleTitle
   } = props;
   
@@ -201,24 +196,11 @@ export default function PostForm(props) {
     e.target.style.height = `${e.target.scrollHeight}px`;
   }
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const postData = new FormData();
-    postData.set("travellerInfo",travellerInfo);
-    postData.set("recommendations",recommendations);
-    postData.set("destinationInfo", destinationInfo);
-    imgFiles.forEach(imgFile => {
-      postData.append("images", imgFile);
-    })
-    dispatch(addPost(postData));
-  }
-  /* if(loading) {
-    return <Loading />
-  } */
+  
   return (
-    <Container encType="multipart/form-data" onSubmit={(e) => handleSubmit(e)}>
+    <Container>
         <PostTitle>
-          {props.modalName}
+          { props.modalName }
         </PostTitle>
         <div className="form-group">
           <InputsGroupHeading>Destination Info: </InputsGroupHeading>
@@ -229,9 +211,10 @@ export default function PostForm(props) {
               name="destination" 
               type="text"
               value = { destinationInfo.destination }
-              onChange = {(e) => setDestinationInfo({...destinationInfo, [e.target.name] : e.target.value}) }
+              onChange = {(e) => handleDestinationInfo(e) }
               placeholder="Barcelona, Venice, Porto..."
               />
+            { errors && errors.destination && <ErrorDisplay>{ errors.destination }</ErrorDisplay> }
           </div>
           <div className="form-group-input">
             <label htmlFor="country">Country</label>
@@ -240,8 +223,11 @@ export default function PostForm(props) {
               name="country" 
               type="text"
               value = { destinationInfo.country }
-              onChange = {(e) => setDestinationInfo({...destinationInfo, [e.target.name] : e.target.value}) }
-              placeholder="Italy, Greece, France..."/>
+              onChange = {(e) => handleDestinationInfo(e) }
+              placeholder="Italy, Greece, France..."
+              required
+              />
+             { errors && errors.country && <ErrorDisplay>{ errors.country }</ErrorDisplay> }
           </div>
           <div className="form-group-input">
             <label htmlFor="summary">Summary</label>
@@ -249,11 +235,12 @@ export default function PostForm(props) {
               id="summary"
               name="summary"
               value = { destinationInfo.summary }
-              onChange = {(e) => setDestinationInfo({...destinationInfo, [e.target.name] : e.target.value}) }
+              onChange = {(e) => handleDestinationInfo(e) }
             />
+            { errors && errors.summary && <ErrorDisplay>{ errors.summary }</ErrorDisplay> }
           </div>
           <div className="form-group-input">
-            <BtnImg htmlFor="images" onClick={imageUploader}><IoIosImages /> 
+            <BtnImg htmlFor="images" onClick={ imageUploader }><IoIosImages /> 
               { imgPreview.length > 0 ? 'Add More Images' : 'Upload Images' }
             </BtnImg>
             <input 
@@ -266,6 +253,7 @@ export default function PostForm(props) {
               ref={imageInputRef}
               onChange={(e) => handleFileUpload(e)}
             />
+            { errors && errors.images && <ErrorDisplay>{ errors.images }</ErrorDisplay> }
           </div>
           { imgPreview.length > 0 && 
            <> 
@@ -273,7 +261,7 @@ export default function PostForm(props) {
               <ImagePreview>
                 { imgPreview.map((img, index) => {
                   return  <ImagePreviewImg key={ img.name || index }>  
-                            <img src={ img.imgFile } alt="preview"/>
+                            <img src={ img.imgFile } alt={img.imgTitle}/>
                             <span className="remove-img" onClick={ () => removeImg(index) }><MdClear/></span>
                             { img.imgTitle  && <h5>{img.imgTitle}</h5> }
                             <label>Add a Title</label>
@@ -300,7 +288,7 @@ export default function PostForm(props) {
             <select id="numOfPeople" 
                name="numOfPeople"
                value={ travellerInfo.numOfPeople }
-               onChange = {(e) => setTravellerInfo({...travellerInfo, [e.target.name] : e.target.value}) }
+               onChange = {(e) => handleTravellerInfo(e) }
                >
               <option value="1">1</option>
               <option value="2">2</option>
@@ -320,17 +308,18 @@ export default function PostForm(props) {
               name="cost" 
               type="number"
               value={ travellerInfo.cost }
-              onChange = {(e) => setTravellerInfo({...travellerInfo, [e.target.name] : e.target.value}) }
+              onChange = {(e) => handleTravellerInfo(e) }
               />
+            { errors && errors.costs && <ErrorDisplay>{ errors.costs }</ErrorDisplay> }
           </div>
         </div>
 
         <div className="form-group">
           <InputsGroupHeading>Recommendations: </InputsGroupHeading>
           <div className="form-group-input">
-            <label htmlFor="numOfDays">Number of days To Spent</label>
+            <label htmlFor="numOfDays">Number of Days To Spent</label>
             <select id="numOfDays" name="numOfDays" value = { recommendations.numOfDays } 
-              onChange = {(e) => setRecommendations({...recommendations, [e.target.name] : e.target.value}) }>
+              onChange = {(e) => handleRecommendations(e) }>
               <option value="1 day">1 day</option>
               <option value="2 days">2 days</option>
               <option value="3 days">3 days</option>
@@ -350,14 +339,16 @@ export default function PostForm(props) {
               name="budget" 
               type="number"
               value={ recommendations.budget }
-              onChange = {(e) => setRecommendations({...recommendations, [e.target.name] : e.target.value}) }
+              onChange = {(e) => handleRecommendations(e) }
               />
+            { errors && errors.budget && <ErrorDisplay>{ errors.budget }</ErrorDisplay> }
           </div>
           <div className="form-group-input">
             <label> Heritages To Visit</label>
             <ArrayOfInputs>
-              { recommendations.heritages.map((item, index) => {
-                return <InputElement key={index} >
+              { 
+               recommendations.heritages.map((item, index) => {
+                 return <InputElement key={index} >
                          <input 
                           name="heritage" 
                           type="text"
@@ -370,13 +361,15 @@ export default function PostForm(props) {
                 })
               }
             </ArrayOfInputs>
+             { errors && errors.heritages && <ErrorDisplay>{ errors.heritages }</ErrorDisplay> }
             <BtnAdd onClick={(e) => addMoreInput(e, 'heritage')}>Add More</BtnAdd>
           </div>
           <div className="form-group-input">
             <label> Places To See</label>
             <ArrayOfInputs>
-              { recommendations.places.map((item, index) => {
-                return <InputElement key={index} >
+              { 
+                recommendations.places.map((item, index) => {
+                  return <InputElement key={index} >
                          <input 
                           name="place" 
                           type="text"
@@ -389,13 +382,14 @@ export default function PostForm(props) {
                 })
               }
             </ArrayOfInputs>
-            <BtnAdd onClick={(e) => addMoreInput(e, 'place')}>Add More</BtnAdd>
+            { errors && errors.places && <ErrorDisplay>{ errors.places }</ErrorDisplay> }
+            <BtnAdd onClick={(e) => addMoreInput(e, 'place')}>Add More</BtnAdd>    
           </div>
           <div className="form-group-input">
             <label>Things To do </label>
             <ArrayOfInputs>
-
-              { recommendations.todos.map((item, index) => {
+              { 
+                recommendations.todos.map((item, index) => {
                 return <InputElement key={index} >
                          <input 
                           name="todo" 
@@ -409,6 +403,7 @@ export default function PostForm(props) {
                 })
               }
             </ArrayOfInputs>
+            { errors && errors.todos && <ErrorDisplay>{ errors.todos }</ErrorDisplay> }
             <BtnAdd onClick={(e) => addMoreInput(e,'todo')}>Add More</BtnAdd>
           </div>
         </div>
@@ -421,7 +416,7 @@ export default function PostForm(props) {
               id="others" 
               name="others" 
               value={ recommendations.others }
-              onChange = {(e) => setRecommendations({...recommendations, [e.target.name] : e.target.value}) }
+              onChange = {(e) => handleRecommendations(e) }
               />
           </div>
         </div>

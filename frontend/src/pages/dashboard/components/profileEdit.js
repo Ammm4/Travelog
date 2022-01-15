@@ -98,9 +98,7 @@ const initialState = (user) => {
 }
 export default function ProfileEdit() {
   const { user } = useSelector(state => state.User)
-  const [avatarFile, setAvatarFile] = useState(null);
-  const [coverFile, setCoverFile] = useState(null);
-  const [avatarImg, setAvatarImg] = useState();
+  const [avatarImg, setAvatarImg] = useState(null);
   const [coverImg, setCoverImg] = useState(null);
   const [infos, setInfos] = useState(initialState(user));
   const [showEdit, setShowEdit] = useState(false);
@@ -110,18 +108,6 @@ export default function ProfileEdit() {
 
   const history = useHistory();
 
-  useEffect(() => {
-   if(!avatarFile) return
-   let avatarURL = URL.createObjectURL(avatarFile);
-   setAvatarImg(avatarURL);
-  },[avatarFile]);
-
-  useEffect(() => {
-   if(!coverFile) return
-   let coverURL = URL.createObjectURL(coverFile);
-   setCoverImg(coverURL);
-  },[coverFile])
-
   const handleClick = (e, imgType) => {
     e.preventDefault();
     if(imgType === 'avatar') {
@@ -130,17 +116,25 @@ export default function ProfileEdit() {
     if(imgType === 'cover') {
       return coverRef.current.click(); 
     }  
-
   }
+
   const handleFileUpload = (e, imgType) => {
     e.preventDefault();
+    var reader = new FileReader();
     if(imgType === 'avatar') {
-      return setAvatarFile(avatarRef.current.files[0]) 
-    }
+      reader.addEventListener("load", function () {
+          setAvatarImg(reader.result);
+        }, false);
+        reader.readAsDataURL(avatarRef.current.files[0]);
+      }
     if(imgType === 'cover') {
-      return setCoverFile(coverRef.current.files[0]) 
+      reader.addEventListener("load", function () {
+          setCoverImg(reader.result);
+       }, false);
+        reader.readAsDataURL(coverRef.current.files[0]);
     }
   }
+
   const handleToggle = (e) => {
     e.preventDefault();
     if(showEdit) {

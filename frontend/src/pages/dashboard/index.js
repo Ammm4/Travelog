@@ -4,7 +4,7 @@ import { Switch, Route, useRouteMatch, Redirect, useLocation } from 'react-route
 import { useSelector, useDispatch } from 'react-redux';
 import { useAlert } from 'react-alert';
 import { NEW_POST_RESET } from '../../redux/posts/postTypes';
-import { LOG_IN_SUCCESS_RESET } from '../../redux/users/userTypes';
+
 
 // ============ Pages ============= //
 import Home from './pages/home';
@@ -14,11 +14,14 @@ import Singlepost from './pages/post';
 import PostModal from './components/PostModal';
 import Userprofile from './pages/userprofile';
 import { clearError } from '../../redux/posts/postActions';
+import { clearError as clearUserError } from '../../redux/users/userActions';
 
 
 export default function Dashboard() {
-  const { user } = useSelector(state => state.User)
-  const { loading, error, success } = useSelector(state => state.NewPost);
+  const { user } = useSelector(state => state.User);
+  const { success, error } = useSelector(state => state.Post);
+  const { error: singlePostError } = useSelector(state => state.SinglePost);
+  const { error: singleUserError } = useSelector(state => state.SingleUser);
   const [ active, setActive ] = useState();
   const [ isModal, setIsModal ] = useState(null);
   const alert = useAlert();
@@ -39,16 +42,24 @@ export default function Dashboard() {
       alert.error(error)
       dispatch(clearError())
     }
+    if(singleUserError) {
+      alert.error(singleUserError);
+      dispatch(clearUserError())
+    }
+    if(singlePostError) {
+      alert.error(singlePostError);
+      dispatch(clearError())
+    }
     if(success) {
       alert.success(success);
       dispatch({ type: NEW_POST_RESET })
     }
-  }, [alert, dispatch, success, error])
-
+  }, [alert, dispatch, success, error, singleUserError, singlePostError])
+  
   if(!user) {
     return <Redirect to ="/login" />
   }
- 
+  
   return (
     <>
       <Navbar active={active}/>
@@ -84,13 +95,13 @@ export default function Dashboard() {
               `${match.path}/profile/users/:user_id`,
             ]}  
         >
-          <Userprofile />
+          <Userprofile setModal={ setIsModal } />
         </Route>
         <Route exact path="/dashboard">
           <Redirect to={`${match.path}/home`} />
         </Route>
       </Switch>
-      { isModal && <PostModal setModal={setIsModal} postId={isModal}/> }
+      { isModal && <PostModal setModal={setIsModal} postModalInfo={isModal}/> }
     </>
   )
 }

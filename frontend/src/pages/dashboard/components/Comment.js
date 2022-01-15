@@ -5,7 +5,6 @@ import { useSelector } from 'react-redux';
 import { usePostAPI } from './SinglePost';
 import useComment from './useComment';
 import Replies from './Replies';
-import Reply from './Reply';
 import { AiOutlineHeart } from "react-icons/ai";
 import { AiFillHeart } from "react-icons/ai";
 import { MdClear } from "react-icons/md";

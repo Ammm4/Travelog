@@ -1,9 +1,8 @@
-import React, { useEffect } from 'react';
+import React, {useEffect} from 'react';
 import styled from 'styled-components';
+import { getPosts } from '../../../redux/posts/postActions';
 import Share from '../components/Share';
 import Post from '../components/Post';
-import { getPosts } from '../../../redux/posts/postActions';
-
 
 import { useSelector, useDispatch } from 'react-redux';
 import Loading from '../components/Loading';
@@ -18,17 +17,17 @@ const HomeContainer = styled.section`
  margin-top: 1rem;
  color:#1e1e1e;
 `
-
 export default function Home({ setModal }) {
+  const { loading, posts } = useSelector(state => state.Post);
   const dispatch = useDispatch();
-  const { loading, posts, error } = useSelector(state => state.Post);
+
   useEffect(() => {
     dispatch(getPosts())
-  },[dispatch]);
-
-  if(loading) {
-    return <Loading />
-  }
+  }, [dispatch])
+  
+ if(loading) {
+   return <Loading msg="Posts Loading"/>
+ }
   return (
     <HomeContainer>
       <Share setModal={setModal}/>
@@ -41,4 +40,4 @@ export default function Home({ setModal }) {
   )
 }
 
-//<Post key={post.post_id} postId={post.post_id} setModal={setModal} singlePost={false}/>
+

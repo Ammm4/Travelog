@@ -1,13 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import PostImages from './PostImages';
-import PostDetails from './PostDetails';
-
-//Icons
-import { BiLike, BiNotepad } from "react-icons/bi";
-import { FaComments } from "react-icons/fa";
-
 const PostWrapper = styled.article`
   margin: auto;
   margin-top: 6rem;
@@ -105,7 +98,7 @@ const List = styled.ul`
   }
 `
 export default function PostConfirm(props) {
-  const {     
+  const {
     imgPreview,
     travellerInfo,
     destinationInfo,
@@ -121,23 +114,23 @@ export default function PostConfirm(props) {
         <InputsGroupHeading>Destination</InputsGroupHeading>
         <Infos>
           <InfoLabel>Place</InfoLabel>
-          <Answer>{destinationInfo.destination}</Answer>
+          <Answer>{ destinationInfo.destination }</Answer>
         </Infos>
         <Infos>
           <InfoLabel>Country</InfoLabel>
-          <Answer>{destinationInfo.country}</Answer>
+          <Answer>{ destinationInfo.country }</Answer>
         </Infos>
         <Infos>
           <InfoLabel>Summary</InfoLabel>
-          <Answer>{destinationInfo.summary}</Answer>
+          <Answer>{ destinationInfo.summary }</Answer>
         </Infos>
-        <InfoLabel>Images({imgPreview.length})</InfoLabel>
+        <InfoLabel>Images({ imgPreview.length })</InfoLabel>
         <ImagePreview>
           { imgPreview && imgPreview.map((img, index) => {
-                return  <ImagePreviewImg key={img.name}>
-                          <img src={ img.imgFile } alt="preview"/>
-                        { img.imgTitle && <h5> { img.imgTitle }</h5> }
-        </ImagePreviewImg>
+            return  <ImagePreviewImg key={ index }>
+                      <img src={ img.imgFile } alt={ img.imgTitle }/>
+                      { img.imgTitle && <h5> { img.imgTitle }</h5> }
+                    </ImagePreviewImg>
               })
           }
         </ImagePreview>
@@ -146,55 +139,65 @@ export default function PostConfirm(props) {
         <InputsGroupHeading>Traveller</InputsGroupHeading>
         <Infos>
           <InfoLabel>No. of People</InfoLabel>
-          <Answer>{travellerInfo.people}</Answer>
+          <Answer>{ travellerInfo.numOfPeople }</Answer>
         </Infos>
         <Infos>
           <InfoLabel>Cost- £/p</InfoLabel>
-          <Answer>{travellerInfo.cost}</Answer>
+          <Answer>{ travellerInfo.cost }</Answer>
         </Infos>
       </InfoGroup>
       <InfoGroup>
         <InputsGroupHeading>Recommendations</InputsGroupHeading>
         <Infos>
           <InfoLabel>No. of Days</InfoLabel>
-          <Answer>{recommendations.days}</Answer>
+          <Answer>{ recommendations.numOfDays }</Answer>
         </Infos>
         <Infos>
           <InfoLabel>Budget- £/p</InfoLabel>
-          <Answer>{recommendations.budget}</Answer>
+          <Answer>{ recommendations.budget }</Answer>
         </Infos>
         <Infos>
           <InfoLabel>Heritages to See</InfoLabel>
           <List>
-            {recommendations.heritages.map((item, index) => {
-              return <li key={index}>{item}</li>
-            })}
+            { 
+             recommendations.heritages.map((item, index) => {
+               return <li key={index}>{item}</li>
+            })
+            }
           </List>
         </Infos>
         <Infos>
           <InfoLabel>Places to Visit</InfoLabel>
           <List>
-            { recommendations.places.map((item, index) => {
-              return <li key={index}>{item}</li>
-            })}
+            { 
+              recommendations.places.map((item, index) => {
+               return <li key={index}>{item}</li>
+            })
+            }
           </List>
         </Infos>
         <Infos>
           <InfoLabel>Things to Do</InfoLabel>
           <List>
-            { recommendations.todos.map((item, index) => {
+            { 
+             recommendations.todos.map((item, index) => {
               return <li key={index}>{item}</li>
-            })}
+            })
+            }
           </List>
         </Infos>
       </InfoGroup>
-      <InfoGroup>
-        <InputsGroupHeading>Others</InputsGroupHeading>
-        <Infos>
-          <InfoLabel>Transportations, Amneties, Safety, etc.</InfoLabel>
-          <Answer>{recommendations.others}</Answer>
-        </Infos>
-      </InfoGroup>
+      { 
+        recommendations.others && 
+        <InfoGroup>
+          <InputsGroupHeading>Others</InputsGroupHeading>
+          <Infos>
+            <InfoLabel>Transportations, Amneties, Safety, etc.</InfoLabel>
+            <Answer>{ recommendations.others }</Answer>
+          </Infos>
+        </InfoGroup>
+      }
+      
       <BtnGroup>
         <Button onClick={(e) => toggleForm(e, 'review')}>Edit</Button>
         <Button onClick={(e) => handleSubmit(e)}>Submit</Button>

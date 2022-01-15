@@ -15,6 +15,10 @@ import {
   EDIT_POST_SUCCESS,
   EDIT_POST_ERROR,
 
+  DELETE_POST_REQUEST,
+  DELETE_POST_SUCCESS,
+  DELETE_POST_ERROR,
+  
   LIKE_POST_REQUEST,
   LIKE_POST_SUCCESS,
   LIKE_POST_ERROR,
@@ -34,10 +38,6 @@ import {
   EDIT_COMMENT_REQUEST,
   EDIT_COMMENT_SUCCESS,
   EDIT_COMMENT_ERROR,
-
-  DELETE_POST_REQUEST,
-  DELETE_POST_SUCCESS,
-  DELETE_POST_ERROR,
   
   ADD_REPLY_REQUEST,
   ADD_REPLY_SUCCESS,
@@ -67,10 +67,10 @@ const getPostsRequest = () => {
   }
 } 
 
-const getPostsSuccess = ( posts ) => {
+const getPostsSuccess = ( data ) => {
   return {
     type: GET_POSTS_SUCCESS,
-    payload: posts
+    payload: data
   }
 } 
 
@@ -82,13 +82,15 @@ const getPostsError = ( error ) => {
 } 
 
 export const getPosts = () => {
-  return (dispatch) => {
+  return async(dispatch) => {
      dispatch(getPostsRequest());
-     axios.get('/api/v1/posts')
-     .then(response => dispatch(getPostsSuccess(response.data.posts)))
-     .catch(error => dispatch(getPostsError(error.message)))
+     try {
+       const { data } = await axios.get('/api/v1/posts')
+       dispatch(getPostsSuccess(data))
+      } catch(error) {
+       dispatch(getPostsError(error.response.data.error || error.message))
+      }
   }
- 
 }
 // ================================ Get Posts Action End ============================== //
 
@@ -119,7 +121,7 @@ export const getSinglePost = ( postId ) => {
      axios.get(`/api/v1/posts/${ postId }`)
      .then(response => {
        dispatch(getSinglePostSuccess(response.data))})
-     .catch(error => dispatch(getSinglePostError(error.response.data.error)))
+     .catch(error => dispatch(getSinglePostError(error.response.data.error || error.message)))
   }
 }
 // ================================ Get Single Post Action End ====================== //
@@ -189,7 +191,7 @@ export const addComment = ( postId, body ) => {
       const { data } = await axios.put(`/api/v1/posts/${postId}/comment_post`, body);
       dispatch(addCommentSuccess(data))
     } catch(error) {
-      dispatch(addCommentError(error.response.data.error))
+      dispatch(addCommentError(error.response.data.error || error.message))
     }
   }
 }
@@ -225,7 +227,7 @@ export const addComment = ( postId, body ) => {
       let { data } = await axios.put(`/api/v1/posts/${postId}/comments/${commentId}/like_comment`);
       dispatch(likeCommentSuccess(data))
     } catch(error) {
-      dispatch(likeCommentError(error.response.data.error || error))
+      dispatch(likeCommentError(error.response.data.error || error.message))
     }
   }
 }
@@ -257,7 +259,7 @@ export const addComment = ( postId, body ) => {
         let { data } = await axios.patch(`/api/v1/posts/${ postId }/comments/${ commentId }/edit_comment`, body);
         dispatch(editCommentSuccess(data))
       } catch(error) {
-        dispatch(editCommentError(error.response.data.error))
+        dispatch(editCommentError(error.response.data.error || error.message))
       }
     }
 }
@@ -290,7 +292,7 @@ export const addComment = ( postId, body ) => {
       let { data } = await axios.delete(`/api/v1/posts/${ postId }/comments/${ commentId }/delete_comment`);
       dispatch(deleteCommentPostSuccess(data))
     } catch(error) {
-      dispatch(deleteCommentPostError(error.response.data.message))
+      dispatch(deleteCommentPostError(error.response.data.error || error.message))
     }
   }
 }
@@ -327,7 +329,7 @@ export const addComment = ( postId, body ) => {
       let { data } = await axios.put(`/api/v1/posts/${ postId }/comments/${ commentId }/reply_comment`, body);
       dispatch(addReplySuccess(data))
     } catch(error) {
-      dispatch(addReplyError(error.response.data.error || error))
+      dispatch(addReplyError(error.response.data.error || error.message))
     }
   }
 }
@@ -361,7 +363,7 @@ export const addComment = ( postId, body ) => {
       let { data } = await axios.put(`/api/v1/posts/${ postId }/comments/${ commentId }/replies/${ replyId}/like_comment_reply`);
       dispatch(likeReplySuccess(data))
     } catch(error) {
-      dispatch(likeReplyError(error.response.data.error || error))
+      dispatch(likeReplyError(error.response.data.error || error.message))
     }
   }
 }
@@ -397,7 +399,7 @@ export const addComment = ( postId, body ) => {
       let { data } = await axios.delete(`/api/v1/posts/${ postId }/comments/${ commentId }/replies/${replyId}/delete_comment_reply`);
       dispatch(deleteReplySuccess(data))
     } catch(error) {
-      dispatch(deleteReplyError(error.response.data.error))
+      dispatch(deleteReplyError(error.response.data.error || error.message))
     }
   }
 }
@@ -433,7 +435,7 @@ export const addComment = ( postId, body ) => {
       let { data } = await axios.patch(`/api/v1/posts/${ postId }/comments/${ commentId }/replies/${replyId}/edit_comment_reply`, body);
       dispatch(editReplySuccess(data))
     } catch(error) {
-      dispatch(editReplyError(error.response.data.error || error))
+      dispatch(editReplyError(error.response.data.error || error.message))
     }
   }
 }
@@ -452,7 +454,7 @@ export const addComment = ( postId, body ) => {
   const addPostSuccess = ( data ) => {
     return {
       type: ADD_NEW_POST_SUCCESS,
-      success: data.success
+      payload: data
     }
   }
 
@@ -466,22 +468,17 @@ export const addComment = ( postId, body ) => {
 export const addPost = (body) => {
   return async (dispatch) => {
     dispatch(addPostRequest());
-  
     try {
       const { data } = await axios.post('/api/v1/posts', body);
       dispatch(addPostSuccess( data ))
     } catch (error) {
-      dispatch(addPostError(error.response.data.error))
+      dispatch(addPostError(error.response.data.error || error.message))
     }
   }
 }
 
 // ================================ Add New Post Action End ====================== //
 
-
-/* const config = { headers: {"Content-Type":"multipart/form-data"} } 
-   const { data } = await axios('api/v1/add_post', body, config);
-*/
 
 // ================================  Edit Post Action Start ====================== //
   const editPostRequest = () => {
@@ -493,7 +490,7 @@ export const addPost = (body) => {
   const editPostSuccess = ( data ) => {
     return {
       type: EDIT_POST_SUCCESS,
-      success: data.success
+      payload: data
     }
   }
 
@@ -508,10 +505,10 @@ export const editPost = (postId, body) => {
   return async (dispatch) => {
     dispatch(editPostRequest());
     try {
-      const { data } = await axios.put(`/api/v1/posts/${ postId }/edit_post`, body);
+      const { data } = await axios.put(`/api/v1/posts/${ postId }`, body);
       dispatch(editPostSuccess( data ))
     } catch (error) {
-      dispatch(editPostError(error.response.data.error))
+      dispatch(editPostError(error.response.data.error || error.message))
     }
   }
 }
@@ -528,7 +525,7 @@ export const editPost = (postId, body) => {
   const deletePostSuccess = ( data ) => {
     return {
       type: DELETE_POST_SUCCESS,
-      success: data.success
+      payload: data
     }
   }
 
@@ -539,14 +536,14 @@ export const editPost = (postId, body) => {
     }
   }
 
-export const deletePost = (postId) => {
+export const deletePost = (postId, body) => {
   return async (dispatch) => {
     dispatch(deletePostRequest());
     try {
-      const { data } = await axios.put(`/api/v1/posts/${ postId }/delete_post`);
+      const { data } = await axios.delete(`/api/v1/posts/${ postId }`, { data: body });
       dispatch(deletePostSuccess( data ))
     } catch (error) {
-      dispatch(deletePostError(error.response.data.error))
+      dispatch(deletePostError(error.response.data.error || error.message))
     }
   }
 }

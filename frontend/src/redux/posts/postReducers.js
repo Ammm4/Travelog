@@ -66,24 +66,49 @@ export const postReducer = (state = { posts: [] }, action) => {
        return {
          ...state,
          loading: true,    
+      }
+     case ADD_NEW_POST_REQUEST:
+     case EDIT_POST_REQUEST:
+     case DELETE_POST_REQUEST:
+       return {
+         ...state,
+         postLoading: true
        }
+     case ADD_NEW_POST_SUCCESS:
+     case EDIT_POST_SUCCESS:
+     case DELETE_POST_SUCCESS:
+       return {
+        ...state,
+        postLoading: false,
+        posts: action.payload.posts,
+        success: action.payload.message       
+      }
      case GET_POSTS_SUCCESS:
        return {
+         ...state,
          loading: false,
-         posts: action.payload,
-         error: ''
+         posts: action.payload.posts,
        }
      case GET_POSTS_ERROR:
+     case ADD_NEW_POST_ERROR:
+     case EDIT_POST_ERROR:
+     case DELETE_POST_ERROR:
        return {
+         ...state,
          loading: false,
-         posts: [],
-         error:action.payload    
+         postLoading: false,
+         error:action.payload,  
        }
+    case NEW_POST_RESET:
+      return {
+        ...state,
+        success: false,
+    }; 
      case CLEAR_POST_ERRORS:
        return {
          ...state,
          error: null
-       }
+      }
      default:
        return state;
      } 
@@ -125,6 +150,7 @@ export const singlePostReducer = (state = { singlepost: {} }, action) => {
      case EDIT_REPLY_SUCCESS:
      case DELETE_REPLY_SUCCESS:
        return {
+         ...state,
          loading: false,
          commentLoading: false,
          replyLoading: false,
@@ -158,46 +184,3 @@ export const singlePostReducer = (state = { singlepost: {} }, action) => {
      } 
 }
 
-export const addNewPostReducer = (state = { newpost: {} }, action) => {
-  switch (action.type) {
-    case ADD_NEW_POST_REQUEST:
-    case EDIT_POST_REQUEST:
-    case DELETE_POST_REQUEST:
-      return {
-        ...state,
-        loading: true,
-      };
-    case ADD_NEW_POST_SUCCESS:
-    case EDIT_POST_SUCCESS:
-      return {
-        loading: false,
-        success: action.payload.message,
-        newpost: action.payload.post,
-      };
-    case DELETE_POST_SUCCESS:
-      return {
-        loading: false,
-        success: action.payload.message,
-      };
-    case ADD_NEW_POST_ERROR:
-    case EDIT_POST_ERROR:
-    case DELETE_POST_ERROR:
-      return {
-        ...state,
-        loading: false,
-        error: action.payload,
-      };
-    case NEW_POST_RESET:
-      return {
-        ...state,
-        success: false,
-      }; 
-    case CLEAR_POST_ERRORS:
-      return {
-        ...state,
-        error: null,
-      };
-    default:
-      return state;
-  }
-};

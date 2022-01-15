@@ -31,14 +31,11 @@ import Loading1 from './Loading1';
 //Icons IoTrashBinSharp  MdDeleteForever AiOutlineEdit AiFillEdit
 import { BsFillInfoCircleFill } from "react-icons/bs";
 import { FaComments } from "react-icons/fa";
-import { MdClear } from "react-icons/md";
-import { BsThreeDots } from "react-icons/bs";
 import { AiOutlineHeart } from "react-icons/ai";
 import { AiFillHeart } from "react-icons/ai";
 import { AiFillEdit } from "react-icons/ai";
-import { IoTrashBinOutline } from "react-icons/io5";
 import { MdDelete } from "react-icons/md";
-import { GrEdit } from "react-icons/gr";
+
 
 const PostContainer = styled.article`
   display: flex;

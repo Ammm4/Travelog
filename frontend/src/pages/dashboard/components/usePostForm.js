@@ -1,13 +1,14 @@
-import {useState, useEffect, useRef} from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { getSinglePost } from '../../../redux/posts/postActions';
-import { addPost } from '../../../redux/posts/postActions';
+import { getSinglePost, addPost, editPost, deletePost } from '../../../redux/posts/postActions';
 
-export default function usePostForm( setModal, postId ) {
-  const {singlepost: post} = useSelector(state => state.SinglePost);
+export default function usePostForm(postId, action) {
+  const {loading: postLoading, singlepost: post, error: singlePostError} = useSelector(state => state.SinglePost);
+  const { postLoading: postEditing, success } = useSelector(state => state.Post);
+  const [msg, setMsg] = useState(null);
+  const [errors, setErrors ] = useState(null)
   const [showPostForm, setShowPostForm] = useState(true);
   const [showReview, setShowReview] = useState(false);
-  const [upLoading, setUpLoading] = useState(false);
   const [images, setImages] = useState([]);
   const [deletedImageIDs, setDeletedImageIDs] = useState([]);
   const [imgPreview, setImgPreview] = useState([]);
@@ -15,16 +16,16 @@ export default function usePostForm( setModal, postId ) {
   const [travellerInfo, setTravellerInfo] = useState({ numOfPeople: '1', cost:'' });
   const [recommendations, setRecommendations] = useState({ numOfDays: '1 day', budget: '', heritages:[''], places:[''], todos:[''], others:'' });
   const imageInputRef = useRef();
+  const reviewRef = useRef();
   const dispatch = useDispatch();
 
    useEffect (() => {
-    if(!postId || postId === 'create') return;
+    if(!postId) return;
     dispatch(getSinglePost(postId));
-   },[dispatch, postId])
+   },[dispatch, action, postId])
    
    useEffect(() => {
-   if(!Object.keys(post).length || postId === 'create') return;
-   setUpLoading(true);
+   if(!Object.keys(post).length || action === 'Create Post') return;
    setImages([...post.images.map(image => ({ public_id: image.img_id, imgFile: image.imgURL, imgTitle : image.imgName}))])
    setImgPreview([...post.images.map(image => ({ public_id: image.img_id, imgFile: image.imgURL, imgTitle : image.imgName}))]);
    setDestinationInfo({ 
@@ -35,14 +36,13 @@ export default function usePostForm( setModal, postId ) {
      numOfPeople: post.travellerInfo.numOfPeople, 
      cost: post.travellerInfo.cost})
    setRecommendations({
-     numOfDays:post.recommendations.days, 
+     numOfDays:post.recommendations.numOfDays, 
      budget: post.recommendations.budget, 
      heritages: post.recommendations.heritages, 
      places: post.recommendations.places, 
      todos: post.recommendations.todos, 
      others: post.recommendations.others});
-   setUpLoading(false);
-  },[post, postId]);
+  },[post, action]);
 
  
  
@@ -76,11 +76,11 @@ export default function usePostForm( setModal, postId ) {
       reader.readAsDataURL(file);
     })
    }
-  const saveEdit = (e) => {
+
+  const handleEditPost = (e) => {
     e.preventDefault();
-    setShowPostForm(false);
-    setShowReview(false);
-    //setUpLoading(true);
+    setMsg("Editing Post");
+    reviewRef.current.scrollIntoView();
     let newPostData = {
       travellerInfo,
       recommendations,
@@ -88,13 +88,16 @@ export default function usePostForm( setModal, postId ) {
       images,
       deletedImageIDs
     }
-    
-    //dispatch(editPost(postData));
+    dispatch(editPost(postId, newPostData));
+  }
+
+  const handleDeletePost = (e) =>{
+    e.preventDefault();
+    setMsg('Deleting Post');
+    const imagesToDelete = images.map(img => img.public_id);
+    dispatch(deletePost(postId, { payload: imagesToDelete }))
   }
    
-  
-
-
   const removeImg = (i) => {
     let newImages = images.filter(( img, index) => index !== i);
     let deletedImage = images.find((img,index) => index === i);
@@ -104,9 +107,9 @@ export default function usePostForm( setModal, postId ) {
     setImages(newImages);
     setImgPreview(newImages)
   }
-  //=================== Images =================//
+  //======================== Images ========================================//
 
-  //================= Array Inputs ================ //
+  //======================== Array Inputs ================================== //
   
   const addMoreInput = (e, inputName) => {
     e.preventDefault();
@@ -172,61 +175,133 @@ export default function usePostForm( setModal, postId ) {
 
   const toggleForm = (e, btnName) => { 
     e.preventDefault();
-    if(btnName === 'create') {
-      setShowPostForm(false);
-      setShowReview(true);
-      return
-    }
-    if(btnName === 'review') {
-      setShowPostForm(true);
-      setShowReview(false);
-      return
-    }
-    
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setShowPostForm(false);
-    setShowReview(false);
-    //setUpLoading(true);
+    reviewRef.current.scrollIntoView();
     let postData = {
       travellerInfo,
       recommendations,
       destinationInfo,
       images
     }
-    dispatch(addPost(postData));
+    
+    if(btnName === 'create') {
+      let err = checkFormErrors(postData);
+      if(Object.keys(err).length !== 0) {
+      return setErrors(err);
+      }
+      setShowPostForm(false);
+      setShowReview(true);
+      return
+    }
+
+    if(btnName === 'review') {
+      setShowPostForm(true);
+      setShowReview(false);
+      return
+    }   
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setMsg("Creating Post");
+    reviewRef.current.scrollIntoView();
+    let postData = {
+      travellerInfo,
+      recommendations,
+      destinationInfo,
+      images
+    }
+    let err = checkFormErrors(postData);
+    if(Object.keys(err).length !== 0) {
+      setErrors(err);
+    } else {
+      dispatch(addPost(postData));
+    }
   }
   
-  const handlePostSubmit = ( e, result ) => {
-    e.preventDefault();
-    if(result === 'success') {
-      return setModal(false)
-    }
-    if(result === 'error') {
-      setShowReview(true);
-      setUpLoading(false);
-    }
+
+  const handleTravellerInfo = (e) => {
+    setTravellerInfo({...travellerInfo, [e.target.name] : e.target.value})
+  }
+  
+  const handleDestinationInfo = (e) => {
+    setDestinationInfo({...destinationInfo, [e.target.name] : e.target.value})
+  }
+
+  const handleRecommendations = (e) => {
+    setRecommendations({...recommendations, [e.target.name] : e.target.value})
   }
   
   return (
     { 
+      postLoading,
+      singlePostError,
+      postEditing,
+      success,
+      msg,
       imageInputRef,
+      reviewRef,
       showPostForm,
       showReview, 
-      upLoading,
       images,
       imgPreview,
-      destinationInfo, setDestinationInfo,
-      travellerInfo, setTravellerInfo,
-      recommendations, setRecommendations,
+      errors,
+      destinationInfo, handleDestinationInfo,
+      travellerInfo, handleTravellerInfo,
+      recommendations, handleRecommendations,
       imageUploader, handleFileUpload,
       handleTitle, removeImg,
       addMoreInput, removeInput,
       handleChange, toggleForm,
-      handleSubmit, handlePostSubmit
+      handleSubmit, 
+      handleEditPost,
+      handleDeletePost
     }
   )
 }
 
+const checkFormErrors = (data) => {
+const error = {};
+ const { destinationInfo, travellerInfo, recommendations, images } = data;
+
+ if(destinationInfo.destination.trim() === "") {
+   error.destination = "Please enter the Destination"
+ } else if(destinationInfo.destination.trim().length > 20) {
+   error.destination = "Destination must be lesser than 20 characters"
+ }
+ 
+ if(destinationInfo.country.trim() === "") {
+   error.country = "Please enter the Destination"
+ } else if(destinationInfo.country.trim().length > 20) {
+   error.country = "Country must be lesser than 20 characters"
+ } 
+
+ if(destinationInfo.summary.trim() === "") {
+   error.summary = "Please Add a Summary"
+ } else if(destinationInfo.country.trim().length > 300) {
+   error.summary = "Summary must be lesser than 300 characters"
+ } 
+
+ if(images.length < 1) {
+   error.images="Please Add an Image"
+ }
+ if(!travellerInfo.cost) {
+   error.costs ="Please Add Costs"
+ }
+
+ if(!recommendations.budget) {
+   error.budget="Please Add Budget"
+ }
+ if(recommendations.places.some(place => place.trim() === "")) {
+   error.places="Please Add Place/s"
+ }
+
+ if(recommendations.heritages.some(heritage => heritage.trim() === "")) {
+   error.heritages="Please Add Heritage/s"
+ }
+
+ if(recommendations.todos.some(todo => todo.trim() === "")) {
+   error.todos="Please Add Heritage/s"
+ }
+
+ return error;
+}

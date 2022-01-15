@@ -48,7 +48,7 @@ export default function Singlepost({ setModal }) {
   },[dispatch, alert, error])
 
   if(loading || Object.keys(post).length < 1) {
-    return <Loading />
+    return <Loading msg="Post Loading"/>
   }
   return (
     <SinglePostContainer>
@@ -60,5 +60,5 @@ export default function Singlepost({ setModal }) {
   )
 }
 
-//<Post postId={ post_id } setModal={ setModal } singlePost={ true } />
+
 

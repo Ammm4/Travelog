@@ -46,7 +46,7 @@ export const login = (body) => {
     .then(response => {
       dispatch(loginSuccess(response.data))})
     .catch(error => {
-      dispatch(loginError(error.response.data.error))})
+      dispatch(loginError(error.response.data.error || error))})
   }
 }//status: error.status, error:error.response.data.error
 // ======================== LOGIN USER  ACTION END ======================= //
@@ -130,12 +130,12 @@ const getSingleUserError = (error) => {
 
 export const getSingleUser = (user_id) => {
   return async (dispatch) => {
-    dispatch(getSingleUserRequest);
+    dispatch(getSingleUserRequest());
     try {
       const { data } = await axios.get(`/api/v1/users/${user_id}`);
       dispatch(getSingleUserSuccess(data.user))
     } catch(error) {
-      dispatch(getSingleUserError(error.response.data.error))
+      dispatch(getSingleUserError(error.response.data.error || error.message))
     }
   }
 }

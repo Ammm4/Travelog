@@ -126,25 +126,25 @@ export default function SinglePostImages({ images }) {
     setCurrentIndex(currentIndex + 1);
   }
   
-  if(images && images.length === 1) {
-   return <Container>
-            <ImgContainer>
-              <img src={ images[0].imgURL } alt="pics" />
-            </ImgContainer>  
-           </Container>
-  }
-  //
   return (
     <Container>
-        {images && images.map((img, index) => {
-          return (<ImgContainer key={ index } index={index} currentIndex={currentIndex} url={img.imgURL}>
+        {
+          images && images.map((img, index) => {
+            return (<ImgContainer key={ index } index={index} currentIndex={currentIndex} url={img.imgURL}>
                   <span className="image_number">{`${index + 1}/${images.length}`}</span>
                   <span className="image_name">{img.imgName}</span>
-          </ImgContainer>)  
-        })}
-      <GrClose className="close-btn" onClick={() => history.goBack()}/>
-      {showPrevBtn && <GrPrevious className="prev-btn" onClick={() => handlePrevClick()}/>}
-      {showNextBtn && <GrNext className="next-btn" onClick={() => handleNextClick() }/>}
+              </ImgContainer>)  
+          })
+        }
+        <GrClose className="close-btn" onClick={ () => history.goBack() }/>
+      
+       {  
+         images.length > 1 && 
+          <>
+            {showPrevBtn && <GrPrevious className="prev-btn" onClick={() => handlePrevClick()}/>}
+            {showNextBtn && <GrNext className="next-btn" onClick={() => handleNextClick() }/>}
+          </>
+       } 
     </Container>
   )
 }

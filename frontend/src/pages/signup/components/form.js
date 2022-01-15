@@ -47,9 +47,9 @@ const InputContainer = styled.div`
   }
   
 `
-const ErrorDisplay = styled.p`
+export const ErrorDisplay = styled.p`
   color: red;
-  font-size: 1rem;
+  font-size: 0.9rem;
 `
 export default function SignupForm() {
   const [signUpDetails, setSignUpDetails] = useState({ username:"", email:"", password:"", confirmpassword:"" });

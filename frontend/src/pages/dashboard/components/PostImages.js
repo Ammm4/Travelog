@@ -112,13 +112,6 @@ export default function PostImages({ images, postId }) {
     setCurrentIndex(currentIndex + 1);
   }
   
-  if(images.length === 1) {
-    return <Container>
-             <ImgContainer>
-               <img src={ images[0] } alt="destination" />
-             </ImgContainer>  
-           </Container>
-  }
   return (
     <Container>
         { 
@@ -135,8 +128,13 @@ export default function PostImages({ images, postId }) {
               <span className="image_name">{image.imgName}</span>
             </ImgContainer>)  
         })}
-      {showPrevBtn && <GrPrevious className="prev-btn" onClick={() => handlePrevClick()}/>}
-      {showNextBtn && <GrNext className="next-btn" onClick={() => handleNextClick() }/>}
+       
+         { images.length > 1 &&
+           <>
+             {showPrevBtn && <GrPrevious className="prev-btn" onClick={() => handlePrevClick()}/>}
+             {showNextBtn && <GrNext className="next-btn" onClick={() => handleNextClick() }/>}
+           </>
+         }
     </Container>
   )
 }

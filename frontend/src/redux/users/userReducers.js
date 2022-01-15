@@ -13,9 +13,11 @@ import {
     SIGN_UP_USER_SUCCESS ,
     SIGN_UP_USER_RESET,
     SIGN_UP_USER_ERROR,
+
     GET_SINGLE_USER_REQUEST,
     GET_SINGLE_USER_SUCCESS,
     GET_SINGLE_USER_ERROR,
+
     CLEAR_USER_ERRORS,
     LOG_OUT_USER_RESET
   } from './userTypes';
@@ -95,14 +97,14 @@ export const singleUserReducer = (state = { singleUser: {} }, action) => {
       }
     case GET_SINGLE_USER_SUCCESS:
       return {
+        ...state,
         loading: false,
         singleUser: action.payload,
-        error: null
       }
     case GET_SINGLE_USER_ERROR:
       return {
+        ...state,
         loading: false,
-        user: {},
         error: action.payload
       }
     case CLEAR_USER_ERRORS:

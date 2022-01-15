@@ -1,17 +1,13 @@
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
-import { useSelector, useDispatch } from 'react-redux';
-import { useAlert } from 'react-alert';
-import { clearError } from '../../../redux/posts/postActions';
-import { NEW_POST_RESET } from '../../../redux/posts/postTypes'
+import { useSelector } from 'react-redux';
 import usePostForm from './usePostForm';
 import PostForm from './PostForm';
 import PostConfirm from './PostConfirm';
 import Loading from './Loading';
 
 import { MdClear } from "react-icons/md";
-
-
+import DeleteBox from './DeleteBox';
 const Container = styled.div`
  position: fixed;
  top:0; left:0;
@@ -29,78 +25,89 @@ const Container = styled.div`
  }
 `
 
-export default function PostModal({ setModal, postId }) {
-  const { loading, error, success } = useSelector(state => state.NewPost);
-  const alert = useAlert();
-  const dispatch = useDispatch();
-  
-  useEffect(() => {
-    if(error) {
-      alert.error(error)
-      dispatch(clearError())
-    }
-     if(success) {
-      alert.success('Post Successfully Created');
-      dispatch({ type: NEW_POST_RESET})
-    }
-  }, [error, success, alert, dispatch]); 
 
+export default function PostModal({ setModal, postModalInfo }) {
+  const { postId, action } = postModalInfo;
   const {
+      postLoading,
+      singlePostError,
+      postEditing,
+      success,
+      errors,
+      msg,
       imageInputRef,
+      reviewRef,
       showPostForm,
       showReview, 
-      upLoading,
-      msg,
       imgPreview,
-      destinationInfo, setDestinationInfo,
-      travellerInfo, setTravellerInfo,
-      recommendations, setRecommendations,
+      destinationInfo, handleDestinationInfo,
+      travellerInfo, handleTravellerInfo,
+      recommendations, handleRecommendations,
       imageUploader, handleFileUpload,
       handleTitle, removeImg,
       addMoreInput, removeInput,
       handleChange, toggleForm,
-      handleSubmit, handlePostSubmit
-  } = usePostForm(setModal, postId);
-  
-  if(loading) {
-    return <Loading />
-  }
+      handleSubmit,
+      handleEditPost,
+      handleDeletePost
+  } = usePostForm(postId, action);
+
+  useEffect(() => {
+    if(singlePostError) {
+      setModal(null);
+    }
+     if(success) {
+      setModal(null);
+    } 
+  }, [singlePostError, success, setModal]);   
+   
   
   return (
-    <Container>
-     <span onClick={ () => setModal(null) }><MdClear /></span>
+    <Container >
+     <span onClick={ () => setModal(null) } ref={reviewRef} ><MdClear /></span>
+       { postLoading && <Loading msg="Post Loading"/> }
+       { postEditing && <Loading msg={msg} />} 
+       {
+         action === 'delete' ? 
+           <DeleteBox handleDeletePost={handleDeletePost} setModal={setModal}>
+           </DeleteBox>
+           :
+           <>
+           { 
+            showPostForm && <PostForm
+              errors={errors}
+              imageInputRef={imageInputRef}
+              imageUploader={imageUploader}
+              imgPreview={imgPreview}
+              handleFileUpload={handleFileUpload}
+              removeImg={removeImg}
+              destinationInfo={destinationInfo}
+              handleDestinationInfo={handleDestinationInfo}
+              travellerInfo={travellerInfo}
+              handleTravellerInfo={handleTravellerInfo}
+              recommendations={recommendations}
+              handleRecommendations={handleRecommendations}
+              removeInput={removeInput}
+              handleChange={handleChange}
+              addMoreInput={addMoreInput} 
+              toggleForm={toggleForm}
+              handleTitle={handleTitle}
+              modalName={ action }
+            />
+           }
 
-     { showPostForm && <PostForm 
-         imageInputRef={imageInputRef}
-         imageUploader={imageUploader}
-         imgPreview={imgPreview}
-         handleFileUpload={handleFileUpload}
-         removeImg={removeImg}
-         destinationInfo={destinationInfo}
-         setDestinationInfo={setDestinationInfo}
-         travellerInfo={travellerInfo}
-         setTravellerInfo={setTravellerInfo}
-         recommendations={recommendations}
-         setRecommendations={setRecommendations}
-         removeInput={removeInput}
-         handleChange={handleChange}
-         addMoreInput={addMoreInput} 
-         toggleForm={toggleForm}
-         handleTitle={handleTitle}
-         modalName={postId === 'create' ? 'Create Post' : 'Edit Post'}
-      />}
-
-      { showReview && <PostConfirm 
-         imgPreview={imgPreview}
-         destinationInfo={destinationInfo}       
-         travellerInfo={travellerInfo}
-         recommendations={recommendations}
-         toggleForm={toggleForm}
-         handleSubmit={handleSubmit}
-      /> }
-
-      { upLoading && <Loading msg={msg} handlePostSubmit={ handlePostSubmit }/>}
-
+           { 
+            showReview && <PostConfirm
+            imgPreview={imgPreview}
+            destinationInfo={destinationInfo}       
+            travellerInfo={travellerInfo}
+            recommendations={recommendations}
+            toggleForm={toggleForm}
+            handleSubmit={ !postId ? handleSubmit : handleEditPost }
+            /> 
+           }
+          </>
+          }
     </Container>
   )
 }

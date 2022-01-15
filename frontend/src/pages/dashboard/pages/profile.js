@@ -160,16 +160,17 @@ export const PostHeading = styled.div`
 
 export default function Profile({ setIsModal }) {
   const { user } = useSelector(state => state.User);
+  const { posts } = useSelector(state => state.Post);
   const match = useRouteMatch();
   return (
     <ProfileContainer>
      <UserProfile>
        <UserImageContainer>   
         <UserCover>
-          <img src={user.cover.cover_url} alt="cover"/>
+          <img src={ user.cover.cover_url } alt="cover"/>
         </UserCover>
         <UserAvatar>
-          <img src={user.avatar.avatar_url} alt="cover"/>
+          <img src={ user.avatar.avatar_url } alt="cover"/>
         </UserAvatar>
         <UserTitle>{ user.username }</UserTitle>
        </UserImageContainer>
@@ -189,8 +190,8 @@ export default function Profile({ setIsModal }) {
          </div>   
        </UserInfo>
        <Btngroup>
-         <EditLink to={`${match.url}/edit`}><FaUserEdit /> Edit Profile</EditLink>
-         <button onClick={(e) => setIsModal(true)}><BsFillGrid3X3GapFill /> Add Post</button>
+         <EditLink to={`${ match.url }/edit`}><FaUserEdit /> Edit Profile</EditLink>
+         <button onClick={ (e) => setIsModal({ postId: null, action:'Create Post' }) }><BsFillGrid3X3GapFill /> Add Post</button>
        </Btngroup>
      </UserProfile>
      <PostHeading>
@@ -198,9 +199,17 @@ export default function Profile({ setIsModal }) {
      </PostHeading>
      { user.posts.length > 0 ? 
         <PostsWrapper>
-          { user.posts.map(post => <Post postId={ post.post_id } key={post.post_id} />) }
+          { 
+           posts.map(post => {
+            if( user.posts.find(item => item.post_id === post.post_id) ) {
+             return <Post key={ post.post_id } post={ post } setModal={ setIsModal } singlePost={false} />
+          }
+             return <></>
+          }) 
+          }
         </PostsWrapper>
-        : <Zeropost />
+        : 
+        <Zeropost />
      }
     </ProfileContainer>
   )
