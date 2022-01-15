@@ -1,6 +1,7 @@
 
 const { PostModel } = require("../../database/models/PostModel");
 const { UserModel } = require("../../database/models/userModel");
+const { v4: uuidv4 } = require('uuid');
 const asyncFunctionWrapper = require("../../utils/asyncFunctionWrapper");
 const ErrorHandler = require("../../utils/errorHandler");
 
@@ -32,56 +33,76 @@ async function find_User_Post_Comment_Reply(req, res, next, action) {
   const user_id = req.user.id;
   const { post_id, comment_id, reply_id } = req.params;
   const { text } = req.body;
-  const post = await PostModel.findById(post_id);
-  if(!post) return next(new ErrorHandler("Post Not Found", 400))
+  const post = await PostModel.findOne({ post_id: post_id });
   const user = await UserModel.findById(user_id);
-  if(!user) return next(new ErrorHandler("User doesn't Exist", 400))
+  let postAuthor = post.author.authorID === user_id ? user : await getPostAuthor(post.author.authorId);
+  let postAuthor_post = postAuthor.posts.find(post => post.post_id === post_id);
+  if(!post || !postAuthor_post) return next(new ErrorHandler("Post Not Found", 400))
+  
   if(action === 'ADD_COMMENT_TO_POST'){
     const newComment = {
-    user_id,
-    name: user.username,
-    text,
-    likes:[],
-    replies:[]
+      comment_id: uuidv4(),
+      user_id,
+      username: user.username,
+      userAvatar: user.avatar.avatar_url,
+      text,
+      likes:[],
+      replies:[]
     }
     post.comments = [...post.comments, newComment];
+    postAuthor_post.comments = [...postAuthor_post.comments, newComment]
   } else {
-    const comment = post.comments.find(comment => comment._id.toString() === comment_id);
-    if(!comment) return next(new ErrorHandler("Comment Not Found", 400));
+    const comment = post.comments.find(comment => comment.comment_id === comment_id);
+    const comment1 = postAuthor_post.comments.find(comment => comment.comment_id === comment_id);
+    if(!comment || !comment1) return next(new ErrorHandler("Comment Not Found", 400));
      if(action === 'ADD_REPLY_TO_COMMENT') {
        let new_Reply_To_Comment = {
-       user_id,
-       name: user.username,
-       text,
-       likes: []
+        reply_id: uuidv4(),
+        user_id,
+        username: user.username,
+        userAvatar: user.avatar.avatar_url,
+        text,
+        likes: []
       }
-      comment.replies = [...comment.replies, new_Reply_To_Comment]
+      comment.replies = [...comment.replies, new_Reply_To_Comment];
+      comment1.replies = [...comment1.replies, new_Reply_To_Comment];
      } else {
-       if(comment.user_id !== user_id) return next(new ErrorHandler("User not authorized to edit",401));
-       if(action === 'EDIT_COMMENT'){
+       if(action === 'EDIT_COMMENT') {
+         if(comment.user_id !== user_id) return next(new ErrorHandler("User not authorized to edit",401));
          comment.text = text;
+         comment1.text = text;
        } else if (action === "DELETE_COMMENT") {
-         let newComments = post.comments.filter(comment => comment._id.toString() !== comment_id);
+         if(comment.user_id !== user_id) return next(new ErrorHandler("User not authorized to edit",401));
+         let newComments = post.comments.filter(comment => comment.comment_id !== comment_id);
          post.comments = newComments;
+         postAuthor_post.comments = newComments;
        } else {
-         let reply = comment.replies.find(reply => reply._id.toString() === reply_id);
-         if(!reply) return next(new ErrorHandler("Reply not found", 400));
+         let reply = comment.replies.find(reply => reply.reply_id === reply_id);
+         let reply1 = comment1.replies.find(reply => reply.reply_id === reply_id)
+         if(!reply || !reply1) return next(new ErrorHandler("Reply not found", 400));
          if(reply.user_id !== user_id) return next(new ErrorHandler("User not authorized to edit",401))
          if(action === "EDIT_COMMENT_REPLY") {
            reply.text = text;
-        } else if (action === "DELETE_COMMENT_REPLY") {
-          const newReplies = comment.replies.filter(reply => reply._id.toString() !== reply_id);
-          comment.replies = newReplies;
-        }
+           reply1.text = text;
+          } else if (action === "DELETE_COMMENT_REPLY") {
+            const newReplies = comment.replies.filter(reply => reply.reply_id !== reply_id);
+            comment.replies = newReplies;
+            comment1.replies = newReplies;
+          }
       }
      } 
   }
  
  await post.save();
-  res.status(200).json({
+ await postAuthor.save();
+ res.status(200).json({
     success: true, 
-    message: "Action Successful!!"
+    message: "Action Successful!!",
+    post
   }) 
 }
 
+async function getPostAuthor(authorId) {
+  return await UserModel.findById(authorId)
+}
 

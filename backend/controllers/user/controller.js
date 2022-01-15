@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 const { validationResult } = require('express-validator');
 const asyncFunctionWrapper = require('../../utils/asyncFunctionWrapper.js');
 const ErrorHandler = require('../../utils/errorHandler.js');
-
+const cloudinary = require('cloudinary');
 
 //================== Token Generator ========================//
 
@@ -41,22 +41,25 @@ const signUpUser = asyncFunctionWrapper(async (req, res, next) => {
      email,
      password: hashedPassword,
      avatar: {
-       avatar_id: "avatar_id",
-       avatar_url: "https://img.freepik.com/free-vector/mysterious-mafia-man-smoking-cigarette_52683-34828.jpg?size=338&ext=jpg"
+       avatar_id: "ywky5uwzisq0vvf3ocsf",
+       avatar_url: "https://res.cloudinary.com/ddocnijls/image/upload/v1641645911/postImages/ywky5uwzisq0vvf3ocsf.jpg"
      },
      about:"A Travel freak",
-     cover:"https://cdn.britannica.com/s:690x388,c:crop/54/155954-050-6568A963/massif-Mount-Everest-Himalayas-Nepal.jpg",
+     cover:{
+       cover_id: "lfgfxvi8vyygiruicrws",
+       cover_url: "https://res.cloudinary.com/ddocnijls/image/upload/v1641645912/postImages/lfgfxvi8vyygiruicrws.jpg"
+      },
      posts:[],
      likes:[],
      comments:[]
    });
 
-  const result = await user.save();
+  await user.save();
   const AccessToken = createAccessToken(user._id);
   return res.status(201).cookie('Token', AccessToken, cookie_Options).send({
     success: true,
     message: 'User Successfully created!!',
-    result
+    user
   })
 }
 )
@@ -77,12 +80,12 @@ const loginUser = asyncFunctionWrapper(async (req, res, next) => {
     }
   //========== Create AccessToken ========= //
   const AccessToken = jwt.sign({ id: user._id }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: process.env.TOKEN_EXPIRES_IN });
-  return res.status(200).cookie('Token', AccessToken, cookie_Options ).send({ message: 'success', user })
+  return res.status(200).cookie('Token', AccessToken, cookie_Options ).send({ success: true, user })
 
 })
 
 
-//======================= Logout User ==========================//
+// ======================= Logout User Start ================================= //
 const logOutUser = (req, res, next) => {
   res.cookie("Token", null, {
     expires: new Date( Date.now() ),
@@ -94,6 +97,32 @@ const logOutUser = (req, res, next) => {
   })
 
 }
+// ======================= Logout User End =================================== //
+
+// ======================= Update User Start ================================= //
+
+const updateUser = asyncFunctionWrapper( async(req, res, next) => {
+  const user_id = req.user.id;
+  const user = await UserModel.findById(user_id);
+  const { coverImg, avatarImg } = req.body;
+  if( coverImg ) {
+     if(user.cover.cover_id === 'postImages/'){
+
+     }
+     await cloudinary.v2.uploader.destroy(imgId);
+  }
+  res.cookie("Token", null, {
+    expires: new Date( Date.now() ),
+    httpOnly: true
+  })
+  res.status(200).json({
+    success: true,
+    message: "Logout successfully!!"
+
+  })
+})
+// ======================= Update User End =================================== //
+
 
 const setUser = asyncFunctionWrapper(async(req, res, next) => {
   const user_id = req.user.id;
@@ -103,6 +132,7 @@ const setUser = asyncFunctionWrapper(async(req, res, next) => {
     user
   })
 })
+
 
 const getSingleUser = asyncFunctionWrapper(async (req, res, next) => {
   const user = await UserModel.findById(req.params.id); 
@@ -117,7 +147,7 @@ const getSingleUser = asyncFunctionWrapper(async (req, res, next) => {
 
 const resetPassword = async (req, res, next) => {
   const { email } = req.body;
-  const user = await UserModel.findOne({email: email});
+  const user = await UserModel.findOne({ email: email });
 
   if(!user) return next(new ErrorHandler('Please enter a correct Email!!', 400))
     

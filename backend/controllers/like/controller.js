@@ -48,7 +48,8 @@ async function find_User_Post_Comment_Reply(req, res, next, action){
   
   res.status(200).json({
     success: true, 
-    message: "Like Successfully!!"
+    message: "Like Successfully!!",
+    post
   })
 }
 

@@ -67,7 +67,7 @@ const Post = new mongoose.Schema({
    heritages: [ { type: String } ],
    places: [ { type: String } ],
    todos: [{ type: String, required: [true, "Please add things to do"] }],
-   others: {type: String, required: true},
+   others: {type: String },
   },
   images:[Image],
   likes: [Like],
