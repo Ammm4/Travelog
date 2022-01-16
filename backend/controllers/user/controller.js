@@ -80,7 +80,7 @@ const loginUser = asyncFunctionWrapper(async (req, res, next) => {
     }
   //========== Create AccessToken ========= //
   const AccessToken = jwt.sign({ id: user._id }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: process.env.TOKEN_EXPIRES_IN });
-  return res.status(200).cookie('Token', AccessToken, cookie_Options ).send({ success: true, user })
+  return res.status(200).cookie('Token', AccessToken, cookie_Options ).send({ success: true, message:'Logged In Successfully', user })
 
 })
 
@@ -93,7 +93,7 @@ const logOutUser = (req, res, next) => {
   })
   res.status(200).json({
     success: true,
-    message: "Logout successfully!!"
+    message: "Logged out successfully"
   })
 
 }
@@ -105,20 +105,42 @@ const updateUser = asyncFunctionWrapper( async(req, res, next) => {
   const user_id = req.user.id;
   const user = await UserModel.findById(user_id);
   const { coverImg, avatarImg } = req.body;
+  req.body.cover = { ...user.cover };
+  req.body.avatar = { ...user.avatar };
   if( coverImg ) {
-     if(user.cover.cover_id === 'postImages/'){
-
+     if(user.cover.cover_id !== 'postImages/lfgfxvi8vyygiruicrws') {
+        await cloudinary.v2.uploader.destroy(user.cover.cover_id);
+     }   
+     let uploadedCover = await fileUploadToCloudinary(coverImg, 'covers');
+     let newCover = {
+       cover_id: uploadedCover.public_id, 
+       cover_url: uploadedCover.secure_url 
      }
-     await cloudinary.v2.uploader.destroy(imgId);
+    req.body.cover = newCover;
   }
-  res.cookie("Token", null, {
-    expires: new Date( Date.now() ),
-    httpOnly: true
-  })
+
+  if( avatarImg ) {
+     if(user.avatar.avatar_id === 'postImages/ywky5uwzisq0vvf3ocsf'){
+       await cloudinary.v2.uploader.destroy(user.avatar.avatar_id);
+     }
+     let uploadedAvatar = await fileUploadToCloudinary(avatarImg, 'avatars')
+     let newAvatar = {
+       avatar_id: uploadedAvatar.public_id, 
+       avatar_url: uploadedAvatar.secure_url 
+      }
+     req.body.avatar = newAvatar;
+  }
+  delete req.body.coverImg;
+  delete req.body.avatarImg;
+  for( let key in req.body) {
+    user[key] = req.body[key];
+  }
+  
+  await user.save();
   res.status(200).json({
     success: true,
-    message: "Logout successfully!!"
-
+    message: "Profile Updated successfully!!",
+    user
   })
 })
 // ======================= Update User End =================================== //
@@ -181,16 +203,16 @@ const resetPassword = async (req, res, next) => {
     */
 }
 
+const fileUploadToCloudinary = async (file, folderName) => {
+  const uploadedImg = await cloudinary.v2.uploader.upload(file, {
+    folder: folderName
+  }
+  )
+  return uploadedImg;
+}
+
 
 /* 
-Get User Details
-const getUserDetails = async(req,res,next) => {
-  const user = await userModel.findById(req.user.id);
-  res.status(200).json({
-    success:true,
-    user
-  })
-}
 
 CHANGE PASSWORD
 const changePassword = async(req,res,next) => {
@@ -257,6 +279,7 @@ module.exports = {
   signUpUser,
   loginUser,
   logOutUser,
+  updateUser,
   setUser,
   getSingleUser
 }

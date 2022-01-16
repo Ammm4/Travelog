@@ -98,9 +98,15 @@ const updatePost = asyncFunctionWrapper(async (req, res, next) => {
 })
 
 const deletePost = asyncFunctionWrapper(async (req, res, next) => {
+  const user_id = req.user.id;
+  const user = await UserModel.findById(user_id);
   const post = await PostModel.findOne({ post_id: req.params.id});
-  if(!post) return next(new ErrorHandler("Post not found", 400))
+  if(!post) return next(new ErrorHandler("Post not found", 400));
+  let userNewPosts = user.posts.filter(post => post.post_id !== req.params.id);
+  user.posts = userNewPosts;
+  deleteAllImages(req.body.payload);
   await post.remove();
+  await user.save();
   const posts = await PostModel.find();
    res.status(201).json({
     success: true,
@@ -128,6 +134,12 @@ const fileUploadToCloudinary = async (file) => {
   }
   )
   return uploadedImg;
+}
+
+const deleteAllImages = async(images) => {
+  images.forEach( async(img) => {
+    await cloudinary.v2.uploader.destroy(img);
+  })
 }
 module.exports = {
   getAllPosts,

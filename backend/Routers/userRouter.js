@@ -8,7 +8,8 @@ const {
   signUpUser, 
   logOutUser, 
   setUser,  
-  getSingleUser
+  getSingleUser,
+  updateUser,
 } = require('../controllers/user/controller');
 
 
@@ -26,6 +27,7 @@ router.post('/logout', logOutUser);
 
 router.post('/setuser', is_User_Authenticated, setUser);
 
+router.put('/users/:id/profile_change', is_User_Authenticated, updateUser)
 router.post('/forgot_password', (req, res) => {
 
 })
@@ -63,8 +65,6 @@ router.put('/password/change', (req,res) => {
 
 })
 
-router.put('/profile/change', (req,res) => {
 
-})
 
 module.exports = router;
