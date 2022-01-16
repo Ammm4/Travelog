@@ -6,14 +6,22 @@ import {
     LOG_OUT_USER_REQUEST,
     LOG_OUT_USER_SUCCESS,
     LOG_OUT_USER_ERROR,
-    SET_USER,
+
+    UPDATE_USER_REQUEST,
+    UPDATE_USER_SUCCESS,
+    UPDATE_USER_ERROR,
+
     SIGN_UP_USER_REQUEST,
     SIGN_UP_USER_SUCCESS ,
     SIGN_UP_USER_ERROR,
+
     GET_SINGLE_USER_REQUEST,
     GET_SINGLE_USER_SUCCESS,
     GET_SINGLE_USER_ERROR,
-    CLEAR_USER_ERRORS
+    
+    SET_USER,
+    CLEAR_USER_ERRORS,
+    
   } from './userTypes';
 
 import axios from 'axios';
@@ -79,7 +87,7 @@ export const logout = () => {
       dispatch(logoutUserSuccess(response.data))
     })
     .catch(error => {
-      dispatch(logoutUserError(error.response.data.error))
+      dispatch(logoutUserError(error.response.data.error || error.message))
     })
   }
 }
@@ -177,6 +185,39 @@ export const getSingleUser = (user_id) => {
 
 // ======================== SIGNUP USER ACTION END ===========================//
 
+// ======================== UPDATE USER ACTION START ===========================//
+const updateUserRequest = () => {
+  return {
+    type: UPDATE_USER_REQUEST
+  }
+}
+const updateUserSuccess = (data) => {
+  return {
+    type: UPDATE_USER_SUCCESS,
+    payload: data
+  }
+}
+const updateUserError = (error) => {
+  return {
+    type: UPDATE_USER_ERROR,
+    payload: error
+  }
+}
+
+export const updateUser = (userID, body) => {
+  return async(dispatch) => {
+    dispatch(updateUserRequest())
+    try {
+     const { data } = await axios.put(`/api/v1/users/${ userID }/profile_change`, body)
+     dispatch(updateUserSuccess(data))
+    } catch(error) {
+     dispatch(updateUserError(error.response.data.error || error.message))
+    }
+  }
+}
+
+
+// ======================== UPDATE USER ACTION END ===========================//
 
 // ========================= CLEAR ERRORS ACTION START ====================== //
  const clearErrorAction = () => {

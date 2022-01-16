@@ -7,7 +7,7 @@ import styled from 'styled-components';
 import { useSelector, useDispatch } from 'react-redux';
 import { clearError } from '../../redux/users/userActions';
 import { useAlert } from 'react-alert';
-import { LOG_IN_SUCCESS_RESET, LOG_OUT_USER_RESET } from '../../redux/users/userTypes';
+import { LOG_IN_SUCCESS_RESET } from '../../redux/users/userTypes';
 
 const LoginWrapper = styled.section`
  display: flex;
@@ -24,13 +24,9 @@ export default function Login() {
   const alert = useAlert();
   
   useEffect(() => {
-   if(success && user) {
-      alert.success('Logged In Successfully');
+   if(success) {
+      alert.success(success);
       dispatch({ type : LOG_IN_SUCCESS_RESET })
-    }
-   if(success && !user) {
-      alert.success('Logged Out Successfully');
-      dispatch({ type : LOG_OUT_USER_RESET })
     }
     if(error) {
       alert.error(error)

@@ -4,10 +4,16 @@ import {
     LOG_IN_SUCCESS,
     LOG_IN_ERROR,
     LOG_IN_SUCCESS_RESET,
+
     LOG_OUT_USER_REQUEST,
     LOG_OUT_USER_SUCCESS,
     LOG_OUT_USER_ERROR,
     
+    UPDATE_USER_REQUEST,
+    UPDATE_USER_SUCCESS,
+    UPDATE_USER_ERROR,
+    UPDATE_USER_RESET,
+   
     SET_USER,
     SIGN_UP_USER_REQUEST,
     SIGN_UP_USER_SUCCESS ,
@@ -33,20 +39,27 @@ const userReducer = (state = { user: null }, action) => {
         ...state,
         loading: true
       }
+    case UPDATE_USER_REQUEST:
+      return {
+        ...state,
+        userUpdating: true
+      }
     case LOG_IN_SUCCESS:
     case SIGN_UP_USER_SUCCESS:
+    case UPDATE_USER_SUCCESS:
       return {
         ...state,
         loading: false,
+        userUpdating: false,
         user: action.payload.user,
-        success: action.payload.success
+        success: action.payload.message
       }
     case LOG_OUT_USER_SUCCESS:
       return {
         ...state,
         loading: false,
         user: null,
-        success: action.payload.success
+        success: action.payload.message
       }
     case LOG_IN_ERROR:
     case SIGN_UP_USER_ERROR:
@@ -57,9 +70,11 @@ const userReducer = (state = { user: null }, action) => {
         error: action.payload
       }
     case LOG_OUT_USER_ERROR:
+    case UPDATE_USER_ERROR:
       return {
         ...state,
         loading: false,
+        userUpdating: false,
         error: action.payload
       }
     case SET_USER:
@@ -73,6 +88,7 @@ const userReducer = (state = { user: null }, action) => {
     case LOG_IN_SUCCESS_RESET:
     case LOG_OUT_USER_RESET:
     case SIGN_UP_USER_RESET:
+    case UPDATE_USER_RESET:
       return {
         ...state,
         success: false

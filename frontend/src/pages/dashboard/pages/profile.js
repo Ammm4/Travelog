@@ -107,6 +107,7 @@ export const UserTitle = styled.h1`
   position: absolute;
   left:50%; bottom: 10%;
   transform: translateX(-50%);
+  letter-spacing: 1px;
 `
 export const UserInfo = styled.div`
   padding: 20px 14px;
@@ -197,11 +198,12 @@ export default function Profile({ setIsModal }) {
      <PostHeading>
        <BsFillGrid3X3GapFill />
      </PostHeading>
-     { user.posts.length > 0 ? 
+     { 
+      posts.filter(post => post.author.authorId === user._id).length > 0 ? 
         <PostsWrapper>
           { 
            posts.map(post => {
-            if( user.posts.find(item => item.post_id === post.post_id) ) {
+            if( post.author.authorId === user._id ) {
              return <Post key={ post.post_id } post={ post } setModal={ setIsModal } singlePost={false} />
           }
              return <></>

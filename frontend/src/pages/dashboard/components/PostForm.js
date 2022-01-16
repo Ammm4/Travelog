@@ -1,8 +1,9 @@
+import ReactStars from "react-rating-stars-component";
 import React from 'react';
 import styled, { css } from 'styled-components';
 
 import { ErrorDisplay } from '../../signup/components/form';
-//Icons
+//Icons 
 import { IoIosImages } from "react-icons/io";
 import { MdClear } from "react-icons/md";
 
@@ -238,6 +239,30 @@ export default function PostForm(props) {
               onChange = {(e) => handleDestinationInfo(e) }
             />
             { errors && errors.summary && <ErrorDisplay>{ errors.summary }</ErrorDisplay> }
+          </div>
+      
+          <div className="form-group-input">
+            <label htmlFor="ratings">Ratings</label>
+            <ReactStars 
+                count={5}
+                isHalf={true}
+                value={4.5}
+            />
+            <select id="ratings" 
+               name="ratings"
+               value={ destinationInfo.ratings }
+               onChange = {(e) => handleTravellerInfo(e) }
+               >
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+              <option value="6">6</option>
+              <option value="7">7</option>
+              <option value="8">8</option>
+              <option value="9">9</option>
+            </select>
           </div>
           <div className="form-group-input">
             <BtnImg htmlFor="images" onClick={ imageUploader }><IoIosImages /> 

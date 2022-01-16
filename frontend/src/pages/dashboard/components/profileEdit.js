@@ -1,40 +1,18 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { UserImageContainer, UserAvatar, UserCover, UserTitle, UserInfo, sharedDivCss } from '../pages/profile';
 import { useHistory } from 'react-router-dom';
 
+import { updateUser } from '../../../redux/users/userActions';
 //Icons FiCamera
 import { BiArrowBack } from "react-icons/bi";
 import { FaCamera } from "react-icons/fa";
 import { FcAbout } from "react-icons/fc";
 import EditForm from './EditForm';
+import Loading from './Loading';
 
-const UserInfoComponent = ({ infos }) => {
-  return  <UserInfo>
-       <h3>Info </h3>
-       <div>
-          <span><FcAbout /></span>
-          <p><b>Name:</b> { infos.username }</p>
-       </div> 
-       <div>
-          <span><FcAbout /></span>
-          <p><b>Email:</b> { infos.email }</p>
-         </div>   
-       <div>
-           <span><FcAbout /></span>
-           <p><b>About:</b> { infos.about }</p>
-        </div>
-        <div>
-          <span><FcAbout /></span>
-          <p><b>Hobbies:</b> { infos.hobbies }</p>
-         </div>
-         <div>
-          <span><FcAbout /></span>
-          <p><b>Location:</b> { infos.city }, { infos.country }</p>
-         </div>  
-     </UserInfo>
-}
+
 const Container = styled.div`
   width: 98%;
   border-radius: 8px;
@@ -51,7 +29,6 @@ const ProfileContainer = styled.div`
 `
 
 const UserProfile = styled.div`
- 
  padding: 0;
  margin: 0;
  width: 100%;
@@ -83,30 +60,41 @@ const EditHeading = styled.div`
 `
 const EditButton = styled.button`
   ${sharedDivCss}
+  display: block;
+  width: 99%;
+  max-width: 225px;
   outline: none;
   border: none;
-  display: block;
   padding: 6px 12px;
   background-color: dodgerblue;
+  &:disabled {
+    background-color: grey;
+  }
   font-size: 1.25rem;
   color: #fefefe;
 `
 
 const initialState = (user) => {
-  const { username, email, about, city, country, hobbies} = user;
+  const { username, email, about, city, country, hobbies } = user;
    return { username, email, about, city, country, hobbies }
 }
 export default function ProfileEdit() {
-  const { user } = useSelector(state => state.User)
+  const { userUpdating, user, success } = useSelector(state => state.User)
   const [avatarImg, setAvatarImg] = useState(null);
   const [coverImg, setCoverImg] = useState(null);
   const [infos, setInfos] = useState(initialState(user));
-  const [showEdit, setShowEdit] = useState(false);
+  const [saveButton, setSaveButton] = useState(false);
   
   const avatarRef = useRef();
   const coverRef = useRef();
-
+  const containerRef = useRef();
+  const dispatch = useDispatch();
   const history = useHistory();
+  useEffect(() => {
+    if(success) {
+      history.goBack()
+    }
+  },[success,history])
 
   const handleClick = (e, imgType) => {
     e.preventDefault();
@@ -122,30 +110,37 @@ export default function ProfileEdit() {
     e.preventDefault();
     var reader = new FileReader();
     if(imgType === 'avatar') {
+      if(!isFileImage(avatarRef.current.files[0])) return;
       reader.addEventListener("load", function () {
           setAvatarImg(reader.result);
         }, false);
-        reader.readAsDataURL(avatarRef.current.files[0]);
+       reader.readAsDataURL(avatarRef.current.files[0]);
       }
     if(imgType === 'cover') {
+      if(!isFileImage(coverRef.current.files[0])) return;
       reader.addEventListener("load", function () {
           setCoverImg(reader.result);
        }, false);
         reader.readAsDataURL(coverRef.current.files[0]);
     }
+    if(!saveButton) setSaveButton(true)
   }
-
-  const handleToggle = (e) => {
+  const handleReset = (e) => {
+    containerRef.current.scrollIntoView();
+    setAvatarImg(null);
+    setCoverImg(null);
+    setInfos(initialState(user));
+    setSaveButton(false)
+  }
+  const handleSubmit = (e) => {
     e.preventDefault();
-    if(showEdit) {
-      setInfos(initialState(user));
-      return setShowEdit(!showEdit);
-    }
-    setShowEdit(!showEdit)
+    containerRef.current.scrollIntoView();
+    dispatch(updateUser(user._id, {...infos, coverImg, avatarImg }))
   }
   
   return (
-    <Container>
+    <Container ref={containerRef}>
+      {userUpdating && <Loading msg="Profile Updating"/>}
      <EditHeading>
        <button onClick={(e) => history.goBack()}><BiArrowBack/> <span>Go Back</span></button>
        <h2>Edit Profile</h2>
@@ -180,21 +175,27 @@ export default function ProfileEdit() {
           <UserTitle>{ user.username }</UserTitle>
         </UserImageContainer>
        </UserProfile>
+       
+      <EditForm infos={infos} setInfos={setInfos} saveButton={saveButton} setSave={setSaveButton}/> 
+     
+      <EditButton 
+        disabled={!saveButton}
+        onClick={ (e) => handleSubmit(e) }
+      >
+        Save & Exit
+      </EditButton>
        <EditButton 
-         onClick={(e) => handleToggle(e)}> 
-         { showEdit ? 'Cancel Edit' : 'Edit Info..'}
-       </EditButton>
-      { 
-        showEdit ? 
-        <EditForm infos={infos} setInfos={setInfos} /> 
-        : 
-        <UserInfoComponent infos={infos} />
-      }
-      <EditButton onClick={(e) => setShowEdit(!showEdit)}>
-        {showEdit ? 'Save & Exit':'Save'}
+        disabled={!saveButton}
+        onClick={(e) => handleReset(e) }
+      >
+        Reset
       </EditButton>
      </ProfileContainer>
     </Container>
   )
+}
+
+function isFileImage(file) {
+    return file && file['type'].split('/')[0] === 'image';
 }
 

@@ -13,6 +13,9 @@ const sharedInputCss = css`
 `
 const Container = styled.div`
  padding: 30px 10px;
+ h3 {
+   letter-spacing: 2px;
+ }
 `
 const Form = styled.form`
 .form-group {
@@ -27,6 +30,7 @@ label {
   display: block;
   font-size: 0.9rem;
   margin-bottom: 0.6rem;
+  letter-spacing: 1px;
 }
 textarea {
   resize: none;
@@ -34,71 +38,77 @@ textarea {
   height: 150px;
   ${sharedInputCss}
 }
+input:focus, textarea:focus {
+  border: 1px solid blue;
+}
 `
 export default function EditForm(props) {
-  const { infos, setInfos } = props;
-
+  const { infos, setInfos, saveButton, setSave } = props;
+  const handleChange = (e) => {
+    if(!saveButton) setSave(true);
+    setInfos({...infos, [e.target.name] : e.target.value})
+  }
   return (
     <Container>
-      <h3>Edit Info</h3>
+      <h3>INFOs</h3>
       <Form>
         <div className="form-group">
-          <label htmlFor="username">Username</label>
+          <label htmlFor="username"><b>Username</b></label>
             <input 
               id="username" 
               name="username" 
               type="text"
               value={ infos.username }
-              onChange = {(e) => setInfos({...infos, [e.target.name] : e.target.value}) }
+              onChange = {(e) => handleChange(e) }
               placeholder="Enter Username Please"/>
 
         </div>
         <div className="form-group">
-          <label htmlFor="email">Email</label>
+          <label htmlFor="email"><b>Email</b></label>
             <input 
               id="email" 
               name="email" 
               type="email"
               value={ infos.email }
-              onChange = {(e) => setInfos({...infos, [e.target.name] : e.target.value}) }
+              onChange = {(e) => handleChange(e) }
               placeholder="Enter Email Please!"/>
         </div>
         <div className="form-group">
-          <label htmlFor="about">About</label>
+          <label htmlFor="about"><b>About</b></label>
             <textarea 
               id="about"
               name="about"
               value={ infos.about }
-              onChange = {(e) => setInfos({...infos, [e.target.name] : e.target.value}) }
+              onChange = {(e) => handleChange(e) }
             />
         </div>
         <div className="form-group">
-          <label htmlFor="hobbies">Hobbies</label>
+          <label htmlFor="hobbies"><b>Hobbies</b></label>
             <textarea 
               id="hobbies"
               name="hobbies"
               value={ infos.hobbies }
-              onChange = {(e) => setInfos({...infos, [e.target.name] : e.target.value}) }
+              onChange = {(e) => handleChange(e) }
             />
         </div>
          <div className="form-group">
-          <label htmlFor="city">City</label>
+          <label htmlFor="city"><b>City</b></label>
             <input 
               id="city" 
               name="city" 
               type="city"
               value={ infos.city }
-              onChange = {(e) => setInfos({...infos, [e.target.name] : e.target.value}) }
+              onChange = {(e) => handleChange(e) }
               placeholder="Enter City Please!"/>
         </div>
          <div className="form-group">
-          <label htmlFor="email">Country</label>
+          <label htmlFor="email"><b>Country</b></label>
             <input 
               id="country" 
               name="country" 
               type="country"
               value={ infos.country }
-              onChange = {(e) => setInfos({...infos, [e.target.name] : e.target.value}) }
+              onChange = {(e) => handleChange(e) }
               placeholder="Enter Country Please!"/>
         </div>
       </Form>

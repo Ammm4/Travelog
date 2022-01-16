@@ -4,7 +4,7 @@ import { Switch, Route, useRouteMatch, Redirect, useLocation } from 'react-route
 import { useSelector, useDispatch } from 'react-redux';
 import { useAlert } from 'react-alert';
 import { NEW_POST_RESET } from '../../redux/posts/postTypes';
-
+import { UPDATE_USER_RESET } from '../../redux/users/userTypes';
 
 // ============ Pages ============= //
 import Home from './pages/home';
@@ -18,7 +18,7 @@ import { clearError as clearUserError } from '../../redux/users/userActions';
 
 
 export default function Dashboard() {
-  const { user } = useSelector(state => state.User);
+  const { user, success: userSuccess, error: userError } = useSelector(state => state.User);
   const { success, error } = useSelector(state => state.Post);
   const { error: singlePostError } = useSelector(state => state.SinglePost);
   const { error: singleUserError } = useSelector(state => state.SingleUser);
@@ -50,11 +50,19 @@ export default function Dashboard() {
       alert.error(singlePostError);
       dispatch(clearError())
     }
+    if(userError) {
+      alert.error(userError);
+      dispatch(clearUserError())
+    }
     if(success) {
       alert.success(success);
       dispatch({ type: NEW_POST_RESET })
     }
-  }, [alert, dispatch, success, error, singleUserError, singlePostError])
+    if(userSuccess) {
+      alert.success(userSuccess);
+      dispatch({ type: UPDATE_USER_RESET })
+    }
+  }, [alert, dispatch, success, userSuccess, error, userError, singleUserError, singlePostError])
   
   if(!user) {
     return <Redirect to ="/login" />

@@ -71,7 +71,7 @@ export default function LoginForm() {
   }
 
   if(loading) {
-    return <Loading />
+    return <Loading msg="Loading"/>
   }
 
   return (
