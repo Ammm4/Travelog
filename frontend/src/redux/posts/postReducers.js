@@ -56,7 +56,8 @@ import {
   DELETE_REPLY_ERROR,
 
   NEW_POST_RESET,
-  CLEAR_POST_ERRORS
+  CLEAR_POST_ERRORS,
+  SINGLE_POST_RESET
 } from "./postTypes";
 
 
@@ -179,6 +180,10 @@ export const singlePostReducer = (state = { singlepost: {} }, action) => {
          ...state,
          error: null
        }
+     case SINGLE_POST_RESET: 
+     return {
+       singlepost: {}
+     }
      default:
        return state;
      } 

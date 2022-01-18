@@ -1,7 +1,7 @@
-import ReactStars from "react-rating-stars-component";
 import React, { useState, useRef, useContext } from  'react';
 import { Link, useRouteMatch } from 'react-router-dom';
 import { useSelector } from "react-redux";
+import { Rating } from 'react-simple-star-rating';
 import styled from 'styled-components';
 
 // Styled Components Import
@@ -111,11 +111,13 @@ function SinglePost({ post, setModal, singlePost}) {
             <div>
               <AuthorName>{ post.author.authorName }</AuthorName>
               <h5>{ post.destinationInfo.destination }, { post.destinationInfo.country }</h5>
-              <ReactStars 
-                count={5}
-                isHalf={true}
-                value={4.5}
-              />
+              <Rating
+                  ratingValue={ post.destinationInfo.ratings }
+                  iconsCount={5}
+                  allowHalfIcon={true}
+                  size={15}
+                  readonly={true}
+                />
             </div>
             { 
               post.author.authorId === user._id && 

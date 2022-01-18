@@ -1,11 +1,13 @@
 import React, { useState, useEffect} from 'react';
 import styled, {css} from 'styled-components';
 import { useHistory } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 
 //Icons
 import { GrPrevious } from "react-icons/gr";
 import { GrNext } from "react-icons/gr";
 import { GrClose } from "react-icons/gr";
+import { SINGLE_POST_RESET } from '../../../redux/posts/postTypes';
 
 const sharedBtnCss = css`
   position: absolute;
@@ -105,6 +107,7 @@ export default function SinglePostImages({ images }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showPrevBtn, setShowPrevBtn] = useState(false);
   const [showNextBtn, setShowNextBtn] = useState(true);
+  const dispatch = useDispatch()
   const history = useHistory();
 
   useEffect(() => {
@@ -125,7 +128,10 @@ export default function SinglePostImages({ images }) {
   const handleNextClick = () => {
     setCurrentIndex(currentIndex + 1);
   }
-  
+  const handleClose = () => {
+    dispatch({ type: SINGLE_POST_RESET});
+    history.goBack()
+  }
   return (
     <Container>
         {
@@ -136,7 +142,7 @@ export default function SinglePostImages({ images }) {
               </ImgContainer>)  
           })
         }
-        <GrClose className="close-btn" onClick={ () => history.goBack() }/>
+        <GrClose className="close-btn" onClick={ handleClose }/>
       
        {  
          images.length > 1 && 

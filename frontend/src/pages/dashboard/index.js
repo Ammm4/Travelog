@@ -15,6 +15,7 @@ import PostModal from './components/PostModal';
 import Userprofile from './pages/userprofile';
 import { clearError } from '../../redux/posts/postActions';
 import { clearError as clearUserError } from '../../redux/users/userActions';
+import ChangePassword from './components/ChangePassword';
 
 
 export default function Dashboard() {
@@ -36,6 +37,13 @@ export default function Dashboard() {
       setActive('avatar')
     }
   }, [location]);
+
+  useEffect(() => {
+    if(isModal) {
+      return document.body.style.overflow = 'hidden';
+    }
+    document.body.style.overflow = 'unset';
+  }, [isModal]);
 
   useEffect(() => {
     if(error) {
@@ -80,6 +88,9 @@ export default function Dashboard() {
         </Route>
         <Route exact path={`${match.path}/profile/edit`}>
           <ProfileEdit /> 
+        </Route>
+        <Route exact path={`${match.path}/profile/change_password`}>
+          <ChangePassword /> 
         </Route>
         <Route 
            exact 

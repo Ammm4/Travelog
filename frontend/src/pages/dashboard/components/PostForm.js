@@ -1,11 +1,15 @@
 import ReactStars from "react-rating-stars-component";
 import React from 'react';
 import styled, { css } from 'styled-components';
-
+import { useSelector } from "react-redux";
 import { ErrorDisplay } from '../../signup/components/form';
+import { Rating } from 'react-simple-star-rating';
+
 //Icons 
 import { IoIosImages } from "react-icons/io";
 import { MdClear } from "react-icons/md";
+import Loading from "./Loading";
+
 
 const commonBtnStyle = css`
   border: none;
@@ -20,17 +24,17 @@ const Container = styled.form`
   width: 98%;
   max-width: 800px;
   background-color: #fff;
-
   .form-group {
     margin: 1.5rem auto 2rem auto;
     padding: 10px;
     width: 100%;
     max-width: 435px;
-    label {
-      font-size: 0.9rem;
-      margin-bottom: 0.6rem;
-    }
   }
+  label {
+      display: block;
+      font-size: 0.9rem;
+      margin-bottom: 0.5rem;
+    }
   .done-btn {
     margin: -2rem auto 2rem auto;
     padding: 10px;
@@ -39,10 +43,6 @@ const Container = styled.form`
   }
   .form-group-input {
     margin-bottom: 0.75rem;
-    label {
-      display: block;
-    }
-    
     input {
       width: 100%;
       outline: none;
@@ -66,8 +66,13 @@ const Container = styled.form`
       border-radius: 25px;
       cursor:pointer;
     }
-    
   }
+  .form-group-input-ratings {
+     margin-bottom: 1.25rem;
+     label {
+       margin-bottom: 0;
+     }
+   }
 `
 export const PostTitle = styled.h1`
   width: 100%;
@@ -98,7 +103,7 @@ const ImagePreview = styled.div`
   margin-top: 1rem;
   display: grid;
   grid-template-columns:1fr 1fr;
- grid-column-gap: 2px;
+  grid-column-gap: 2px;
 `
 const ImagePreviewImg = styled.div`
   position: relative; 
@@ -170,11 +175,12 @@ background-color: #000;
 color: #fff;
 `
 
-
 export default function PostForm(props) {
+  const { loading } = useSelector(state => state.SinglePost);
   const {
          errors,
          destinationInfo,
+         setDestinationInfo,
          handleDestinationInfo,
          travellerInfo,
          handleTravellerInfo,
@@ -196,8 +202,10 @@ export default function PostForm(props) {
     e.target.style.height = '48px';
     e.target.style.height = `${e.target.scrollHeight}px`;
   }
-
   
+  if(loading) {
+    return <Loading msg="Post Loading" />
+  }
   return (
     <Container>
         <PostTitle>
@@ -240,29 +248,18 @@ export default function PostForm(props) {
             />
             { errors && errors.summary && <ErrorDisplay>{ errors.summary }</ErrorDisplay> }
           </div>
-      
-          <div className="form-group-input">
-            <label htmlFor="ratings">Ratings</label>
-            <ReactStars 
-                count={5}
-                isHalf={true}
-                value={4.5}
+           <div>
+            
+           </div>
+          <div className="form-group-input-ratings">
+            <label htmlFor="ratings">Ratings </label>
+            <Rating
+             ratingValue={ destinationInfo.ratings }
+             iconsCount={5}
+             allowHalfIcon={true}
+             onClick={ newValue => setDestinationInfo({ ...destinationInfo, ratings: newValue }) }
             />
-            <select id="ratings" 
-               name="ratings"
-               value={ destinationInfo.ratings }
-               onChange = {(e) => handleTravellerInfo(e) }
-               >
-              <option value="1">1</option>
-              <option value="2">2</option>
-              <option value="3">3</option>
-              <option value="4">4</option>
-              <option value="5">5</option>
-              <option value="6">6</option>
-              <option value="7">7</option>
-              <option value="8">8</option>
-              <option value="9">9</option>
-            </select>
+                
           </div>
           <div className="form-group-input">
             <BtnImg htmlFor="images" onClick={ imageUploader }><IoIosImages /> 
@@ -444,8 +441,7 @@ export default function PostForm(props) {
               onChange = {(e) => handleRecommendations(e) }
               />
           </div>
-        </div>
-
+        </div> 
       <div className="done-btn">
         <BtnAdd onClick={(e) => toggleForm(e, 'create')}>Done</BtnAdd>
       </div>

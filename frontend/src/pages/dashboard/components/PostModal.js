@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
-import { useSelector } from 'react-redux';
 import usePostForm from './usePostForm';
 import PostForm from './PostForm';
 import PostConfirm from './PostConfirm';
@@ -8,6 +7,8 @@ import Loading from './Loading';
 
 import { MdClear } from "react-icons/md";
 import DeleteBox from './DeleteBox';
+import { useDispatch } from 'react-redux';
+import { SINGLE_POST_RESET } from '../../../redux/posts/postTypes';
 const Container = styled.div`
  position: fixed;
  top:0; left:0;
@@ -16,20 +17,19 @@ const Container = styled.div`
  height: 100%;
  overflow: auto;
  background-color: rgba(0,0,0, 0.85);
- span {
-   position: absolute;
-   right:1rem;
-   top: 1rem;
-   font-size: 2.5rem;
-   color: #fff;
- }
+ 
 `
-
+const CloseModalBtn = styled.span`
+  position: absolute;
+  right:1rem;
+  top: 1rem;
+  font-size: 2.5rem;
+  color: #fff;
+`
 
 export default function PostModal({ setModal, postModalInfo }) {
   const { postId, action } = postModalInfo;
   const {
-      postLoading,
       singlePostError,
       postEditing,
       success,
@@ -41,6 +41,7 @@ export default function PostModal({ setModal, postModalInfo }) {
       showReview, 
       imgPreview,
       destinationInfo, handleDestinationInfo,
+      setDestinationInfo,
       travellerInfo, handleTravellerInfo,
       recommendations, handleRecommendations,
       imageUploader, handleFileUpload,
@@ -51,7 +52,7 @@ export default function PostModal({ setModal, postModalInfo }) {
       handleEditPost,
       handleDeletePost
   } = usePostForm(postId, action);
-
+  const dispatch = useDispatch();
   useEffect(() => {
     if(singlePostError) {
       setModal(null);
@@ -59,13 +60,20 @@ export default function PostModal({ setModal, postModalInfo }) {
      if(success) {
       setModal(null);
     } 
-  }, [singlePostError, success, setModal]);   
-   
-  
+  }, [singlePostError, success, setModal]); 
+
+  const handleClose = () => {
+    dispatch({ type: SINGLE_POST_RESET })
+    setModal(null)
+  }
+  const handleModalClose = (e) => {
+    if(e.target.classList.contains('modal')) {
+      return handleClose();
+    }
+  }
   return (
-    <Container >
-     <span onClick={ () => setModal(null) } ref={reviewRef} ><MdClear /></span>
-       { postLoading && <Loading msg="Post Loading"/> }
+    <Container className='modal' onClick={ (e) => handleModalClose(e) }>
+     <CloseModalBtn onClick={ handleClose } ref={reviewRef} ><MdClear /></CloseModalBtn>
        { postEditing && <Loading msg={msg} />} 
        {
          action === 'delete' ? 
@@ -83,6 +91,7 @@ export default function PostModal({ setModal, postModalInfo }) {
               removeImg={removeImg}
               destinationInfo={destinationInfo}
               handleDestinationInfo={handleDestinationInfo}
+              setDestinationInfo={setDestinationInfo}
               travellerInfo={travellerInfo}
               handleTravellerInfo={handleTravellerInfo}
               recommendations={recommendations}

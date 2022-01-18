@@ -19,6 +19,8 @@ const HomeContainer = styled.section`
 `
 export default function Home({ setModal }) {
   const { loading, posts } = useSelector(state => state.Post);
+  let Posts = [ ...posts];
+  let newPosts = Posts.reverse();
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -32,8 +34,8 @@ export default function Home({ setModal }) {
     <HomeContainer>
       <Share setModal={setModal}/>
       <PostsWrapper>
-        { posts &&
-          posts.map(post => <Post key={post.post_id} post={post} setModal={setModal} singlePost={false}/>)
+        { newPosts &&
+          newPosts.map(post => <Post key={post.post_id} post={post} setModal={setModal} singlePost={false}/>)
         }    
       </PostsWrapper>
     </HomeContainer>

@@ -12,29 +12,32 @@ export default function usePostForm(postId, action) {
   const [images, setImages] = useState([]);
   const [deletedImageIDs, setDeletedImageIDs] = useState([]);
   const [imgPreview, setImgPreview] = useState([]);
-  const [destinationInfo, setDestinationInfo] = useState({ destination: '', country: '', summary: ''  });
+  const [destinationInfo, setDestinationInfo] = useState({ destination: '', country: '', summary: '', ratings: 2.5 });
   const [travellerInfo, setTravellerInfo] = useState({ numOfPeople: '1', cost:'' });
   const [recommendations, setRecommendations] = useState({ numOfDays: '1 day', budget: '', heritages:[''], places:[''], todos:[''], others:'' });
   const imageInputRef = useRef();
   const reviewRef = useRef();
   const dispatch = useDispatch();
 
-   useEffect (() => {
+  useEffect (() => {
     if(!postId) return;
     dispatch(getSinglePost(postId));
-   },[dispatch, action, postId])
+   },[dispatch, postId])
    
-   useEffect(() => {
+  useEffect(() => {
    if(!Object.keys(post).length || action === 'Create Post') return;
    setImages([...post.images.map(image => ({ public_id: image.img_id, imgFile: image.imgURL, imgTitle : image.imgName}))])
    setImgPreview([...post.images.map(image => ({ public_id: image.img_id, imgFile: image.imgURL, imgTitle : image.imgName}))]);
-   setDestinationInfo({ 
+   setDestinationInfo({
      destination: post.destinationInfo.destination, 
      country: post.destinationInfo.country, 
-     summary: post.destinationInfo.summary})
-   setTravellerInfo({ 
+     summary: post.destinationInfo.summary,
+     ratings: post.destinationInfo.ratings
+    })
+   setTravellerInfo({
      numOfPeople: post.travellerInfo.numOfPeople, 
-     cost: post.travellerInfo.cost})
+     cost: post.travellerInfo.cost
+    })
    setRecommendations({
      numOfDays:post.recommendations.numOfDays, 
      budget: post.recommendations.budget, 
@@ -44,7 +47,7 @@ export default function usePostForm(postId, action) {
      others: post.recommendations.others});
   },[post, action]);
 
- 
+   
  
 
  //=================== Images ===============//
@@ -246,6 +249,7 @@ export default function usePostForm(postId, action) {
       imgPreview,
       errors,
       destinationInfo, handleDestinationInfo,
+      setDestinationInfo,
       travellerInfo, handleTravellerInfo,
       recommendations, handleRecommendations,
       imageUploader, handleFileUpload,

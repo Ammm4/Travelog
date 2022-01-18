@@ -1,5 +1,7 @@
+import ReactStars from 'react-rating-stars-component';
 import React from 'react';
 import styled from 'styled-components';
+import { Rating } from 'react-simple-star-rating';
 
 const PostWrapper = styled.article`
   margin: auto;
@@ -31,6 +33,9 @@ const Infos = styled.div`
 const InfoLabel = styled.h5`
   display: block;
   margin-bottom: 0.5rem;
+`
+const InfoRatingsLabel = styled.h5`
+  display: block;
 `
 const InputsGroupHeading = styled.h4`
   font-family: 'Montserrat Alternates', sans-serif;
@@ -106,7 +111,7 @@ export default function PostConfirm(props) {
     toggleForm,
     handleSubmit
   } = props;
-  
+  console.log(destinationInfo.ratings)
   return (
     <PostWrapper>
       <PostTitle>Review & Submit</PostTitle>
@@ -123,6 +128,16 @@ export default function PostConfirm(props) {
         <Infos>
           <InfoLabel>Summary</InfoLabel>
           <Answer>{ destinationInfo.summary }</Answer>
+        </Infos>
+        <Infos>
+          <InfoRatingsLabel>Ratings</InfoRatingsLabel>      
+            <Rating
+              ratingValue={ destinationInfo.ratings }
+              iconsCount={5}
+              allowHalfIcon={true}
+              size={15}
+              readonly={true}
+            />
         </Infos>
         <InfoLabel>Images({ imgPreview.length })</InfoLabel>
         <ImagePreview>

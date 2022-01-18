@@ -192,6 +192,7 @@ export default function Profile({ setIsModal }) {
        </UserInfo>
        <Btngroup>
          <EditLink to={`${ match.url }/edit`}><FaUserEdit /> Edit Profile</EditLink>
+         <EditLink to={`${ match.url }/edit`}><FaUserEdit /> Change Password</EditLink>
          <button onClick={ (e) => setIsModal({ postId: null, action:'Create Post' }) }><BsFillGrid3X3GapFill /> Add Post</button>
        </Btngroup>
      </UserProfile>
@@ -206,7 +207,7 @@ export default function Profile({ setIsModal }) {
             if( post.author.authorId === user._id ) {
              return <Post key={ post.post_id } post={ post } setModal={ setIsModal } singlePost={false} />
           }
-             return <></>
+             return ''
           }) 
           }
         </PostsWrapper>

@@ -1,14 +1,12 @@
-import ReactStars from "react-rating-stars-component";
 import React, { useState, } from 'react';
 import { Link, useRouteMatch, useLocation } from 'react-router-dom';
 import styled,{ css } from 'styled-components';
-import { useDispatch, useSelector } from 'react-redux';
-import { deletePost } from "../../../redux/posts/postActions";
+import { Rating } from 'react-simple-star-rating';
+import { useSelector } from 'react-redux';
 
 // Components
 import PostImages from './PostImages';
 import PostDetails, { usePostDetails } from './PostDetails';
-
 
 //Icons 
 import { BsFillInfoCircleFill } from "react-icons/bs";
@@ -212,13 +210,9 @@ export default function Post({ post, setModal, singlePost }) {
   const { user } = useSelector(state => state.User);
   const location = useLocation();
   const [showInfo, setShowInfo] = useState(false);
-  const dispatch = useDispatch()
   let { url } = useRouteMatch();
   
-  const handleDelete = (e, postId) => {
-    e.preventDefault();
-    dispatch(deletePost(postId))
-  }
+  
   
   return (
         <PostWrapper singlePost={singlePost}>
@@ -229,11 +223,16 @@ export default function Post({ post, setModal, singlePost }) {
             <div>
               <AuthorName>{ post.author.authorName }</AuthorName>
               <h5>{ post.destinationInfo.destination }, { post.destinationInfo.country }</h5>
-              <ReactStars 
-                count={5}
-                isHalf={true}
-                value={4.5}
-              />
+              { post.destinationInfo.ratings 
+                &&
+                <Rating
+                  ratingValue={ post.destinationInfo.ratings }
+                  iconsCount={5}
+                  allowHalfIcon={true}
+                  size={15}
+                  readonly={true}
+                />
+              }
             </div>
             { 
               post.author.authorId === user._id && 
