@@ -11,6 +11,14 @@ import {
     UPDATE_USER_SUCCESS,
     UPDATE_USER_ERROR,
 
+    DELETE_USER_REQUEST,
+    DELETE_USER_SUCCESS,
+    DELETE_USER_ERROR,
+    
+    CHANGE_PASSWORD_REQUEST,
+    CHANGE_PASSWORD_SUCCESS,
+    CHANGE_PASSWORD_ERROR,
+
     SIGN_UP_USER_REQUEST,
     SIGN_UP_USER_SUCCESS ,
     SIGN_UP_USER_ERROR,
@@ -218,6 +226,74 @@ export const updateUser = (userID, body) => {
 
 
 // ======================== UPDATE USER ACTION END ===========================//
+
+// ======================== DELETE USER ACTION START ===========================//
+const changePasswordRequest = () => {
+  return {
+    type: CHANGE_PASSWORD_REQUEST
+  }
+}
+const changePasswordSuccess = (data) => {
+  return {
+    type: CHANGE_PASSWORD_SUCCESS,
+    payload: data
+  }
+}
+const changePasswordError = (error) => {
+  return {
+    type: CHANGE_PASSWORD_ERROR,
+    payload: error
+  }
+}
+
+export const changePassword = (userID, body) => {
+  return async(dispatch) => {
+    dispatch(changePasswordRequest())
+    try {
+     const { data } = await axios.put(`/api/v1/users/${ userID }/change_password`, body)
+     dispatch(changePasswordSuccess(data))
+    } catch(error) {
+     dispatch(changePasswordError(error.response.data.error || error.message))
+    }
+  }
+}
+
+
+// ======================== DELETE USER ACTION END ===========================//
+
+// ======================== DELETE USER ACTION START ===========================//
+const deleteUserRequest = () => {
+  return {
+    type: DELETE_USER_REQUEST
+  }
+}
+const deleteUserSuccess = (data) => {
+  return {
+    type: DELETE_USER_SUCCESS,
+    payload: data
+  }
+}
+const deleteUserError = (error) => {
+  return {
+    type: DELETE_USER_ERROR,
+    payload: error
+  }
+}
+
+export const deleteUser = (userID, body) => {
+  return async(dispatch) => {
+    dispatch(deleteUserRequest())
+    try {
+     const { data } = await axios.put(`/api/v1/users/${ userID }/delete_profile`, body)
+     dispatch(deleteUserSuccess(data))
+    } catch(error) {
+     dispatch(deleteUserError(error.response.data.error || error.message))
+    }
+  }
+}
+
+
+// ======================== DELETE USER ACTION END ===========================//
 
 // ========================= CLEAR ERRORS ACTION START ====================== //
  const clearErrorAction = () => {

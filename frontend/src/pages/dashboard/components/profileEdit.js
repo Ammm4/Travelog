@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { useSelector, useDispatch } from 'react-redux';
-import { UserImageContainer, UserAvatar, UserCover, UserTitle, UserInfo, sharedDivCss } from '../pages/profile';
+import { UserImageContainer, UserAvatar, UserCover, UserTitle, sharedDivCss } from '../pages/profile';
 import { useHistory } from 'react-router-dom';
 
 import { updateUser } from '../../../redux/users/userActions';
@@ -13,7 +13,7 @@ import EditForm from './EditForm';
 import Loading from './Loading';
 
 
-const Container = styled.div`
+export const Container = styled.div`
   width: 98%;
   border-radius: 8px;
   margin: 4.25rem auto 1.5rem auto;
@@ -36,7 +36,7 @@ const UserProfile = styled.div`
  box-shadow: none;
 `
 
-const EditHeading = styled.div`
+export const EditHeading = styled.div`
   width: 100%;
   h2 {
     margin-top: 0.75rem;

@@ -1,11 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
-import { useAlert } from 'react-alert';
-import { logout, clearError } from '../../../redux/users/userActions';
+import { logout } from '../../../redux/users/userActions';
 
-//============== Components =================//
-import Loading from './Loading';
 //============== Icons =====================//
 
 import { SiYourtraveldottv } from "react-icons/si";
@@ -191,24 +188,11 @@ const Img = styled.span`
 `
 
 export default function Navbar({ active }) {
-  const { loading, user, error } = useSelector(state => state.User)
+  const { user } = useSelector(state => state.User)
   const [menuBar, setMenubar] = useState(false);
   const dispatch = useDispatch();
   const match = useRouteMatch();
-  const alert = useAlert();
   
-  useEffect(() => {
-    if(error) {
-      alert.error(error);
-      dispatch(clearError())
-    }
-  }, [alert, dispatch, error])
- 
-  
-  if(loading) {
-    return <Loading />
-  }
-
   return (
     <NavContainer>
       <Nav>

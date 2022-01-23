@@ -32,6 +32,7 @@ const signUpUser = asyncFunctionWrapper(async (req, res, next) => {
   // Check if email already exists
   const emailExists = await UserModel.findOne({email: email});
   if(emailExists) return next(new ErrorHandler('User already exists', 400));
+
  // If email doesnot exists hash the password
   const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -68,9 +69,8 @@ const signUpUser = asyncFunctionWrapper(async (req, res, next) => {
 //==================== Login/SignIn User =========================//
 const loginUser = asyncFunctionWrapper(async (req, res, next) => {
   const { email, password } = req.body;
-  if(!email || !password) {
-    return next(new ErrorHandler('Please Enter Email or Password', 400))
-  }
+  if(!email || !password) return next(new ErrorHandler('Please Enter Email or Password', 400))
+  
   const user = await UserModel.findOne({ email: email }).select("+password");
   if(!user) return next(new ErrorHandler("User doesn't Exist", 501))
  
@@ -120,7 +120,7 @@ const updateUser = asyncFunctionWrapper( async(req, res, next) => {
   }
 
   if( avatarImg ) {
-     if(user.avatar.avatar_id === 'postImages/ywky5uwzisq0vvf3ocsf'){
+     if(user.avatar.avatar_id !== 'postImages/ywky5uwzisq0vvf3ocsf'){
        await cloudinary.v2.uploader.destroy(user.avatar.avatar_id);
      }
      let uploadedAvatar = await fileUploadToCloudinary(avatarImg, 'avatars')
@@ -156,6 +156,47 @@ const setUser = asyncFunctionWrapper(async(req, res, next) => {
 })
 
 
+const changePassword = async(req,res,next) => {
+  const user = await UserModel.findById(req.user.id).select("+password");
+  const isPasswordMatch = await bcrypt.compare(req.body.oldPassword, user.password);
+  if(!isPasswordMatch) return next(new ErrorHandler("Current password is incorrect", 401));
+  
+  if(req.body.newPassword !== req.body.confirmPassword) return next(new ErrorHandler("Passwords do not match", 401));
+  
+  const hashedPassword = await bcrypt.hash(req.body.newPassword, 10);
+  user.password = hashedPassword;
+  await user.save();
+  res.status(200).json({
+    success: true,
+    message: "Password Changed successfully!!",
+    user
+  })
+
+}
+
+// ======================= Delete User Start =================================== //
+const deleteUser = async(req,res,next) => {
+  const user = await UserModel.findById(req.user.id).select("+password");
+  const isPasswordMatch = await bcrypt.compare(req.body.password, user.password);
+  if(!isPasswordMatch) return next(new ErrorHandler("Current password is incorrect", 401));
+  deleteUserCloudinary(user.avatar.avatarId, user.cover.coverId);
+  //deletePosts(user.posts);
+
+  await user.remove();
+
+  res.cookie("Token", null, {
+    expires: new Date( Date.now() ),
+    httpOnly: true
+  })
+  res.status(200).json({
+    success: true,
+    message: "User Deleted successfully!!",
+    user
+  })
+
+}
+// ======================= Delete User End =================================== //
+
 const getSingleUser = asyncFunctionWrapper(async (req, res, next) => {
   const user = await UserModel.findById(req.params.id); 
   if(!user) return next(new ErrorHandler("User not found", 404))
@@ -166,6 +207,8 @@ const getSingleUser = asyncFunctionWrapper(async (req, res, next) => {
 })
 
 //======================= Forgot Password ==========================//
+
+
 
 const resetPassword = async (req, res, next) => {
   const { email } = req.body;
@@ -203,6 +246,7 @@ const resetPassword = async (req, res, next) => {
     */
 }
 
+// ====================== Utility Function ================= //
 const fileUploadToCloudinary = async (file, folderName) => {
   const uploadedImg = await cloudinary.v2.uploader.upload(file, {
     folder: folderName
@@ -211,75 +255,23 @@ const fileUploadToCloudinary = async (file, folderName) => {
   return uploadedImg;
 }
 
-
-/* 
-
-CHANGE PASSWORD
-const changePassword = async(req,res,next) => {
-  const user = await userModel.findById(req.user.id).select("+password");
-  const isPasswordMatch = bcrypt.compare(user.password, req.body.oldPassword);
-  if(!isPasswordMatch){
-    res.status(404).send({"old password is not incorrect"})
-  }
-  if(req.body.newPassword !== req.body.confirmPassword){
-    res.status(404).send({"Password does not match!!"})
-  }
-  user.password = req.body.newPassword;
-  user.save();
+const deleteUserCloudinary =  async( avatarId, coverId ) => {
+  await cloudinary.v2.uploader.destroy(avatarId); 
+  await cloudinary.v2.uploader.destroy(coverId);
 }
 
-UPDATE PROFILE
-const updateProfile = async(req,res,next) => {
-  const{ username, email, avatar, cover, about} = req.body
-  
-  const newUserData = {...user, username: username, email: email, avatar: avatar, cover: cover, about: about}
-  const user = await userModel.findByIdandUpdate(req.user.id, newUserData, {
-    new: true,
-    runValidators: true,
-    useFindandModify: false
-  });
-  res.status(200).json({
-    success: true
-  })
-}
-
-ADD Comment 
-
-const addComment = async(req,res) => {
-  const { postId, comment } = req.body;
-  const newComment = {
-   userid: req.user.id,
-   username: req.user.name,
-   comment,
-  } 
-  const { id } = req.user.id
-  const product = await postModel.findById({id: postId});
-  product.comments = [...products.comments, newComment];
-  product.save()
-  //const hasUserCommented = product.comments.find(item => item.userid === id)
-}
-
-Update Comment 
-
-
-
-const updateComment = async(req,res) => {
+const deletePosts = (posts) => {
 
 }
 
-REPLY COMMENT
-
-
-ADD LIKES
-
-
-*/
 
 module.exports = {
   signUpUser,
   loginUser,
   logOutUser,
   updateUser,
+  changePassword,
+  deleteUser,
   setUser,
   getSingleUser
 }

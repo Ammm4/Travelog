@@ -9,7 +9,7 @@ import { MdClear } from "react-icons/md";
 import DeleteBox from './DeleteBox';
 import { useDispatch } from 'react-redux';
 import { SINGLE_POST_RESET } from '../../../redux/posts/postTypes';
-const Container = styled.div`
+export const Container = styled.div`
  position: fixed;
  top:0; left:0;
  z-index: 2222;
@@ -19,7 +19,7 @@ const Container = styled.div`
  background-color: rgba(0,0,0, 0.85);
  
 `
-const CloseModalBtn = styled.span`
+export const CloseModalBtn = styled.span`
   position: absolute;
   right:1rem;
   top: 1rem;
@@ -52,6 +52,7 @@ export default function PostModal({ setModal, postModalInfo }) {
       handleEditPost,
       handleDeletePost
   } = usePostForm(postId, action);
+  
   const dispatch = useDispatch();
   useEffect(() => {
     if(singlePostError) {
@@ -77,7 +78,7 @@ export default function PostModal({ setModal, postModalInfo }) {
        { postEditing && <Loading msg={msg} />} 
        {
          action === 'delete' ? 
-           <DeleteBox handleDeletePost={handleDeletePost} setModal={setModal}>
+           <DeleteBox title="Delete Post" handleDeletePost={handleDeletePost} setModal={setModal}>
            </DeleteBox>
            :
            <>

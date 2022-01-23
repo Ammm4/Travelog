@@ -1,15 +1,21 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useRouteMatch } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import styled, {css} from 'styled-components';
 import Post from '../components/Post';
 import { PostsWrapper } from './home';
 
-//Icons SiAboutdotme
+//Import
+
+
+//Icons SiAboutdotme 
 import { BsFillGrid3X3GapFill } from "react-icons/bs";
+import { MdDelete } from "react-icons/md";
+import { MdAddCircle } from "react-icons/md";
 import { FaUserEdit } from "react-icons/fa";
 import { FcAbout } from "react-icons/fc";
 import Zeropost from '../components/zeropost';
+import ProfileModal from '../components/ProfileModal';
 
 const sharedImgCss = css`
   display: inline-block;
@@ -135,6 +141,7 @@ const Btngroup = styled.div`
   width: 100%;
   display: flex;
   justify-content: space-around;
+  align-items: center;
   button {
     ${sharedBtnCss}
   }
@@ -162,6 +169,7 @@ export const PostHeading = styled.div`
 export default function Profile({ setIsModal }) {
   const { user } = useSelector(state => state.User);
   const { posts } = useSelector(state => state.Post);
+  const [showModal, setShowModal] = useState(false);
   const match = useRouteMatch();
   return (
     <ProfileContainer>
@@ -191,9 +199,12 @@ export default function Profile({ setIsModal }) {
          </div>   
        </UserInfo>
        <Btngroup>
-         <EditLink to={`${ match.url }/edit`}><FaUserEdit /> Edit Profile</EditLink>
-         <EditLink to={`${ match.url }/edit`}><FaUserEdit /> Change Password</EditLink>
-         <button onClick={ (e) => setIsModal({ postId: null, action:'Create Post' }) }><BsFillGrid3X3GapFill /> Add Post</button>
+         <EditLink to={`${ match.url }/edit`}> Edit Profile</EditLink>
+         <EditLink to={`${ match.url }/change_password`}> Change Password</EditLink>
+       </Btngroup>
+       <Btngroup>
+         <button onClick={ (e) => setShowModal(true) }><MdDelete /> Delete Profile</button>
+         <button onClick={ (e) => setIsModal({ postId: null, action:'Create Post' }) }><MdAddCircle /> Add Post</button>
        </Btngroup>
      </UserProfile>
      <PostHeading>
@@ -207,13 +218,14 @@ export default function Profile({ setIsModal }) {
             if( post.author.authorId === user._id ) {
              return <Post key={ post.post_id } post={ post } setModal={ setIsModal } singlePost={false} />
           }
-             return ''
+             return null
           }) 
           }
         </PostsWrapper>
         : 
         <Zeropost />
      }
+     { showModal && <ProfileModal setShowModal={ setShowModal }/>}
     </ProfileContainer>
   )
 }

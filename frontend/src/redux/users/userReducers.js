@@ -13,7 +13,15 @@ import {
     UPDATE_USER_SUCCESS,
     UPDATE_USER_ERROR,
     UPDATE_USER_RESET,
-   
+
+    DELETE_USER_REQUEST,
+    DELETE_USER_SUCCESS,
+    DELETE_USER_ERROR,
+    
+    CHANGE_PASSWORD_REQUEST,
+    CHANGE_PASSWORD_SUCCESS,
+    CHANGE_PASSWORD_ERROR,
+
     SET_USER,
     SIGN_UP_USER_REQUEST,
     SIGN_UP_USER_SUCCESS ,
@@ -25,7 +33,8 @@ import {
     GET_SINGLE_USER_ERROR,
 
     CLEAR_USER_ERRORS,
-    LOG_OUT_USER_RESET
+    LOG_OUT_USER_RESET,
+    
   } from './userTypes';
 
 
@@ -34,12 +43,14 @@ const userReducer = (state = { user: null }, action) => {
 
     case LOG_IN_REQUEST:
     case LOG_OUT_USER_REQUEST:
+    case DELETE_USER_REQUEST:
     case SIGN_UP_USER_REQUEST:
       return {
         ...state,
         loading: true
       }
     case UPDATE_USER_REQUEST:
+    case CHANGE_PASSWORD_REQUEST:
       return {
         ...state,
         userUpdating: true
@@ -47,6 +58,7 @@ const userReducer = (state = { user: null }, action) => {
     case LOG_IN_SUCCESS:
     case SIGN_UP_USER_SUCCESS:
     case UPDATE_USER_SUCCESS:
+    case CHANGE_PASSWORD_SUCCESS:
       return {
         ...state,
         loading: false,
@@ -55,6 +67,7 @@ const userReducer = (state = { user: null }, action) => {
         success: action.payload.message
       }
     case LOG_OUT_USER_SUCCESS:
+    case DELETE_USER_SUCCESS:
       return {
         ...state,
         loading: false,
@@ -70,7 +83,9 @@ const userReducer = (state = { user: null }, action) => {
         error: action.payload
       }
     case LOG_OUT_USER_ERROR:
+    case DELETE_USER_ERROR:
     case UPDATE_USER_ERROR:
+    case CHANGE_PASSWORD_ERROR:
       return {
         ...state,
         loading: false,
@@ -93,6 +108,7 @@ const userReducer = (state = { user: null }, action) => {
         ...state,
         success: false
       }
+
     case CLEAR_USER_ERRORS: 
       return {
         ...state,

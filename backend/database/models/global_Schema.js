@@ -56,6 +56,7 @@ const Post = new mongoose.Schema({
     country: { type: String, required: true },
     destination: { type: String, required: [true, "Please add the destination name!!"] },
     summary: { type: String, required: [true, "Please add some description!"] },
+    ratings: { type: Number, required: true }
   },
   travellerInfo : {
     numOfPeople: { type: Number, required: true },
@@ -80,4 +81,3 @@ module.exports = {
   Like,
   Comment
 }
-// No Image https://www.theiasilver.com/index.php/images/products/16093363945fec864a3a7e8.jpg

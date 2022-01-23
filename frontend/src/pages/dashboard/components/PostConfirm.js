@@ -111,7 +111,6 @@ export default function PostConfirm(props) {
     toggleForm,
     handleSubmit
   } = props;
-  console.log(destinationInfo.ratings)
   return (
     <PostWrapper>
       <PostTitle>Review & Submit</PostTitle>

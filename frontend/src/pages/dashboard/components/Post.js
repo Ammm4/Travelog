@@ -212,8 +212,6 @@ export default function Post({ post, setModal, singlePost }) {
   const [showInfo, setShowInfo] = useState(false);
   let { url } = useRouteMatch();
   
-  
-  
   return (
         <PostWrapper singlePost={singlePost}>
           <PostAuthor>

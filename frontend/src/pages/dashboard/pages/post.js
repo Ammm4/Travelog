@@ -2,8 +2,8 @@ import React, { useEffect } from 'react';
 import {  useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
-import { useAlert } from 'react-alert';
-import { getSinglePost, clearError } from '../../../redux/posts/postActions';
+
+import { getSinglePost } from '../../../redux/posts/postActions';
 
 //import Post from '../components/Post';
 import SinglePost from '../components/SinglePost';
@@ -32,20 +32,13 @@ const ImageGridWrapper = styled.div`
 
 export default function Singlepost({ setModal }) {
   const { post_id } = useParams();
-  const { loading, singlepost:post, error } = useSelector(state => state.SinglePost);
+  const { loading, singlepost:post } = useSelector(state => state.SinglePost);
   const dispatch = useDispatch();
-  const alert = useAlert();
   
   useEffect(() => {
     dispatch(getSinglePost(post_id));
   }, [post_id, dispatch])
   
-  useEffect(() => {
-   if(error){
-    alert.error(error);
-    dispatch(clearError());
-   }
-  },[dispatch, alert, error])
 
   if(loading || Object.keys(post).length < 1) {
     return <Loading msg="Post Loading"/>

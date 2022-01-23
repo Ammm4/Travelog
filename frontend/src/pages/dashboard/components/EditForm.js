@@ -17,7 +17,7 @@ const Container = styled.div`
    letter-spacing: 2px;
  }
 `
-const Form = styled.form`
+export const Form = styled.form`
 .form-group {
   margin: 1rem auto 0.5rem auto;
   padding: 10px;
