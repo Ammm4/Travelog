@@ -1,5 +1,6 @@
 require('dotenv').config();
-const { UserModel }  = require("../../database/models/userModel.js");
+const { UserModel } = require("../../database/models/userModel.js");
+const { PostModel } = require("../../database/models/postModel.js");
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { validationResult } = require('express-validator');
@@ -42,13 +43,13 @@ const signUpUser = asyncFunctionWrapper(async (req, res, next) => {
      email,
      password: hashedPassword,
      avatar: {
-       avatar_id: "ywky5uwzisq0vvf3ocsf",
-       avatar_url: "https://res.cloudinary.com/ddocnijls/image/upload/v1641645911/postImages/ywky5uwzisq0vvf3ocsf.jpg"
+       avatar_id: "avatars/xik6iypxmxlfyxwmoylr",
+       avatar_url: "https://res.cloudinary.com/ddocnijls/image/upload/v1642801880/avatars/xik6iypxmxlfyxwmoylr.jpg"
      },
      about:"A Travel freak",
      cover:{
-       cover_id: "lfgfxvi8vyygiruicrws",
-       cover_url: "https://res.cloudinary.com/ddocnijls/image/upload/v1641645912/postImages/lfgfxvi8vyygiruicrws.jpg"
+       cover_id: "covers/cover_u0dro6",
+       cover_url: "https://res.cloudinary.com/ddocnijls/image/upload/v1642936888/covers/cover_u0dro6.jpg"
       },
      posts:[],
      likes:[],
@@ -108,7 +109,7 @@ const updateUser = asyncFunctionWrapper( async(req, res, next) => {
   req.body.cover = { ...user.cover };
   req.body.avatar = { ...user.avatar };
   if( coverImg ) {
-     if(user.cover.cover_id !== 'postImages/lfgfxvi8vyygiruicrws') {
+     if(user.cover.cover_id !== 'covers/cover_u0dro6') {
         await cloudinary.v2.uploader.destroy(user.cover.cover_id);
      }   
      let uploadedCover = await fileUploadToCloudinary(coverImg, 'covers');
@@ -120,7 +121,7 @@ const updateUser = asyncFunctionWrapper( async(req, res, next) => {
   }
 
   if( avatarImg ) {
-     if(user.avatar.avatar_id !== 'postImages/ywky5uwzisq0vvf3ocsf'){
+     if(user.avatar.avatar_id !== 'avatars/xik6iypxmxlfyxwmoylr'){
        await cloudinary.v2.uploader.destroy(user.avatar.avatar_id);
      }
      let uploadedAvatar = await fileUploadToCloudinary(avatarImg, 'avatars')
@@ -156,7 +157,8 @@ const setUser = asyncFunctionWrapper(async(req, res, next) => {
 })
 
 
-const changePassword = async(req,res,next) => {
+const changePassword = asyncFunctionWrapper(
+  async(req,res,next) => {
   const user = await UserModel.findById(req.user.id).select("+password");
   const isPasswordMatch = await bcrypt.compare(req.body.oldPassword, user.password);
   if(!isPasswordMatch) return next(new ErrorHandler("Current password is incorrect", 401));
@@ -173,15 +175,18 @@ const changePassword = async(req,res,next) => {
   })
 
 }
+)
 
 // ======================= Delete User Start =================================== //
-const deleteUser = async(req,res,next) => {
+const deleteUser = asyncFunctionWrapper( async(req,res,next) => {
   const user = await UserModel.findById(req.user.id).select("+password");
-  const isPasswordMatch = await bcrypt.compare(req.body.password, user.password);
+  const isPasswordMatch = await bcrypt.compare(req.body.payload, user.password);
   if(!isPasswordMatch) return next(new ErrorHandler("Current password is incorrect", 401));
-  deleteUserCloudinary(user.avatar.avatarId, user.cover.coverId);
-  //deletePosts(user.posts);
-
+  user.posts.forEach( async (post) => {
+      await deletePost(post)
+   })
+  deleteUserCloudinary(user.avatar.avatar_id, user.cover.cover_id);
+  
   await user.remove();
 
   res.cookie("Token", null, {
@@ -191,10 +196,9 @@ const deleteUser = async(req,res,next) => {
   res.status(200).json({
     success: true,
     message: "User Deleted successfully!!",
-    user
   })
 
-}
+})
 // ======================= Delete User End =================================== //
 
 const getSingleUser = asyncFunctionWrapper(async (req, res, next) => {
@@ -255,14 +259,22 @@ const fileUploadToCloudinary = async (file, folderName) => {
   return uploadedImg;
 }
 
-const deleteUserCloudinary =  async( avatarId, coverId ) => {
-  await cloudinary.v2.uploader.destroy(avatarId); 
-  await cloudinary.v2.uploader.destroy(coverId);
+const deleteUserCloudinary = async( avatarId, coverId ) => {
+  if(avatarId !== 'avatars/xik6iypxmxlfyxwmoylr'){
+       await cloudinary.v2.uploader.destroy(avatarId);
+  }
+  if(coverId !== 'covers/cover_u0dro6') {
+    await cloudinary.v2.uploader.destroy(coverId);
+  }
 }
 
-const deletePosts = (posts) => {
-
-}
+const deletePost = async(post) => {
+    const postModel = await PostModel.findOne({ post_id: post.post_id});
+    await (post.images.forEach(async(image) => {
+      await cloudinary.v2.uploader.destroy(image.img_id)
+    }))
+    await postModel.remove();
+ }
 
 
 module.exports = {

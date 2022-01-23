@@ -5,48 +5,8 @@ import styled from 'styled-components';
 
 import { Link } from 'react-router-dom';
 import  validator  from 'validator';
+import { FormContainer, Form, InputContainer, ToggleLink  } from '../../login/components/form';
 
-const FormContainer =  styled.div`
-  height: 100%;
-  width: 100%;
-  padding: 1rem;
-  h1 {
-   font-family: 'Montserrat Alternates', sans-serif;
-   font-size: 2.25rem;
-   text-align: center;
-   margin-bottom: 3rem;
-   letter-spacing: 1px;
-  }
-
-`
-const Form = styled.form`
-  input[type="submit"] {
-    width: 100%;
-    outline: none;
-    padding: 6px 10px;
-    margin: 1rem auto;
-    font-weight: 700;
-    font-size: 1.2rem;
-    letter-spacing: 1px;
-  }
-`
-const InputContainer = styled.div`
-  margin: 1rem auto;
-  label {
-    display: block;
-    margin-bottom: 0.3rem;
-    letter-spacing: 1px;
-    font-weight: 700;
-  }
-  input[type="password"], input[type="email"], input[type="text"] {
-    width: 100%;
-    font-size: 1rem;
-    outline: none;
-    padding: 8px 12px;
-    letter-spacing: 1px;
-  }
-  
-`
 export const ErrorDisplay = styled.p`
   color: red;
   font-size: 0.9rem;
@@ -126,7 +86,7 @@ export default function SignupForm() {
         {errors.confirmpassword && <ErrorDisplay>{errors.confirmpassword}</ErrorDisplay>}
         <input type="submit" value="Sign Up" />
       </Form>
-     <p>Already Signed Up <Link to="/login">Login</Link></p> 
+     <ToggleLink>Got an Account ? <Link to="/login">Login</Link></ToggleLink> 
     </FormContainer>
   )
 }

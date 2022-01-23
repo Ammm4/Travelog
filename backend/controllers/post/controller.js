@@ -80,6 +80,7 @@ const updatePost = asyncFunctionWrapper(async (req, res, next) => {
     }
   })
   )
+  
   req.body.images = uploadedImages;
   
   for( let key in req.body) {

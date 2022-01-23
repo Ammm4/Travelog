@@ -280,11 +280,11 @@ const deleteUserError = (error) => {
   }
 }
 
-export const deleteUser = (userID, body) => {
+export const deleteUser = (body) => {
   return async(dispatch) => {
     dispatch(deleteUserRequest())
     try {
-     const { data } = await axios.put(`/api/v1/users/${ userID }/delete_profile`, body)
+     const { data } = await axios.delete(`/api/v1/users/delete_profile`, { data: body })
      dispatch(deleteUserSuccess(data))
     } catch(error) {
      dispatch(deleteUserError(error.response.data.error || error.message))

@@ -33,7 +33,7 @@ router.put('/users/:id/profile_change', is_User_Authenticated, updateUser);
 
 router.put('/users/:id/change_password', is_User_Authenticated, changePassword);
 
-router.delete('/users/:id/change_password', is_User_Authenticated, deleteUser);
+router.delete('/users/delete_profile', is_User_Authenticated, deleteUser);
 
 router.post('/forgot_password', (req, res) => {
 
