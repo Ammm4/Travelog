@@ -4,10 +4,11 @@ import { useSelector, useDispatch } from 'react-redux';
 import styled, {css} from 'styled-components';
 import Post from '../components/Post';
 import { PostsWrapper } from './home';
+import { ProfileContainer, UserProfile } from './profile';
 
 //Icons SiAboutdotme
 import { BsFillGrid3X3GapFill } from "react-icons/bs";
-import { FcAbout } from "react-icons/fc";
+import { IoInformationCircleSharp } from "react-icons/io5";
 
 import Zeropost from '../components/zeropost';
 import Loading from '../components/Loading';
@@ -50,17 +51,8 @@ const sharedEditBtnCss = css`
     border-radius: 5px;
     color: #fff;
 `
-const ProfileContainer = styled.main`
-  padding-top: 80px;
-`
-export const UserProfile = styled.div`
-  ${sharedDivCss}
-  width: 100%;
-  background-color: transparent;
-  cursor:pointer;
-  margin: 0 auto;
-  
-`
+
+
 export const UserImageContainer = styled.div`
   position: relative;
   width: 100%;
@@ -185,6 +177,7 @@ export default function Userprofile({ setModal }) {
   }
   return (
     <ProfileContainer>
+     <h2 style={{marginTop: '15px'}}>{user.username}'s Profile</h2>
      <UserProfile>
        <UserImageContainer>   
         <UserCover>
@@ -198,15 +191,15 @@ export default function Userprofile({ setModal }) {
        <UserInfo>
          <h3>Info</h3> 
          <div>
-           <span><FcAbout /></span>
+           <span><IoInformationCircleSharp /></span>
            <p><b>About:</b> { user.about }</p>
          </div>
          <div>
-          <span><FcAbout /></span>
+          <span><IoInformationCircleSharp /></span>
           <p><b>Hobbies:</b> { user.hobbies }</p>
          </div>
          <div>
-          <span><FcAbout /></span>
+          <span><IoInformationCircleSharp /></span>
           <p><b>Location:</b> { user.city }, { user.country }</p>
          </div>   
        </UserInfo>

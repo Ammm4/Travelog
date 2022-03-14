@@ -154,15 +154,15 @@ function SinglePost({ post, setModal, singlePost}) {
                   <InteractionButton 
                     onClick={ (e) => handlePostLike(e) } >
                     { 
-                      post.likes.find(like => like.user_id === user._id) ? 
-                      <AiFillHeart /> 
+                      post.likes.find(like => like.user_id === user.userId) ? 
+                      <AiFillHeart style={{color: '#021b41'}}/> 
                        :
                       <AiOutlineHeart /> 
                     } 
                   </InteractionButton> 
                   <InteractionButton 
                     onClick={ (e) => handleCommentIconClick(e) } >
-                    <FaComments/> 
+                    <FaComments style={{color: '#021b41'}}/> 
                   </InteractionButton> 
           </PostInteractions>
 

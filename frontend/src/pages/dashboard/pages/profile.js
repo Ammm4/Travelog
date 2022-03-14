@@ -4,16 +4,14 @@ import { useSelector } from 'react-redux';
 import styled, {css} from 'styled-components';
 import Post from '../components/Post';
 import { PostsWrapper } from './home';
-
+import Share from '../components/Share';
 //Import
 
 
-//Icons SiAboutdotme 
+//Icons SiAboutdotme FaUserCog 
 import { BsFillGrid3X3GapFill } from "react-icons/bs";
-import { MdDelete } from "react-icons/md";
-import { MdAddCircle } from "react-icons/md";
-import { FaUserEdit } from "react-icons/fa";
-import { FcAbout } from "react-icons/fc";
+import { FaUserCog } from "react-icons/fa";
+import { IoInformationCircleSharp } from "react-icons/io5";
 import Zeropost from '../components/zeropost';
 import ProfileModal from '../components/ProfileModal';
 
@@ -32,14 +30,22 @@ export const sharedDivCss = css`
   box-shadow: 2px 2px 4px rgba(0,0,0,0.5);
 `
 const sharedBtnCss = css `
-  display: inline-block;
+  display: block;
   outline: none;
-  border: 2px solid #f1f1f1;
-  border-radius: 2px;
+  background-color:#fff;
   cursor: pointer;
-  font-size: 1.4rem;
-  padding: 8px 16px;
-  width: 49%;
+  width: 98%;
+  margin: 0.75rem auto;
+  text-align: center;
+  border: 1px solid #2e5c99;
+  font-size: 15px;
+  color:#2671d3;
+  padding: 16px 40px;
+  &:hover {
+    background-color: #2a78cd;
+     color:#fff;
+     border: none;
+   }
 `
 const sharedEditBtnCss = css`
     display: inline-block;
@@ -55,15 +61,24 @@ const sharedEditBtnCss = css`
     border-radius: 5px;
     color: #fff;
 `
-const ProfileContainer = styled.main`
+export const ProfileContainer = styled.main`
   padding-top: 80px;
+  h2 {
+    font-family: 'Montserrat Alternates', sans-serif;
+    font-size: 40px;
+    font-weight: 400;
+    text-align: center;
+    letter-spacing: 0.8px;
+    color: #021b41;
+  }
 `
 export const UserProfile = styled.div`
   ${sharedDivCss}
   width: 100%;
   background-color: #fff;
   cursor:pointer;
-  margin: 0 auto;
+  margin: 40px auto 0 auto;
+  overflow: hidden;
   
 `
 export const UserImageContainer = styled.div`
@@ -129,9 +144,10 @@ export const UserInfo = styled.div`
     display: grid;
     grid-template-columns: auto 1fr;
     grid-column-gap: 1rem;
+    color: #021b41;
     span {
      text-align: center;
-     font-size: 1.5rem;
+     font-size: 1.25rem;
     }
   }
   p {
@@ -141,19 +157,44 @@ export const UserInfo = styled.div`
   }
 `
 const Btngroup = styled.div`
+  ${sharedDivCss};
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   padding: 8px;
-  width: 100%;
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
   button {
     ${sharedBtnCss}
   }
 `
+
+
 const EditLink = styled(Link)`
-   ${sharedBtnCss}
-   text-decoration: none;
-   text-align: center;
+  text-decoration: none;
+  ${sharedBtnCss}   
+`
+const SettingBtnGroup = styled.div`
+  width: 100%;
+  margin: 1rem auto 1.5rem auto;
+  background-color: #fff;
+  max-height: ${props => props.showSettings ? '400px' : '0'};
+  padding: ${props => props.showSettings? '8px' : '0'};
+  opacity: ${props => props.showSettings? '1' : '0'};
+  overflow: hidden;
+  transition: all 0.3s ease;
+  button {
+    ${sharedBtnCss}
+  }
+`
+
+const CogButton = styled.button`
+  background-color: transparent;
+  outline: none;
+  border: none;
+  display: block;
+  cursor: pointer;
+  margin: auto;
+  text-align: center;
+  font-size: 2.5rem;
+  color: #021b41;
 `
 export const PostHeading = styled.div`
   ${sharedDivCss}
@@ -173,10 +214,12 @@ export const PostHeading = styled.div`
 export default function Profile({ setIsModal }) {
   const { user } = useSelector(state => state.User);
   const { posts } = useSelector(state => state.Post);
+  const [showSettings, setShowSettings] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const match = useRouteMatch();
   return (
     <ProfileContainer>
+     <h2 style={{marginTop: '15px'}}>{user.name}'s Profile</h2>
      <UserProfile>
        <UserImageContainer>   
         <UserCover>
@@ -190,27 +233,26 @@ export default function Profile({ setIsModal }) {
        <UserInfo>
          <h3>Info</h3> 
          <div>
-           <span><FcAbout /></span>
+           <span><IoInformationCircleSharp /></span>
            <p><b>About:</b> { user.about }</p>
          </div>
          <div>
-          <span><FcAbout /></span>
+          <span><IoInformationCircleSharp /></span>
           <p><b>Hobbies:</b> { user.hobbies }</p>
          </div>
          <div>
-          <span><FcAbout /></span>
+          <span><IoInformationCircleSharp /></span>
           <p><b>Location:</b> { user.city }, { user.country }</p>
          </div>   
        </UserInfo>
-       <Btngroup>
+       <CogButton onClick={() => setShowSettings(!showSettings)}><FaUserCog /></CogButton>
+       <SettingBtnGroup showSettings={showSettings}>
          <EditLink to={`${ match.url }/edit`}> Edit Profile</EditLink>
-         <EditLink to={`${ match.url }/change_password`}> Change Password</EditLink>
-       </Btngroup>
-       <Btngroup>
-         <button onClick={ (e) => setShowModal(true) }><MdDelete /> Delete Profile</button>
-         <button onClick={ (e) => setIsModal({ postId: null, action:'Create Post' }) }><MdAddCircle /> Add Post</button>
-       </Btngroup>
+         <EditLink to={`${ match.url }/change_password`}> Reset Password</EditLink>
+         <button onClick={ (e) => setShowModal(true) }> Delete Profile</button>
+       </SettingBtnGroup>
      </UserProfile>
+     <Share setModal={setIsModal}/>
      <PostHeading>
        <BsFillGrid3X3GapFill />
      </PostHeading>
