@@ -51,7 +51,7 @@ const sharedEditBtnCss = css`
     color: #fff;
 `
 const ProfileContainer = styled.main`
-  padding-top: 65px;
+  padding-top: 80px;
 `
 export const UserProfile = styled.div`
   ${sharedDivCss}
@@ -103,11 +103,16 @@ export const UserAvatar = styled.div`
      
    }
 `
-export const UserTitle = styled.h1`
-  text-align: center;
+export const UserTitle = styled.h2`
   position: absolute;
   left:50%; bottom: 10%;
   transform: translateX(-50%);
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-size: 40px;
+  font-weight: 400;
+  text-align: center;
+  letter-spacing: 0.8px;
+  color: #021b41;
 `
 export const UserInfo = styled.div`
   padding: 20px 14px;

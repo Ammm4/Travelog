@@ -56,12 +56,12 @@ const sharedEditBtnCss = css`
     color: #fff;
 `
 const ProfileContainer = styled.main`
-  padding-top: 65px;
+  padding-top: 80px;
 `
 export const UserProfile = styled.div`
   ${sharedDivCss}
   width: 100%;
-  background-color: transparent;
+  background-color: #fff;
   cursor:pointer;
   margin: 0 auto;
   
@@ -108,12 +108,16 @@ export const UserAvatar = styled.div`
      
    }
 `
-export const UserTitle = styled.h1`
-  text-align: center;
+export const UserTitle = styled.h2`
   position: absolute;
   left:50%; bottom: 10%;
   transform: translateX(-50%);
-  letter-spacing: 1px;
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-size: 40px;
+  font-weight: 400;
+  text-align: center;
+  letter-spacing: 0.8px;
+  color: #021b41;
 `
 export const UserInfo = styled.div`
   padding: 20px 14px;
@@ -176,12 +180,12 @@ export default function Profile({ setIsModal }) {
      <UserProfile>
        <UserImageContainer>   
         <UserCover>
-          <img src={ user.cover.cover_url } alt="cover"/>
+          <img src={ user.coverURL } alt="cover"/>
         </UserCover>
         <UserAvatar>
-          <img src={ user.avatar.avatar_url } alt="cover"/>
+          <img src={ user.avatarURL } alt="cover"/>
         </UserAvatar>
-        <UserTitle>{ user.username }</UserTitle>
+        <UserTitle>{ user.name }</UserTitle>
        </UserImageContainer>
        <UserInfo>
          <h3>Info</h3> 
@@ -211,11 +215,11 @@ export default function Profile({ setIsModal }) {
        <BsFillGrid3X3GapFill />
      </PostHeading>
      { 
-      posts.filter(post => post.author.authorId === user._id).length > 0 ? 
+      posts.filter(post => post.author.authorId === user.userId).length > 0 ? 
         <PostsWrapper>
           { 
            posts.map(post => {
-            if( post.author.authorId === user._id ) {
+            if( post.author.authorId === user.userId ) {
              return <Post key={ post.post_id } post={ post } setModal={ setIsModal } singlePost={false} />
           }
              return null

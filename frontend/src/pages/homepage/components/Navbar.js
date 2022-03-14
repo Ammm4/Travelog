@@ -4,15 +4,16 @@ import { SiYourtraveldottv } from "react-icons/si";
 import { BiMenuAltLeft } from "react-icons/bi";
 import { MdClear } from "react-icons/md";
 import { Link } from 'react-router-dom';
+import { RiUserLine } from "react-icons/ri";
 
 const NavContainer = styled.div`
   position: fixed;
   top:0;
   left:0;
   width: 100%;
-  height: 70px;
-  background-color: #1e1e1e;
-  color: var(--main-bg-color);
+  height: 75px;
+  background-color: #fff;
+  color: #021b41;
   padding: 5px 8px;
   display: flex;
   justify-items: center;
@@ -26,14 +27,19 @@ const Nav = styled.nav`
 const NavLogo = styled.div`
 display: flex;
 align-items: center;
+color: #021b41;
 span {
   margin-right: 0.5rem;
-  font-size: 2.5rem
+  font-size: 2rem
 }
 `
 const Logo = styled.h1 `
   font-family: 'Montserrat Alternates', sans-serif;
-  font-size: 1.75rem
+  color: #021b41; 
+  font-size: 25px;
+  font-weight: 500;
+  letter-spacing: 0.8px;
+  color: #021b41;
 `
 const MenuBar = styled.div`
  display: none;
@@ -67,7 +73,7 @@ const NavMenu = styled.div`
     position: absolute;
     min-width: 100%;
     height: calc(100vh - 70px);
-    background-color: var(--main-color);
+    background-color: #fff;
     top:0;
     left:0;
     transform: ${props => props.menuBar? " translateY(70px)" :" translateY(-100%)"};
@@ -81,7 +87,7 @@ const NavMenu = styled.div`
 `
 const NavLink =  styled(Link)`
   text-decoration: none;
-  color: var(--main-bg-color);
+  color: #292929;
   transition: 250ms all ease-in;
   &:hover {
     color: #888
@@ -94,7 +100,7 @@ const Button = styled.button`
   border-radius: 12px;
   letter-spacing: 1px;
   font-family: inherit;
-  color: var(--main-bg-color);
+  color: #fff;
   font-size: 1rem;
   background: linear-gradient(#4671ea, #ac34e7);
   cursor: pointer;
@@ -122,13 +128,8 @@ export default function Navbar() {
                 <Button>DEMO</Button>
             </li>
             <li className="nav-item">
-              <NavLink to="/signup">
-                Signup
-              </NavLink>
-            </li>
-            <li className="nav-item">
               <NavLink to="/login">
-                Login
+                <RiUserLine/> LOG IN
               </NavLink>
             </li>
           </ul>

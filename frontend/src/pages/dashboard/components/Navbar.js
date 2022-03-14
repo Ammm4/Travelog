@@ -21,9 +21,10 @@ const NavContainer = styled.div`
   left:0;
   z-index: 1111;
   width: 100%;
-  height: 60px;
-  background-color: #1e1e1e;
-  color: var(--main-bg-color);
+  height: 70px;
+  background-color: #fff;
+  color: #021b41;
+  border-bottom: 1px solid #efeff0;
 `
 const Nav = styled.nav`
   width: 100%;
@@ -37,12 +38,16 @@ const NavLogo = styled.div`
   padding-left: 8px;
   span {
     margin-right: 0.5rem;
-    font-size: 2.5rem
+    font-size: 2rem;
   }
 `
 const Logo = styled.h1 `
   font-family: 'Montserrat Alternates', sans-serif;
-  font-size: 1.75rem
+  color: #021b41; 
+  font-size: 25px;
+  font-weight: 500;
+  letter-spacing: 0.8px;
+  color: #021b41;
 `
 const MenuBar = styled.div`
  display: none;
@@ -65,7 +70,7 @@ const NavMenu = styled.div`
     height: 100%;
     width: 75px;
     list-style-type: none;
-    border-bottom: ${props => props.active === 'home' ? '3px solid #aaa':''};
+    border-bottom: ${props => props.active === 'home' ? '2.5px solid #021b41':''};
     display: flex;
     align-items: center;
     justify-content: center;
@@ -74,7 +79,7 @@ const NavMenu = styled.div`
   .avatar {
     display: flex;
     width: 100px;
-    border-bottom: ${props => props.active === 'avatar' ? '3px solid #fff' : ''};
+    border-bottom: ${props => props.active === 'avatar' ? '2.5px solid #021b41' : ''};
     align-items: center;
     justify-content: center;
     margin-left: 50px;
@@ -110,7 +115,7 @@ const NavLink =  styled(Link)`
   width: 100%;
   height: 100%;
   display: inline-block;
-  color: ${props => props.active === 'home' ? '#aaa' : '#fff'};
+  color: ${props => props.active === 'home' ? '#021b41;' : '#aaa'};
   transition: 250ms all ease-in;
   font-size: 2.2rem;
   &:hover {
@@ -121,33 +126,24 @@ const NavLink =  styled(Link)`
 const AvatarLink = styled(Link)`
   position: relative;
   text-decoration: none;
-  color: var(--main-color);
+  font-family: 'Montserrat Alternates', sans-serif;
+  color: #021b41; 
   transition: 250ms all ease-in;
+  padding-right: 10px;
   display: flex;
   align-items: center;
   height: 2rem;
+  border-radius:16px;
   font-size: 1rem;
   background-color: #fff;
   cursor: pointer;
-  &::after {
-    content:"";
-    position: absolute;
-    background-color:#fff;
-    height:2rem;
-    width:2rem;
-    z-index: -1;
-    border-radius: 50%;
-    right:-17px; 
-  }
+  
   span {
     margin-left: 0.65rem;
     text-transform: capitalize;
   }
   &:hover {
-    &:after {
-    background-color: rgb(244,244,244);
-    }
-    color: #888;
+    color: #1e1e1e;
     background-color: rgb(244,244,244);
   }
 `
@@ -162,7 +158,7 @@ const Button = styled.button`
   align-items: center;
   justify-content: center;
   font-family: 'Roboto', sans-serif;
-  color: var(--main-bg-color);
+  color: #292929;
   font-size: 0.66rem;
   background-color: transparent;
   cursor: pointer;
@@ -214,10 +210,10 @@ export default function Navbar({ active }) {
           <div className="avatar" >
             <AvatarLink to={`${match.url}/profile`}>
               <Img>
-                  <img src={user.avatar.avatar_url} alt="avatar"/>
+                  <img src={ user.avatarURL } alt="avatar"/>
               </Img>
-              <span className="username">{user.username}</span>    
-              </AvatarLink>  
+              <span className="username">{ user.name }</span>    
+            </AvatarLink>  
           </div>
           <Button onClick={ () => dispatch(logout()) }>
             <span>

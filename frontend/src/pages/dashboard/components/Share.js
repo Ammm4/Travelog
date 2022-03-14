@@ -59,7 +59,7 @@ export default function Share({ setModal }) {
   return (
     <ShareContainer onClick={() => setModal({ postId: null, action: 'Create Post' })}>
       <ShareTitle>
-        <img src={user.avatar.avatar_url} alt="avatar"/>
+        <img src={user.avatarURL} alt="avatar"/>
         <input disabled placeholder="Got New Experiences to Share??"/> 
       </ShareTitle>
       <IconHolders>

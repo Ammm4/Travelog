@@ -74,14 +74,17 @@ const Container = styled.form`
      }
    }
 `
-export const PostTitle = styled.h1`
+export const PostTitle = styled.h2`
   width: 100%;
   margin: 1rem auto;
+  font-size: 40px;
+  font-weight: 400;
   letter-spacing: 1px;
   border-bottom: 2px solid #ccc;
   max-width:300px;
   font-family: 'Montserrat Alternates', sans-serif;
   text-align: center;
+  color: #021b41;
 `
 const BtnImg = styled.button`
   ${commonBtnStyle} 

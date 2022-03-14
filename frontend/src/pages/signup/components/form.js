@@ -5,7 +5,7 @@ import styled from 'styled-components';
 
 import { Link } from 'react-router-dom';
 import  validator  from 'validator';
-import { FormContainer, Form, InputContainer, ToggleLink  } from '../../login/components/form';
+import { FormContainer, Form, InputContainer, ToggleLink, AuthLink  } from '../../login/components/form';
 
 export const ErrorDisplay = styled.p`
   color: red;
@@ -35,38 +35,35 @@ export default function SignupForm() {
   
   return (
     <FormContainer>
-      <h1>Sign Up</h1>
+      <h2>Join the Club</h2>
       <Form onSubmit={(e) => handleSubmit(e)}><InputContainer>
           <label htmlFor="username">Username</label>
           <input 
             type="text" 
             name="username"
             id="username"
-            placeholder="Enter Your Username"
             value={signUpDetails.username}
             onChange={(e) => handleChange(e)}
           />
         </InputContainer>
         {errors.username && <ErrorDisplay>{errors.username}</ErrorDisplay>}
         <InputContainer>
-          <label htmlFor="email">Email</label>
+          <label htmlFor="email">Email address</label>
           <input 
             type="email" 
             name="email"
             id="email"
-            placeholder="Enter Your Email"
             value={signUpDetails.email}
             onChange={(e) => handleChange(e)}
           />
         </InputContainer>
         {errors.email && <ErrorDisplay>{errors.email}</ErrorDisplay>}
         <InputContainer>
-          <label htmlFor="password">Password</label>
+          <label htmlFor="password">Choose Password</label>
           <input 
             type="password"
             name="password"
             id="password"
-            placeholder="Enter Your Password"
             value={signUpDetails.password}
             onChange={(e) => handleChange(e)}
           />
@@ -78,7 +75,6 @@ export default function SignupForm() {
             type="password"
             name="confirmpassword"
             id="password"
-            placeholder="Confirm Password"
             value={signUpDetails.confirmpassword}
             onChange={(e) => handleChange(e)}
           />
@@ -86,7 +82,7 @@ export default function SignupForm() {
         {errors.confirmpassword && <ErrorDisplay>{errors.confirmpassword}</ErrorDisplay>}
         <input type="submit" value="Sign Up" />
       </Form>
-     <ToggleLink>Got an Account ? <Link to="/login">Login</Link></ToggleLink> 
+     <ToggleLink>Got an Account ? <AuthLink to="/login">Login</AuthLink></ToggleLink> 
     </FormContainer>
   )
 }

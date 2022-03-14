@@ -58,7 +58,7 @@ export const PostAuthor = styled.div`
   margin-bottom: 0.75rem;
   padding: 8px;
   letter-spacing: 1px;
-  border-bottom: 2px solid #f1f1f1;
+  border-bottom: 1px solid #efeff0;
   span {
     font-weight: 700;
   }
@@ -114,8 +114,8 @@ export const Button = styled.button`
 `
 
 export const PostInteractions = styled.div`
-border-top: 1px solid #f1f1f1;
-border-bottom: 1px solid #f1f1f1;
+border-top: 1px solid #efeff0;
+border-bottom: 1px solid #efeff0;
 padding: 10px;
 cursor: pointer;
 
@@ -233,7 +233,7 @@ export default function Post({ post, setModal, singlePost }) {
               }
             </div>
             { 
-              post.author.authorId === user._id && 
+              post.author.authorId === user.userId && 
               <ActionContainer>
                   <DeleteButton onClick={ (e) => setModal({ postId: post.post_id, action: 'Edit Post' }) }><AiFillEdit /></DeleteButton>
                   <DeleteButton onClick={ (e) => setModal({ postId: post.post_id, action: 'delete' })}><MdDelete /></DeleteButton>
@@ -282,6 +282,7 @@ export default function Post({ post, setModal, singlePost }) {
                  </InteractionButton> 
               </PostInteractions>
 
+
              { 
                post.comments.length > 0 && 
                  <PostComments>
@@ -293,7 +294,7 @@ export default function Post({ post, setModal, singlePost }) {
              }
   
              <CommentPost singlePost={singlePost}>
-                <AvatarImage src={ user.avatar.avatar_url } alt="avatar" />
+                <AvatarImage src={ user.avatarURL } alt="avatar" />
                 <textarea 
                   placeholder="Got a question??, Ask John!"
                   disabled={true}

@@ -58,7 +58,7 @@ export default function EditForm(props) {
               id="username" 
               name="username" 
               type="text"
-              value={ infos.username }
+              value={ infos.name }
               onChange = {(e) => handleChange(e) }
               placeholder="Enter Username Please"/>
 

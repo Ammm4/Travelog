@@ -27,7 +27,7 @@ import {
     GET_SINGLE_USER_SUCCESS,
     GET_SINGLE_USER_ERROR,
     
-    SET_USER,
+    SHOW_ME,
     CLEAR_USER_ERRORS,
     
   } from './userTypes';
@@ -103,18 +103,18 @@ export const logout = () => {
 
 
 // ======================== SET USER ACTION START ======================= //
-const setUser = (user) => {
+const showMeSuccess = (user) => {
   return {
-    type: SET_USER,
+    type: SHOW_ME,
     payload: user
   }
 }
 
-export const setuser = () => {
+export const showMe = () => {
   return (dispatch) => {
-    axios.post('/api/v1/setuser')
+    axios.get('/api/v1/showMe')
     .then(response => {
-      dispatch(setUser(response.data.user))
+      dispatch(showMeSuccess(response.data.user))
     })
   }
 }

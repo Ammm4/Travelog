@@ -7,7 +7,7 @@ import { clearError } from '../../redux/users/userActions';
 import { SIGN_UP_USER_RESET } from '../../redux/users/userTypes';
 
 // Components 
-import Header from './components/header';
+import Header from '../Header';
 import Welcome from './components/welcome';
 import SignupForm from './components/form';
 import Loading from '../dashboard/components/Loading';
@@ -17,7 +17,7 @@ const SignupWrapper = styled.section`
  width: 90%;
  max-width: 875px;
  margin:auto;
- margin-top: 3rem;
+ margin-top: 1.75rem;
  padding: 2rem;
 `
 export default function Signup() {
@@ -48,9 +48,9 @@ export default function Signup() {
     <>
       <Header />
       <SignupWrapper>
-        <Welcome />
         <SignupForm />
       </SignupWrapper>
     </>
   )
 }
+//<Welcome />

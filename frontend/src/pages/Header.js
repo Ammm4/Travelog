@@ -1,12 +1,13 @@
-import React from 'react'
+import React from 'react';
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { SiYourtraveldottv } from "react-icons/si";
 
 const HeaderContainer = styled.header`
   width: 100%;
-  height: 70px;
-  background-color: var(--main-color);
-  color: var(--main-bg-color);
+  height: 75px;
+  background-color: #fff;
+  color: #222;
   padding: 5px 8px;
   display: flex;
   justify-items: center;
@@ -17,23 +18,32 @@ const Brand = styled.div`
   display: flex;
   justify-content: space-between;
 `
-const BrandLogo = styled.div`
+const BrandLogo = styled(Link)`
+  text-decoration: none;
+  color: #222;
   display: flex;
   align-items: center;
+  justify-content: space-between;
   span {
     margin-right: 0.5rem;
-   font-size: 2.5rem
+    font-size: 2rem
   }
 `
 const Logo = styled.h1`
   font-family: 'Montserrat Alternates', sans-serif;
-  font-size: 1.75rem
+  color: #021b41; 
+  font-size: 25px;
+  font-weight: 500;
+  letter-spacing: 0.8px;
+  color: #021b41;
 `
+
+
 export default function Header() {
   return (
     <HeaderContainer>
       <Brand>
-      <BrandLogo>
+      <BrandLogo to="/">
         <span><SiYourtraveldottv /></span>
         <Logo>TravelLog</Logo>
       </BrandLogo>

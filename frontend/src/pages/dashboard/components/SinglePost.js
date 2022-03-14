@@ -44,7 +44,7 @@ const PostContainer = styled.article`
   height: 100%;
   border-radius: 8px;
   margin:0;
-  padding:4rem 0 0 0;
+  padding:5rem 0 0 0;
   background-color: #fff;
   box-shadow:'none';
   cursor:pointer;
@@ -186,7 +186,7 @@ function SinglePost({ post, setModal, singlePost}) {
           }
           
           <CommentPost singlePost={singlePost}>
-            <AvatarImage src={ user.avatar.avatar_url } alt="avatar" />
+            <AvatarImage src={ user.avatarURL } alt="avatar" />
             <textarea 
               ref={ commentInputRef } 
               value={ commentText } 

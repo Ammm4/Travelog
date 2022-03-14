@@ -16,12 +16,13 @@ import Loading from './Loading';
 export const Container = styled.div`
   width: 98%;
   border-radius: 8px;
-  margin: 4.25rem auto 1.5rem auto;
+  margin: 4.6rem auto 1.5rem auto;
   background-color: transparent;
 `
 const ProfileContainer = styled.div`
   width: 100%;
   max-width: 600px;
+  background-color: #FFF;
   padding-bottom: 5px;
   border-radius: 8px;
   margin: 1.5rem auto 1.5rem auto;
@@ -40,8 +41,12 @@ export const EditHeading = styled.div`
   width: 100%;
   h2 {
     margin-top: 0.75rem;
-    text-align: center;
     font-family: 'Montserrat Alternates', sans-serif;
+    font-size: 40px;
+    font-weight: 400;
+    text-align: center;
+    letter-spacing: 0.8px;
+    color: #021b41;
   }
   button {
     display: inline-block;
@@ -75,8 +80,8 @@ const EditButton = styled.button`
 `
 
 const initialState = (user) => {
-  const { username, email, about, city, country, hobbies } = user;
-   return { username, email, about, city, country, hobbies }
+  const { name, email, about, city, country, hobbies } = user;
+   return { name, email, about, city, country, hobbies }
 }
 export default function ProfileEdit() {
   const { userUpdating, user, success } = useSelector(state => state.User)
@@ -149,7 +154,7 @@ export default function ProfileEdit() {
        <UserProfile>
         <UserImageContainer>
           <UserCover>
-            <img src={ coverImg || user.cover.cover_url } alt="cover"/>
+            <img src={ coverImg || user.coverURL } alt="cover"/>
             <button onClick={(e) => handleClick(e, 'cover')}> <FaCamera/></button>
             <input 
                 name="coverImg" 
@@ -161,7 +166,7 @@ export default function ProfileEdit() {
               />
           </UserCover>
           <UserAvatar>
-            <img src={ avatarImg || user.avatar.avatar_url } alt="cover"/>
+            <img src={ avatarImg || user.avatarURL } alt="cover"/>
             <button onClick={(e) => handleClick(e, 'avatar')}> <FaCamera/></button>
             <input 
                 name="avatarImg" 
@@ -172,11 +177,11 @@ export default function ProfileEdit() {
                 onChange={(e) => handleFileUpload(e, 'avatar')}
               />
           </UserAvatar>
-          <UserTitle>{ user.username }</UserTitle>
+          <UserTitle>{ user.name }</UserTitle>
         </UserImageContainer>
        </UserProfile>
        
-      <EditForm infos={infos} setInfos={setInfos} saveButton={saveButton} setSave={setSaveButton}/> 
+      <EditForm infos={ infos } setInfos={setInfos} saveButton={saveButton} setSave={setSaveButton}/> 
      
       <EditButton 
         disabled={!saveButton}
