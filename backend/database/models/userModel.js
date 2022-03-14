@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
-const {Like, Comment, Post} = require('./global_Schema.js');
+const { Like, Comment, Post } = require('./global_Schema.js');
 const validator = require('validator');
+const crypto = require('crypto');
 
 
 const userSchema = new mongoose.Schema({
@@ -57,6 +58,17 @@ const userSchema = new mongoose.Schema({
   resetPasswordExpire: Date
 });
 
+//Password Reset Token
+userSchema.methods.GenerateToken = function() {
+  const resetToken = crypto.randomBytes(20).toString('hex');
+  this.resetPasswordToken = crypto
+    .createHash("sha256")
+    .update(resetToken)
+    .digest("hex");
+  this.resetPasswordExpire = Date.now() + 15 * 60 * 1000;
+  return resetToken
+}
+
 /* Crypting Password
 
 userSchema.pre("save", async function(next) {
@@ -75,21 +87,9 @@ userSchema.getJWTtOKEN = function() {
 
 COMPARE PASSWORD
 userSchema.methods.Compare = async function(enteredPassword) {
-  return await bcrypt.compare(enteredPassword, this.password)k
+  return await bcrypt.compare(enteredPassword, this.password)
 }
 
-//Password Reset Token
-userSchema.methods.GenerateToken = function() {
-  const resetToken = crypto.randomBytes(20).toString('hex');
-  this.resetPasswordToken = crypto
-    .createHash("sha256")
-    .update(resetToken)
-    .digest("hex")
-
-  this.resetPasswordExpire = Date.now() + 15 * 60 * 1000;
-
-  return resetToken
-}
 
 */
 const UserModel = mongoose.model('User', userSchema);

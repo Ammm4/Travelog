@@ -1,8 +1,6 @@
 const app = require('./app');
-
 require('dotenv').config();
 const cloudinary = require('cloudinary');
-
 const PORT = process.env.PORT || 8000;
 
 process.on("uncaughtException", (error) => {

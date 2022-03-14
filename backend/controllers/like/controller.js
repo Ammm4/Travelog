@@ -16,7 +16,7 @@ exports.add_Like_To_Comment_Reply = asyncFunctionWrapper( async( req, res, next 
 })
 
 async function find_User_Post_Comment_Reply(req, res, next, action){
-  const user_id = req.user.id;
+  const user_id = req.user.userId;
   const { post_id, comment_id, reply_id } = req.params;
   const post = await PostModel.findOne({ post_id: post_id });
   const user = await UserModel.findById(user_id);

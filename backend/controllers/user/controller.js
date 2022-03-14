@@ -1,4 +1,4 @@
-require('dotenv').config();
+
 const { UserModel } = require("../../database/models/userModel.js");
 const { PostModel } = require("../../database/models/postModel.js");
 const bcrypt = require('bcrypt');
@@ -7,6 +7,9 @@ const { validationResult } = require('express-validator');
 const asyncFunctionWrapper = require('../../utils/asyncFunctionWrapper.js');
 const ErrorHandler = require('../../utils/errorHandler.js');
 const cloudinary = require('cloudinary');
+var nodemailer = require('nodemailer');
+var smtpTransport = require('nodemailer-smtp-transport');
+const tokenPayload = require('../../utils/tokenPayload');
 
 //================== Token Generator ========================//
 
@@ -57,6 +60,7 @@ const signUpUser = asyncFunctionWrapper(async (req, res, next) => {
    });
 
   await user.save();
+  //const tokenPayload = { userId: user._id, name: user.username, avatarUrl: user.avatar.avatar_url}
   const AccessToken = createAccessToken(user._id);
   return res.status(201).cookie('Token', AccessToken, cookie_Options).send({
     success: true,
@@ -79,9 +83,10 @@ const loginUser = asyncFunctionWrapper(async (req, res, next) => {
   if(!match) {
       return next(new ErrorHandler('Wrong Email or Password!!', 401))
     }
+  const payload = tokenPayload(user);
   //========== Create AccessToken ========= //
-  const AccessToken = jwt.sign({ id: user._id }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: process.env.TOKEN_EXPIRES_IN });
-  return res.status(200).cookie('Token', AccessToken, cookie_Options ).send({ success: true, message:'Logged In Successfully', user })
+  const AccessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, { expiresIn: process.env.TOKEN_EXPIRES_IN });
+  return res.status(200).cookie('Token', AccessToken, cookie_Options ).send({ success: true, message:'Logged In Successfully', user: payload })
 
 })
 
@@ -96,7 +101,6 @@ const logOutUser = (req, res, next) => {
     success: true,
     message: "Logged out successfully"
   })
-
 }
 // ======================= Logout User End =================================== //
 
@@ -147,12 +151,12 @@ const updateUser = asyncFunctionWrapper( async(req, res, next) => {
 // ======================= Update User End =================================== //
 
 
-const setUser = asyncFunctionWrapper(async(req, res, next) => {
-  const user_id = req.user.id;
-  const user = await UserModel.findById(user_id);
+const showMe = asyncFunctionWrapper(async(req, res, next) => {
+  //const user_id = req.user.id;
+  //const user = await UserModel.findById(user_id);
   res.status(200).json({
     success: true, 
-    user
+    user: req.user
   })
 })
 
@@ -202,7 +206,7 @@ const deleteUser = asyncFunctionWrapper( async(req,res,next) => {
 // ======================= Delete User End =================================== //
 
 const getSingleUser = asyncFunctionWrapper(async (req, res, next) => {
-  const user = await UserModel.findById(req.params.id); 
+  const user = await UserModel.findById(req.params.id).select('-password'); 
   if(!user) return next(new ErrorHandler("User not found", 404))
     res.status(200).json({
       success: true,
@@ -212,22 +216,57 @@ const getSingleUser = asyncFunctionWrapper(async (req, res, next) => {
 
 //======================= Forgot Password ==========================//
 
-
-
 const resetPassword = async (req, res, next) => {
   const { email } = req.body;
   const user = await UserModel.findOne({ email: email });
+  if(!user) return next(new ErrorHandler('Please enter a correct Email!!', 400));
+  
+  var transporter = nodemailer.createTransport(smtpTransport({
+   service: 'gmail',
+   host: 'smtp.gmail.com',
+   auth: {
+    user: 'resetemail410@gmail.com',
+    pass: 'JheskangNamkhan1974.com'
+   }
+   }));
+  //const resetToken = user.generatePasswordToken();
+  //await user.save({ validateBeforeSave: false });
+  //const resetPasswordUrl = `http://localhost:8000/api/v1/reset_password/${resetToken}`;
+  var mailOptions = {
+   from: 'resetemail410@gmail.com',
+   to: email,
+   subject: 'Sending Email using Node.js[nodemailer]',
+   text: 'That was easy!'
+  };
+ 
+ /*  res.status(200).json({
+      success: true,
+      message: 'Reset Link has been sent to your account'
+   }) */  
+    try {
+      await transporter.sendMail(mailOptions);
+      res.status(200).json({
+        success: true,
+        message: `The link to reset your password has been sent to your ${user.email}`
+      })
+     } catch(e) {
+       console.log('Hi')
+     /*  user.resetPasswordToken =  undefined;
+      user.resetPasswordExpire = undefined;
+      await user.save({validateBeforeSave: false}); */
+      return next(new Error)
+     }
 
-  if(!user) return next(new ErrorHandler('Please enter a correct Email!!', 400))
-    
+  /* 
+   
 
-  /* Get resetPasswordToken
+   Get resetPasswordToken
     const resetToken = user.generatePasswordToken();
     user.save({ validateBeforeSave: false });
     
     const resetPasswordUrl = `http://localhost:8000/api/v1/reset_password/${resetToken}`
     
-    const resetPasswordUrl = `${req.protocol}://${req.get('host')}/api/v1/password/reset/${resetToken}`
+    //const resetPasswordUrl = `${req.protocol}://${req.get('host')}/api/v1/password/reset/${resetToken}`
     const message = `Click here to reset your password \n\n ${resetPasswordUrl} \n\n If you didn't request for password rest, ignore this message`
     
     try {
@@ -284,7 +323,8 @@ module.exports = {
   updateUser,
   changePassword,
   deleteUser,
-  setUser,
-  getSingleUser
+  showMe,
+  getSingleUser,
+  resetPassword
 }
 

@@ -7,11 +7,12 @@ const {
   loginUser, 
   signUpUser, 
   logOutUser, 
-  setUser,  
+  showMe,  
   getSingleUser,
   updateUser,
   changePassword,
-  deleteUser
+  deleteUser,
+  resetPassword
 } = require('../controllers/user/controller');
 
 
@@ -27,7 +28,7 @@ router.post('/login', loginUser);
 
 router.post('/logout', logOutUser);
 
-router.post('/setuser', is_User_Authenticated, setUser);
+router.get('/showMe', is_User_Authenticated, showMe);
 
 router.put('/users/:id/profile_change', is_User_Authenticated, updateUser);
 
@@ -35,9 +36,7 @@ router.put('/users/:id/change_password', is_User_Authenticated, changePassword);
 
 router.delete('/users/delete_profile', is_User_Authenticated, deleteUser);
 
-router.post('/forgot_password', (req, res) => {
-
-})
+router.post('/forgot_password', resetPassword)
 
 router.put('/reset_password/:token', (req, res) => {
   /* 
@@ -67,11 +66,6 @@ router.put('/reset_password/:token', (req, res) => {
 router.get('/me', (req,res) => {
 
 })
-
-router.put('/password/change', (req,res) => {
-
-})
-
 
 
 module.exports = router;

@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "Start": "node backend/server",
+    "start": "node backend/server",
     "devStart": "nodemon server.js"
   },
   "keywords": [],
@@ -19,13 +19,15 @@
     "cloudinary": "^1.28.0",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
+    "crypto": "^1.0.1",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
     "express-fileupload": "^1.2.1",
     "express-validator": "^6.13.0",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.0.12",
-    "nodemailer": "^6.7.1",
+    "nodemailer": "^6.7.2",
+    "nodemailer-smtp-transport": "^2.7.4",
     "uuid": "^8.3.2",
     "validator": "^13.7.0"
   }
