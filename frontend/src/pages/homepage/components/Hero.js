@@ -29,15 +29,16 @@ const commonBtnStyle = css`
 `
 
 const HeroContainer = styled.section`
+  //margin-top: 100px;
   min-height: 100vh;
   min-width: 100vw;
-  background: url("./images/scene-1.jpg") no-repeat center;
-  background-cover: cover;
+  background: url("./images/pichu1.jpg") no-repeat center;
+  background-size: cover;
   display: flex;
   justify-content: center;
   align-items: flex-end;
   @media only screen and (max-width: 640px) {
-    background-image: url("./images/scene-2.jpg");
+    background-image: url("./images/pichu2.jpg");
   }
 `
 const HeroBanner = styled.div`

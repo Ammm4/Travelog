@@ -4,14 +4,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../../../redux/users/userActions';
 
 //============== Icons =====================//
-
+//AiOutlineLogout
 import { SiYourtraveldottv } from "react-icons/si";
 import { BiMenuAltLeft } from "react-icons/bi";
 import { MdClear } from "react-icons/md";
 import { Link, useRouteMatch } from 'react-router-dom';
 import { AiFillHome } from "react-icons/ai";
 import { MdOutlineLogout } from "react-icons/md";
-
+import { AiOutlineLogout } from "react-icons/ai";
 
 
 
@@ -53,7 +53,7 @@ const MenuBar = styled.div`
  display: none;
  font-size: 2.5rem;
  &:hover {
-   color: #888
+   color: #2a78cd;
  }
  @media only screen and (max-width: 768px){
    display: flex;
@@ -94,7 +94,7 @@ const NavMenu = styled.div`
     justify-content: space-around;
     min-width: 100%;
     height: calc(100vh - 70px);
-    background-color: var(--main-color);
+    background-color: #fff;
     top:70px;
     left:0;
     transform: ${props => props.menuBar? " translateX(0)" :" translateX(-100%)"};
@@ -152,22 +152,18 @@ const Button = styled.button`
   outline: none;
   padding: 8px 16px;
   border-radius: 11px;
-  letter-spacing: 1px;
+  letter-spacing: 2px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-family: 'Roboto', sans-serif;
-  color: #292929;
-  font-size: 0.66rem;
+  font-size: 0.67rem;
   background-color: transparent;
   cursor: pointer;
   transition: .5s all ease-in;
-  span {
-    font-size: 1.175rem;
-  }
   &:hover {
-    color: #888;
+    color: #2a78cd;
+    text-decoration: underline
   }
 `
 const Img = styled.span`
@@ -217,9 +213,9 @@ export default function Navbar({ active }) {
           </div>
           <Button onClick={ () => dispatch(logout()) }>
             <span>
-              <MdOutlineLogout />
+              <AiOutlineLogout style={{fontSize:'1.75rem'}}/>
             </span>
-            Log Out
+            LOG OUT
           </Button>
         </NavMenu>
       </Nav>

@@ -35,7 +35,7 @@ const sharedBtnCss = css `
   background-color:#fff;
   cursor: pointer;
   width: 98%;
-  margin: 0.75rem auto;
+  margin: 1.2rem auto;
   text-align: center;
   border: 1px solid #2e5c99;
   font-size: 15px;

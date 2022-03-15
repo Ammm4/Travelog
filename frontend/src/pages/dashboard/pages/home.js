@@ -32,7 +32,7 @@ export default function Home({ setModal }) {
  }
   return (
     <HomeContainer>
-      <Share setModal={setModal}/>
+      <Share setModal={setModal} homepage={true}/>
       <PostsWrapper>
         { newPosts &&
           newPosts.map(post => <Post key={post.post_id} post={post} setModal={setModal} singlePost={false}/>)

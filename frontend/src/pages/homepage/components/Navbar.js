@@ -12,17 +12,23 @@ const NavContainer = styled.div`
   left:0;
   width: 100%;
   height: 75px;
-  background-color: #fff;
+  background-color: transparent;
   color: #021b41;
   padding: 5px 8px;
   display: flex;
   justify-items: center;
   align-items: center;
+  transition: .5s all ease-in;
+  &:hover {
+    background-color: #ffffff;
+    background-image: linear-gradient(315deg, #ffffff 0%, #d7e1ec 74%);
+  }
 `
 const Nav = styled.nav`
   width: 100%;
   display: flex;
   justify-content: space-between;
+
 `
 const NavLogo = styled.div`
 display: flex;
@@ -42,16 +48,16 @@ const Logo = styled.h1 `
   color: #021b41;
 `
 const MenuBar = styled.div`
- display: none;
- font-size: 2.5rem;
- &:hover {
-   color: #888
- }
- @media only screen and (max-width: 768px){
-   display: flex;
-   justify-items: center;
-   align-items: center;
- }
+  display: none;
+  font-size: 2.5rem;
+  &:hover {
+    color: #2a78cd
+  }
+  @media only screen and (max-width: 768px){
+    display: flex;
+    justify-items: center;
+    align-items: center;
+  }
  `
 const NavMenu = styled.div`
   display: flex;
@@ -71,42 +77,51 @@ const NavMenu = styled.div`
 
   @media only screen and (max-width: 768px){ 
     position: absolute;
-    min-width: 100%;
-    height: calc(100vh - 70px);
-    background-color: #fff;
     top:0;
     left:0;
-    transform: ${props => props.menuBar? " translateY(70px)" :" translateY(-100%)"};
+    min-width: 100%;
+    height: 100vh;
+    z-index: -1;
+    background-color: #ffffff;
+    background-image: linear-gradient(315deg, #ffffff 0%, #d7e1ec 74%);
+    transform: ${props => props.menuBar? " translateY(0)" :" translateY(-100%)"};
     .nav-list {
-     height: 100%;
-     max-height: 300px;
-     flex-direction: column;
-     justify-content: space-around;
-  }
+       height: 100%;
+       max-height: 300px;
+       flex-direction: column;
+       justify-content: space-around;
+   }
  }
 `
 const NavLink =  styled(Link)`
-  text-decoration: none;
-  color: #292929;
-  transition: 250ms all ease-in;
-  &:hover {
-    color: #888
-  }
+ display: flex;
+ align-items: center;
+ text-decoration: none;
+ color: #021b41;
+ transition: 250ms all ease-in;
+ letter-spacing: 2px;
+ font-weight: 400;
+ &:hover {
+    color: #2a78cd;
+    text-decoration: underline;
+ }
 `
 const Button = styled.button`
-  border: none;
+  border: 1px solid #021b41;
   outline: none;
-  padding: 8px 16px;
-  border-radius: 12px;
+  padding: 16px 40px;
+  border-radius: 28px;
   letter-spacing: 1px;
   font-family: inherit;
-  color: #fff;
+  color: #021b41;
   font-size: 1rem;
-  background: linear-gradient(#4671ea, #ac34e7);
+  background-color: transparent;
   cursor: pointer;
   transition: .5s all ease-in;
   &:hover {
-    background: #888;
+    background-color: #2a78cd;
+    border: none;
+    color: #fff;
   }
 `
 export default function Navbar() {
@@ -129,7 +144,7 @@ export default function Navbar() {
             </li>
             <li className="nav-item">
               <NavLink to="/login">
-                <RiUserLine/> LOG IN
+                <RiUserLine style={{fontSize: '1.75rem'}}/> LOG IN
               </NavLink>
             </li>
           </ul>

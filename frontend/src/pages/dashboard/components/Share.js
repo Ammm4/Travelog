@@ -16,7 +16,7 @@ const ShareContainer = styled.article`
   max-width: 600px;
   padding: 8px;
   border-radius: 8px;
-  margin: 7.5rem auto 3rem auto;
+  margin: ${props => props.homepage ? '7.5rem auto 3rem auto': '3rem auto 3rem auto'};
   background-color: #fff;
   box-shadow: 1px 1px 4px rgba(0,0,0,0.5);
   cursor:pointer;
@@ -92,10 +92,10 @@ const Divider = styled.div`
   margin: auto 0;
   border-left: 2px solid #f0f0f0;
 `
-export default function Share({ setModal }) {
+export default function Share({ setModal, homepage }) {
   const { user } = useSelector(state => state.User);
   return (
-    <ShareContainer onClick={() => setModal({ postId: null, action: 'Create Post' })}>
+    <ShareContainer homepage={homepage} onClick={() => setModal({ postId: null, action: 'Create Post' })}>
       <ShareTitle>
         <img src={user.avatarURL} alt="avatar"/>
          <p>Create Post, Start a Forum ...</p>
