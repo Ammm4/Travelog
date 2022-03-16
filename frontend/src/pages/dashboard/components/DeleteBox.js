@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { PostTitle } from './PostForm';
+import { PostTitle, commonLabel, commonInput, BtnAdd} from './PostForm';
 
 export const Container = styled.div`
   margin: auto;
@@ -12,58 +12,32 @@ export const Container = styled.div`
   background-color: #fff;
 
   p {
-    margin-top: 2rem;
+    margin: 2rem 0;
+    color:#004684;
+    font-size: 1.15rem;
+    font-weight: 700;
     text-align: center;
-    letter-spacing: 1px;
+    letter-spacing: .5px;
   }
 `
 export const BtnGroup = styled.div`
     width: 100%;
-    max-width: 250px;
+    max-width: 400px;
     margin: 2rem auto;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around;
-
-    button {
-      display: inline-block;
-      letter-spacing: 1px;
-      margin: 0.4rem;
-      padding: 10px 16px;
-      border-radius: 5px;
-      font-family: inherit;
-      outline: none;
-      border: none;
-    }
-
-    .red-btn:hover {
-      background-color: red;
-      color: #fff;
-    }
-
-    .green-btn:hover {
-      background-color: green;
-      color: #fff;
-    }
 
     label {
-     display: block;
-     font-size: 0.9rem;
-     margin-bottom: 0.6rem;
-     letter-spacing: 1px;
+     ${commonLabel}
     }
 
     input {
-     outline: none;
-     width: 100%;
-     max-width: 400px;
-     border: 1px solid #eee;
-     font-size: 0.9rem;
-     letter-spacing: 1px;
-     padding: 10px 16px;
-     border-radius: 10px;
+     ${commonInput}
     }
 `
+  export const Button = styled(BtnAdd)`
+   display: block;
+   margin: 1.65rem auto;
+   width: 100%;
+  `
 export default function DeleteBox({ handleDeletePost, setModal, title }) {
   
   return (
@@ -71,10 +45,9 @@ export default function DeleteBox({ handleDeletePost, setModal, title }) {
       <PostTitle>{ title }</PostTitle>
       <p>Do you confirm to delete the profile ?</p>
       <BtnGroup>
-        <button className="red-btn" onClick={(e) => handleDeletePost(e)}>Confirm</button>
-        <button className="green-btn" onClick={() => setModal(null)}>Cancel</button>
+        <Button className="red-btn" onClick={(e) => handleDeletePost(e)}>Confirm</Button>
+        <Button className="green-btn" onClick={() => setModal(null)}>Cancel</Button>
       </BtnGroup>
-      
     </Container>
   )
 }

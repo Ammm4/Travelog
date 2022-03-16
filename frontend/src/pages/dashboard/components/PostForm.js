@@ -13,7 +13,6 @@ import Loading from "./Loading";
 const commonBtnStyle = css`
   border: none;
   outline: none;
-  background-color: transparent;
 `
 export const commonWrapper = css`
  margin: auto;
@@ -38,6 +37,19 @@ export const commonGroupWrapper = css`
    width: 100%;
   max-width: 700px;
 `
+export const commonInput = css`
+  width: 100%;
+  outline: none;
+  border: 1px solid #ccc;
+  padding: 16px 18px;
+  border-radius: 2px;
+  letter-spacing: 1px;
+  font-size: 1rem;
+  &:focus {
+        border: 1px solid #021b41;
+        border-left: 5px solid #021b41;
+  }
+`
 
 const Container = styled.form`
   ${commonWrapper}
@@ -51,17 +63,7 @@ const Container = styled.form`
   .form-group-input {
     margin: 2.25rem 0;
     input {
-      width: 100%;
-      outline: none;
-      border: 1px solid #ccc;
-      padding: 16px 18px;
-      border-radius: 2px;
-      letter-spacing: 1px;
-      font-size: 1rem;
-      &:focus {
-        border: 1px solid #021b41;
-        border-left: 5px solid #021b41;
-      }
+     ${commonInput}
     }
 
     #summary, #others, #transportations {
@@ -201,7 +203,7 @@ export const BtnAdd = styled.button`
  letter-spacing: .5px;
  color: #fff;
  &:hover {
- background-color: #2878cd;
+ background-color: #2a78cd;
 }
 `
 
