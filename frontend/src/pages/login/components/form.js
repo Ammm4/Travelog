@@ -84,12 +84,10 @@ export const InputContainer = styled.div`
   }
   
 `
-
 export const ToggleLink = styled.p`
   width: 100%;
   max-width: 400px;
   margin: 2rem auto;
-  //margin-top: 1rem;
   font-size: 0.95rem;
 `
 export const AuthLink = styled(Link)`

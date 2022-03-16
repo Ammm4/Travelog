@@ -77,13 +77,13 @@ const BtnGroup = styled.div`
   background-color:#fff;
   cursor: pointer;
   width: 98%;
-  margin:auto;
+  margin:0.25rem auto;
   text-align: center;
   font-size: 19px;
   color:#021b41;
   padding: 16px 40px;
   &:hover {
-    background-color: #eee;
+    background-color: #f9f9f9;
    }
   }
 `
@@ -101,9 +101,9 @@ export default function Share({ setModal, homepage }) {
          <p>Create Post, Start a Forum ...</p>
       </ShareTitle>
       <BtnGroup>
-        <button><IoAddCircle style={{fontSize:'2.2rem', color: '#021b41'}} />Post</button>
+        <button title="Create a Post"><IoAddCircle style={{fontSize:'2.2rem', color: '#021b41'}} />Post</button>
         <Divider />
-        <button><IoAddCircle style={{fontSize:'2.2rem', color: '#021b41'}}/>Forum</button>
+        <button title="Start a Forum"><IoAddCircle style={{fontSize:'2.2rem', color: '#021b41'}}/>Forum</button>
       </BtnGroup>
       
     </ShareContainer>

@@ -1,106 +1,49 @@
-import ReactStars from 'react-rating-stars-component';
 import React from 'react';
 import styled from 'styled-components';
 import { Rating } from 'react-simple-star-rating';
+import { 
+  commonWrapper, 
+  PostTitle, 
+  InputsGroupHeading, 
+  commonLabel, 
+  ImagePreview,
+  ImagePreviewImg,
+  commonGroupWrapper,
+  BtnAdd} from './PostForm';
 
 const PostWrapper = styled.article`
-  margin: auto;
-  margin-top: 6rem;
-  border-radius: 10px;
-  padding: 10px;
-  width: 98%;
-  max-width: 800px;
-  background-color: #fff;
+  ${commonWrapper}
 `
-const PostTitle =  styled.h1`
-  width: 100%;
-  margin: 1rem auto;
-  letter-spacing: 1px;
-  border-bottom: 2px solid #ccc;
-  max-width:300px;
-  font-family: 'Montserrat Alternates', sans-serif;
-  text-align: center;
-`
+
 const InfoGroup = styled.div`
-  margin: 1.5rem auto 2rem auto;
-  padding: 10px;
-  width: 100%;
-  max-width: 400px;
+  ${commonGroupWrapper}
 `
 const Infos = styled.div`
- margin-bottom: 0.75rem;
+ margin-bottom: 1.5rem;
 `
 const InfoLabel = styled.h5`
-  display: block;
-  margin-bottom: 0.5rem;
-`
-const InfoRatingsLabel = styled.h5`
-  display: block;
-`
-const InputsGroupHeading = styled.h4`
-  font-family: 'Montserrat Alternates', sans-serif;
-  font-size: 1.35rem;
-  margin-bottom: 1.5rem;
+  ${commonLabel}
 `
 
 //============== Images =============== //
-const ImagePreview = styled.div`
-  margin-top: 1rem;
-  display: grid;
-  grid-template-columns:1fr 1fr;
-  grid-column-gap: 2px;
-`
-const ImagePreviewImg = styled.div`
-  position: relative; 
-  width: 100%;
-  height: auto;
-    img {
-      width: 100%;
-      height: 200px;
-      object-fit:cover;
-    }
-     h5 {
-      position: absolute;
-      width:auto;
-      max-width: 98%;
-      top: 45%;
-      word-break: break-all;
-      text-align: center;
-      border-radius: 5px;
-      left: 1%;
-      padding: 8px 5px;
-      background-color: rgba(0,0,0,0.5);
-      color:#fff;
-      letter-spacing: 1px;  
-    }
-`
+
 const BtnGroup = styled.div`
-    width: 100%;
-    max-width: 400px; 
-    margin: auto;
+  width: 100%;
+  max-width: 700px; 
+  margin: 0 auto 2rem auto;
 `
-const Button = styled.button`
-  outline: none;
-  border: none;
-  background: #000;
-  padding: 6px 10px;
-  border-radius: 5px;
-  margin-right:3px;
-  color: #FFF;
-  letter-spacing: 1px;
+const Button = styled(BtnAdd)`
+  margin-right:1rem;
   &:hover{
     color:#ccc
   }
 `
 const Answer = styled.p`
-  font-size: 0.9rem;
+  font-size: 1rem;
 `
 
 const List = styled.ul`
   padding-left: 1.75rem;
-  li {
-    font-size: 0.85rem;
-  }
 `
 export default function PostConfirm(props) {
   const {
@@ -129,7 +72,7 @@ export default function PostConfirm(props) {
           <Answer>{ destinationInfo.summary }</Answer>
         </Infos>
         <Infos>
-          <InfoRatingsLabel>Ratings</InfoRatingsLabel>      
+          <InfoLabel>Ratings</InfoLabel>      
             <Rating
               ratingValue={ destinationInfo.ratings }
               iconsCount={5}
@@ -175,7 +118,7 @@ export default function PostConfirm(props) {
           <List>
             { 
              recommendations.heritages.map((item, index) => {
-               return <li key={index}>{item}</li>
+               return <li key={index}><Answer>{item}</Answer></li>
             })
             }
           </List>
@@ -185,7 +128,7 @@ export default function PostConfirm(props) {
           <List>
             { 
               recommendations.places.map((item, index) => {
-               return <li key={index}>{item}</li>
+               return <li key={index}><Answer>{item}</Answer></li>
             })
             }
           </List>
@@ -195,7 +138,7 @@ export default function PostConfirm(props) {
           <List>
             { 
              recommendations.todos.map((item, index) => {
-              return <li key={index}>{item}</li>
+              return <li key={index}><Answer>{item}</Answer></li>
             })
             }
           </List>

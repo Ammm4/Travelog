@@ -21,7 +21,7 @@ const NavContainer = styled.div`
   left:0;
   z-index: 1111;
   width: 100%;
-  height: 70px;
+  height: 75px;
   background-color: #fff;
   color: #021b41;
   border-bottom: 1px solid #efeff0;
@@ -67,7 +67,6 @@ const NavMenu = styled.div`
   transition: 250ms all ease-in;
   
   .nav-list {
-    height: 100%;
     width: 75px;
     list-style-type: none;
     border-bottom: ${props => props.active === 'home' ? '2.5px solid #021b41':''};
@@ -78,16 +77,16 @@ const NavMenu = styled.div`
 
   .avatar {
     display: flex;
-    width: 100px;
+    padding: 8px 0px;
     border-bottom: ${props => props.active === 'avatar' ? '2.5px solid #021b41' : ''};
     align-items: center;
     justify-content: center;
     margin-left: 50px;
-    margin-right: 50px;
+    margin-right: 55px;
   }
   
   
-  @media only screen and (max-width: 768px){ 
+  @media only screen and (max-width: 768px) { 
     position: absolute;
     flex-direction: column;
     align-items: center;
@@ -98,15 +97,17 @@ const NavMenu = styled.div`
     top:70px;
     left:0;
     transform: ${props => props.menuBar? " translateX(0)" :" translateX(-100%)"};
-    
     .nav-list {
       height: auto;
       max-height: 300px;
+    }
     .avatar {
       margin-left: 0;
-      margin-right: 0
-  } 
-  }
+      margin-right: 0;
+     } 
+     button {
+       padding: 0px;
+     }
  }
 `
 const NavLink =  styled(Link)`
@@ -119,7 +120,7 @@ const NavLink =  styled(Link)`
   transition: 250ms all ease-in;
   font-size: 2.2rem;
   &:hover {
-    color: #888;
+    color: #2a78cd;
   }
 `
 
@@ -133,25 +134,23 @@ const AvatarLink = styled(Link)`
   display: flex;
   align-items: center;
   height: 2rem;
-  border-radius:16px;
+  border-radius:0px 16px 16px 0px;
   font-size: 1rem;
   background-color: #fff;
   cursor: pointer;
-  
   span {
     margin-left: 0.65rem;
     text-transform: capitalize;
   }
   &:hover {
-    color: #1e1e1e;
-    background-color: rgb(244,244,244);
+    color: #fff;
+    background-color: #2a78cd;
   }
 `
 const Button = styled.button`
   border: none;
   outline: none;
   padding: 8px 16px;
-  border-radius: 11px;
   letter-spacing: 2px;
   display: flex;
   flex-direction: column;
@@ -171,7 +170,7 @@ const Img = styled.span`
   img {
     position: absolute;
     top:0;
-    left: -15px;
+    left: -1rem;
     height: 2rem;
     width: 2rem;
     vertical-align: center;
@@ -197,14 +196,14 @@ export default function Navbar({ active }) {
         </MenuBar>
         <NavMenu menuBar={ menuBar } active={active}>
           <ul className="nav-list">
-            <li className="nav-item" >
+            <li className="nav-item" onClick={() => setMenubar(false)}>
                 <NavLink to={`${match.url}/home`} active={active} >
                   <AiFillHome />
                 </NavLink>   
             </li>
           </ul>
           <div className="avatar" >
-            <AvatarLink to={`${match.url}/profile`}>
+            <AvatarLink to={`${match.url}/profile`} onClick={() => setMenubar(false)}>
               <Img>
                   <img src={ user.avatarURL } alt="avatar"/>
               </Img>

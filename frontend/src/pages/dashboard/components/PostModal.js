@@ -25,6 +25,9 @@ export const CloseModalBtn = styled.span`
   top: 1rem;
   font-size: 2.5rem;
   color: #fff;
+  &:hover {
+    color: #f00;
+  }
 `
 
 export default function PostModal({ setModal, postModalInfo }) {

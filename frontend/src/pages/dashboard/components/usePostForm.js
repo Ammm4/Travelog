@@ -187,6 +187,7 @@ export default function usePostForm(postId, action) {
     }
     
     if(btnName === 'create') {
+      setErrors(null);
       let err = checkFormErrors(postData);
       if(Object.keys(err).length !== 0) {
       return setErrors(err);
@@ -268,43 +269,43 @@ const error = {};
  const { destinationInfo, travellerInfo, recommendations, images } = data;
 
  if(destinationInfo.destination.trim() === "") {
-   error.destination = "Please enter the Destination"
+   error.destination = "Please enter the destination"
  } else if(destinationInfo.destination.trim().length > 20) {
    error.destination = "Destination must be lesser than 20 characters"
  }
  
  if(destinationInfo.country.trim() === "") {
-   error.country = "Please enter the Destination"
+   error.country = "Please enter the country"
  } else if(destinationInfo.country.trim().length > 20) {
    error.country = "Country must be lesser than 20 characters"
  } 
 
  if(destinationInfo.summary.trim() === "") {
-   error.summary = "Please Add a Summary"
+   error.summary = "Please add a summary"
  } else if(destinationInfo.country.trim().length > 300) {
    error.summary = "Summary must be lesser than 300 characters"
  } 
 
  if(images.length < 1) {
-   error.images="Please Add an Image"
+   error.images="Please add an image"
  }
  if(!travellerInfo.cost) {
-   error.costs ="Please Add Costs"
+   error.costs ="Please add costs"
  }
 
  if(!recommendations.budget) {
-   error.budget="Please Add Budget"
+   error.budget="Please add a budget"
  }
  if(recommendations.places.some(place => place.trim() === "")) {
-   error.places="Please Add Place/s"
+   error.places="Please add a place"
  }
 
  if(recommendations.heritages.some(heritage => heritage.trim() === "")) {
-   error.heritages="Please Add Heritage/s"
+   error.heritages="Please add a heritage"
  }
 
  if(recommendations.todos.some(todo => todo.trim() === "")) {
-   error.todos="Please Add Heritage/s"
+   error.todos="Please add a todo"
  }
 
  return error;

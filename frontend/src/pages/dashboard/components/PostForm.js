@@ -1,4 +1,3 @@
-import ReactStars from "react-rating-stars-component";
 import React from 'react';
 import styled, { css } from 'styled-components';
 import { useSelector } from "react-redux";
@@ -16,72 +15,91 @@ const commonBtnStyle = css`
   outline: none;
   background-color: transparent;
 `
-const Container = styled.form`
-  margin: auto;
+export const commonWrapper = css`
+ margin: auto;
   margin-top: 6rem;
-  border-radius: 10px;
+  border-radius: 6px;
   padding: 10px;
-  width: 98%;
+  width: 99%;
   max-width: 800px;
-  background-color: #fff;
+  background-color: #fff; 
+`
+export const commonLabel = css`
+  display: block;
+  color:#004684;
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin-bottom: 0.6rem;
+  letter-spacing: .5px;
+`
+export const commonGroupWrapper = css`
+   margin: 1.5rem auto 2rem auto;
+   padding: 10px;
+   width: 100%;
+  max-width: 700px;
+`
+
+const Container = styled.form`
+  ${commonWrapper}
   .form-group {
-    margin: 1.5rem auto 2rem auto;
-    padding: 10px;
-    width: 100%;
-    max-width: 435px;
+    ${commonGroupWrapper}
   }
   label {
-      display: block;
-      font-size: 0.9rem;
-      margin-bottom: 0.5rem;
+      ${commonLabel}
     }
-  .done-btn {
-    margin: -2rem auto 2rem auto;
-    padding: 10px;
-    width: 100%;
-    max-width: 400px;
-  }
+  
   .form-group-input {
-    margin-bottom: 0.75rem;
+    margin: 2.25rem 0;
     input {
       width: 100%;
       outline: none;
-      border: 1px solid #eee;
-      padding: 10px 16px;
-      border-radius: 10px;
+      border: 1px solid #ccc;
+      padding: 16px 18px;
+      border-radius: 2px;
       letter-spacing: 1px;
+      font-size: 1rem;
+      &:focus {
+        border: 1px solid #021b41;
+        border-left: 5px solid #021b41;
+      }
     }
 
     #summary, #others, #transportations {
       resize: none;
+      outline: none;
       width: 100%;
       height: 150px;
-      border: 1px solid #eee;
+      border: 1px solid #ccc;
       padding: 10px 16px;
-      border-radius: 14px;
+      border-radius: 2px;
+      font-size: 1rem;
       font-family: inherit;
+      &:focus {
+        border: 1px solid #021b41;
+        border-left: 5px solid #021b41;
+      }
     }
     select {
-      padding: 10px 16px;
-      border-radius: 25px;
+      outline: none;
+      padding: 16px 40px 16px 5px;
+      border-radius: 2px;
+      font-size: 1rem;
       cursor:pointer;
+      &:focus {
+        border: 1px solid #021b41;
+        border-left: 5px solid #021b41;
+      }
     }
   }
-  .form-group-input-ratings {
-     margin-bottom: 1.25rem;
-     label {
-       margin-bottom: 0;
-     }
-   }
 `
-export const PostTitle = styled.h2`
+export const PostTitle = styled.h1`
   width: 100%;
-  margin: 1rem auto;
+  margin: 3rem auto;
   font-size: 40px;
-  font-weight: 400;
+  font-weight: 500;
   letter-spacing: 1px;
   border-bottom: 2px solid #ccc;
-  max-width:300px;
+  max-width:400px;
   font-family: 'Montserrat Alternates', sans-serif;
   text-align: center;
   color: #021b41;
@@ -91,24 +109,26 @@ const BtnImg = styled.button`
   font-size: 1.35rem;
   display: flex;
   align-items: center;
+  color:#021b41;
   * {
     margin-right: 5px;
     font-size: 2.5rem;
   }
 `
 
-const InputsGroupHeading = styled.h4`
+export const InputsGroupHeading = styled.h2`
   font-family: 'Montserrat Alternates', sans-serif;
-  font-size: 1.35rem;
+  font-size: 1.5rem;
   margin-bottom: 1.5rem;
+  font-weight: 600;
 `
-const ImagePreview = styled.div`
+export const ImagePreview = styled.div`
   margin-top: 1rem;
   display: grid;
   grid-template-columns:1fr 1fr;
   grid-column-gap: 2px;
 `
-const ImagePreviewImg = styled.div`
+export const ImagePreviewImg = styled.div`
   position: relative; 
   width: 100%;
   img {
@@ -138,25 +158,28 @@ const ImagePreviewImg = styled.div`
       letter-spacing: 1px;
   }
   label {
-      font-weight: 600;
-      padding: 8px;
+      font-weight: 500;
+      padding-top: 8px;
   }
   textarea {
       display: inline-block;
-      margin-top:0.5rem;
       width: 100%;
       height: 44px;
       font-size: 0.9rem;
       font-family: inherit;
       outline: none;
-      border: 2px solid #ccc;
-      border-radius: 5px;
+      border: 1px solid #ccc;
+      border-radius: 2px;
       padding: 8px;
       resize: none;
+      &:focus {
+        border: 1px solid #021b41;
+        border-left: 5px solid #021b41;
+      }
   }
 `
 const ArrayOfInputs = styled.div`
-  margin: 0.75rem auto;
+  //margin: 0.75rem auto;
 `
 const InputElement = styled.div`
   margin: 0.5rem auto;
@@ -169,13 +192,17 @@ const InputElement = styled.div`
     }
   } 
 `
-const BtnAdd = styled.button`
-${commonBtnStyle}
-font-size: 0.75rem;
-padding: 6px 8px;
-border-radius: 5px;
-background-color: #000;
-color: #fff;
+export const BtnAdd = styled.button`
+ ${commonBtnStyle}
+ font-size: 1rem;
+ padding: 16px 40px;
+ border-radius: 2px;
+ background-color: #021b41;
+ letter-spacing: .5px;
+ color: #fff;
+ &:hover {
+ background-color: #2878cd;
+}
 `
 
 export default function PostForm(props) {
@@ -254,7 +281,7 @@ export default function PostForm(props) {
            <div>
             
            </div>
-          <div className="form-group-input-ratings">
+          <div className="form-group-input">
             <label htmlFor="ratings">Ratings </label>
             <Rating
              ratingValue={ destinationInfo.ratings }
@@ -294,7 +321,7 @@ export default function PostForm(props) {
                                  type="text"
                                  value={img.imgTitle}
                                  maxLength="50" 
-                                 placeholder="Add a Title..."
+                                 placeholder="Title/Name..."
                                  onChange={(e) => handleTitle(e,index)}
                                  onKeyUp={(e) => handleKeyUp(e) }
                              />
@@ -315,6 +342,7 @@ export default function PostForm(props) {
                value={ travellerInfo.numOfPeople }
                onChange = {(e) => handleTravellerInfo(e) }
                >
+              <option disabled></option>
               <option value="1">1</option>
               <option value="2">2</option>
               <option value="3">3</option>
@@ -345,6 +373,7 @@ export default function PostForm(props) {
             <label htmlFor="numOfDays">Number of Days To Spent</label>
             <select id="numOfDays" name="numOfDays" value = { recommendations.numOfDays } 
               onChange = {(e) => handleRecommendations(e) }>
+              <option disabled></option>
               <option value="1 day">1 day</option>
               <option value="2 days">2 days</option>
               <option value="3 days">3 days</option>
@@ -433,9 +462,9 @@ export default function PostForm(props) {
           </div>
         </div>
 
-        <div className="form-group">
+        <div className="form-group" style={{marginBottom:'0'}}>
           <InputsGroupHeading>Others: </InputsGroupHeading>   
-          <div className="form-group-input">
+          <div className="form-group-input" style={{marginBottom:'0'}}>
             <label htmlFor="others">Access to community, ease of transportation, safety..</label>
             <textarea 
               id="others" 
@@ -445,7 +474,7 @@ export default function PostForm(props) {
               />
           </div>
         </div> 
-      <div className="done-btn">
+      <div className="form-group" style={{marginTop:'0'}}>
         <BtnAdd onClick={(e) => toggleForm(e, 'create')}>Done</BtnAdd>
       </div>
       </Container>
