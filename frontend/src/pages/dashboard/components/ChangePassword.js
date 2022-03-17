@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { useHistory } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { Container, EditHeading } from './profileEdit';
+import { commonLabel, commonInput } from './PostForm';
 import { ErrorDisplay } from '../../signup/components/form';
 import { changePassword } from '../../../redux/users/userActions';
 import { BiArrowBack } from "react-icons/bi";
@@ -11,38 +12,35 @@ import { UPDATE_USER_RESET } from '../../../redux/users/userTypes';
 
 const Form = styled.form`
   width: 100%;
-  max-width: 400px;
+  max-width: 600px;
   margin: 2rem auto;
-  
+  h2 {
+    font-family: 'Montserrat Alternates', sans-serif;
+    font-size: 40px;
+    font-weight: 400;
+    text-align: center;
+    letter-spacing: 0.8px;
+    color: #021b41;
+  }
   .form-group {
-  margin: 0.5rem auto 0.5rem auto;
+  margin: 1.5rem auto 0.5rem auto;
   padding: 10px;
   width: 100%;
   }
-
   label {
-  display: inline-block;
-  font-size: 0.9rem;
-  margin-bottom: 0.6rem;
-  letter-spacing: 1px;
+  ${commonLabel}
  }
   input {
-  outline: none;
-  width: 99%;
-  border: 1px solid #eee;
-  font-size: 0.9rem;
-  letter-spacing: 1px;
-  padding: 10px 16px;
-  border-radius: 10px;
-   &:focus {
-    border: 1px solid #111;
-   }
+  ${ commonInput }
   }
  input[type="submit"] {
-   color: white;
-   background-color: green;
+   color: #fff;
+   background-color: #021b41;
+   &:hover {
+     background-color: #2a78cd;
+   }
    &:disabled {
-     background-color: red;
+     background-color: #ccc;
    }
   }
    
@@ -109,9 +107,10 @@ export default function ChangePassword() {
     <Container>
       <EditHeading>
         <button onClick={(e) => history.goBack()}><BiArrowBack/> <span>Go Back</span></button>
-        <h2>Change Password</h2>
       </EditHeading>
+      
       <Form>
+        <h2>Change Password</h2>
         <div className="form-group">
           <label htmlFor="oldPassword"><b>Old Password</b></label>
             <input 

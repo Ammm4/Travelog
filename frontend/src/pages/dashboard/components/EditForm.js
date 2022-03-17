@@ -1,21 +1,10 @@
 import React from 'react';
-import styled, { css } from 'styled-components';
+import styled from 'styled-components';
+import { commonLabel, commonInput } from './PostForm';
+import { InfoHeader } from '../pages/profile';
 
-const sharedInputCss = css`
-  outline: none;
-  width: 100%;
-  max-width: 400px;
-  border: 1px solid #eee;
-  font-size: 0.9rem;
-  letter-spacing: 1px;
-  padding: 10px 16px;
-  border-radius: 10px;
-`
 const Container = styled.div`
- padding: 30px 10px;
- h3 {
-   letter-spacing: 2px;
- }
+ padding: 25px 10px;
 `
 export const Form = styled.form`
 .form-group {
@@ -24,22 +13,20 @@ export const Form = styled.form`
   width: 100%;
 }
 input {
-  ${sharedInputCss}
+  ${ commonInput }
 }
 label {
-  display: block;
-  font-size: 0.9rem;
-  margin-bottom: 0.6rem;
-  letter-spacing: 1px;
+  ${ commonLabel }
 }
 textarea {
   resize: none;
   font-family: 'Roboto', sans-serif;
   height: 150px;
-  ${sharedInputCss}
+  ${ commonInput }
 }
-input:focus, textarea:focus {
-  border: 1px solid blue;
+textarea:focus {
+  border: 1px solid #021b41;
+  border-left: 5px solid #021b41;
 }
 `
 export default function EditForm(props) {
@@ -50,21 +37,21 @@ export default function EditForm(props) {
   }
   return (
     <Container>
-      <h3>INFOs</h3>
+      <InfoHeader>Infos</InfoHeader>
       <Form>
         <div className="form-group">
-          <label htmlFor="username"><b>Username</b></label>
+          <label htmlFor="username">Username</label>
             <input 
               id="username" 
               name="username" 
               type="text"
-              value={ infos.name }
+              value={ infos.username }
               onChange = {(e) => handleChange(e) }
               placeholder="Enter Username Please"/>
 
         </div>
         <div className="form-group">
-          <label htmlFor="email"><b>Email</b></label>
+          <label htmlFor="email">Email</label>
             <input 
               id="email" 
               name="email" 
@@ -74,7 +61,7 @@ export default function EditForm(props) {
               placeholder="Enter Email Please!"/>
         </div>
         <div className="form-group">
-          <label htmlFor="about"><b>About</b></label>
+          <label htmlFor="about">About</label>
             <textarea 
               id="about"
               name="about"
@@ -83,7 +70,7 @@ export default function EditForm(props) {
             />
         </div>
         <div className="form-group">
-          <label htmlFor="hobbies"><b>Hobbies</b></label>
+          <label htmlFor="hobbies">Hobbies</label>
             <textarea 
               id="hobbies"
               name="hobbies"
@@ -92,7 +79,7 @@ export default function EditForm(props) {
             />
         </div>
          <div className="form-group">
-          <label htmlFor="city"><b>City</b></label>
+          <label htmlFor="city">City</label>
             <input 
               id="city" 
               name="city" 
@@ -102,7 +89,7 @@ export default function EditForm(props) {
               placeholder="Enter City Please!"/>
         </div>
          <div className="form-group">
-          <label htmlFor="email"><b>Country</b></label>
+          <label htmlFor="email">Country</label>
             <input 
               id="country" 
               name="country" 

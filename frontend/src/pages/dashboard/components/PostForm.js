@@ -9,10 +9,10 @@ import { IoIosImages } from "react-icons/io";
 import { MdClear } from "react-icons/md";
 import Loading from "./Loading";
 
-
 const commonBtnStyle = css`
   border: none;
   outline: none;
+  font-size: 1rem;
 `
 export const commonWrapper = css`
  margin: auto;
@@ -111,13 +111,12 @@ const BtnImg = styled.button`
   font-size: 1.35rem;
   display: flex;
   align-items: center;
+  background-color: transparent;
   color:#021b41;
-  * {
-    margin-right: 5px;
-    font-size: 2.5rem;
+   &:hover {
+    color: #2a78cd;
   }
 `
-
 export const InputsGroupHeading = styled.h2`
   font-family: 'Montserrat Alternates', sans-serif;
   font-size: 1.5rem;
@@ -195,14 +194,13 @@ const InputElement = styled.div`
   } 
 `
 export const BtnAdd = styled.button`
- ${commonBtnStyle}
- font-size: 1rem;
+ ${ commonBtnStyle }
  padding: 16px 40px;
  border-radius: 2px;
  background-color: #021b41;
  letter-spacing: .5px;
  color: #fff;
- &:hover {
+  &:hover {
  background-color: #2a78cd;
 }
 `
@@ -288,13 +286,14 @@ export default function PostForm(props) {
             <Rating
              ratingValue={ destinationInfo.ratings }
              iconsCount={5}
+             fillColor='#2a78cd'
              allowHalfIcon={true}
              onClick={ newValue => setDestinationInfo({ ...destinationInfo, ratings: newValue }) }
             />
                 
           </div>
           <div className="form-group-input">
-            <BtnImg htmlFor="images" onClick={ imageUploader }><IoIosImages /> 
+            <BtnImg htmlFor="images" onClick={ imageUploader }><IoIosImages style={{fontSize: '2rem'}} /> 
               { imgPreview.length > 0 ? 'Add More Images' : 'Upload Images' }
             </BtnImg>
             <input 

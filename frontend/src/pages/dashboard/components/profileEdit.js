@@ -1,53 +1,30 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { useSelector, useDispatch } from 'react-redux';
-import { UserImageContainer, UserAvatar, UserCover, UserTitle, sharedDivCss } from '../pages/profile';
+import { 
+  ProfileContainer, 
+  UserProfile, 
+  UserImageContainer, 
+  UserAvatar, 
+  UserCover, 
+  UserTitle } from '../pages/profile';
+import { Button } from './DeleteBox';
 import { useHistory } from 'react-router-dom';
 
 import { updateUser } from '../../../redux/users/userActions';
 //Icons FiCamera
 import { BiArrowBack } from "react-icons/bi";
 import { FaCamera } from "react-icons/fa";
-import { FcAbout } from "react-icons/fc";
 import EditForm from './EditForm';
 import Loading from './Loading';
 
 
 export const Container = styled.div`
-  width: 98%;
-  border-radius: 8px;
-  margin: 4.6rem auto 1.5rem auto;
-  background-color: transparent;
+  width: 99%;
+  margin: 5.5rem auto 1.5rem auto;
 `
-const ProfileContainer = styled.div`
-  width: 100%;
-  max-width: 600px;
-  background-color: #FFF;
-  padding-bottom: 5px;
-  border-radius: 8px;
-  margin: 1.5rem auto 1.5rem auto;
-  box-shadow: 2px 2px 4px rgba(0,0,0,0.5); 
-`
-
-const UserProfile = styled.div`
- padding: 0;
- margin: 0;
- width: 100%;
- background: transparent;
- box-shadow: none;
-`
-
 export const EditHeading = styled.div`
   width: 100%;
-  h2 {
-    margin-top: 0.75rem;
-    font-family: 'Montserrat Alternates', sans-serif;
-    font-size: 40px;
-    font-weight: 400;
-    text-align: center;
-    letter-spacing: 0.8px;
-    color: #021b41;
-  }
   button {
     display: inline-block;
     display: flex;
@@ -55,33 +32,24 @@ export const EditHeading = styled.div`
     outline: none;
     border: none;
     background: transparent;
-    letter-spacing: 1px;
+    letter-spacing: 0.8px;
     font-size: 1.15rem;
     cursor: pointer;
     span {
       margin-left: 5px;
     }
+    &:hover {
+      text-decoration: underline;
+      color: #2a78cd;
+    }
   }
 `
-const EditButton = styled.button`
-  ${sharedDivCss}
-  display: block;
-  width: 99%;
-  max-width: 225px;
-  outline: none;
-  border: none;
-  padding: 6px 12px;
-  background-color: dodgerblue;
-  &:disabled {
-    background-color: grey;
-  }
-  font-size: 1.25rem;
-  color: #fefefe;
-`
+const EditButton = styled(Button)``
+  
 
 const initialState = (user) => {
-  const { name, email, about, city, country, hobbies } = user;
-   return { name, email, about, city, country, hobbies }
+  const { name: username, email, about, city, country, hobbies } = user;
+   return { username, email, about, city, country, hobbies }
 }
 export default function ProfileEdit() {
   const { userUpdating, user, success } = useSelector(state => state.User)
@@ -140,7 +108,7 @@ export default function ProfileEdit() {
   const handleSubmit = (e) => {
     e.preventDefault();
     containerRef.current.scrollIntoView();
-    dispatch(updateUser(user._id, {...infos, coverImg, avatarImg }))
+    dispatch(updateUser(user.userId, {...infos, coverImg, avatarImg }))
   }
   
   return (
@@ -148,9 +116,9 @@ export default function ProfileEdit() {
       {userUpdating && <Loading msg="Profile Updating"/>}
      <EditHeading>
        <button onClick={(e) => history.goBack()}><BiArrowBack/> <span>Go Back</span></button>
-       <h2>Edit Profile</h2>
      </EditHeading>
-     <ProfileContainer>
+     <ProfileContainer style={{marginTop: '0px'}}>
+       <h2>Edit Profile</h2>
        <UserProfile>
         <UserImageContainer>
           <UserCover>
@@ -179,22 +147,21 @@ export default function ProfileEdit() {
           </UserAvatar>
           <UserTitle>{ user.name }</UserTitle>
         </UserImageContainer>
-       </UserProfile>
-       
-      <EditForm infos={ infos } setInfos={setInfos} saveButton={saveButton} setSave={setSaveButton}/> 
-     
+        <EditForm infos={ infos } setInfos={setInfos} saveButton={saveButton} setSave={setSaveButton}/>  
+    
       <EditButton 
         disabled={!saveButton}
         onClick={ (e) => handleSubmit(e) }
-      >
+        >
         Save & Exit
       </EditButton>
        <EditButton 
         disabled={!saveButton}
         onClick={(e) => handleReset(e) }
-      >
+        >
         Reset
       </EditButton>
+      </UserProfile>
      </ProfileContainer>
     </Container>
   )

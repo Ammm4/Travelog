@@ -5,7 +5,6 @@ import styled, {css} from 'styled-components';
 import Post from '../components/Post';
 import { PostsWrapper } from './home';
 import Share from '../components/Share';
-//Import
 
 
 //Icons SiAboutdotme FaUserCog 
@@ -25,11 +24,12 @@ export const sharedDivCss = css`
   width: 100%;
   max-width: 600px;
   border-radius: 8px;
+  font-size: 1rem;
   margin: 1rem auto 1.5rem auto;
   background-color: #fff;
   box-shadow: 2px 2px 4px rgba(0,0,0,0.5);
 `
-const sharedBtnCss = css `
+export const sharedBtnCss = css `
   display: block;
   outline: none;
   background-color:#fff;
@@ -38,11 +38,11 @@ const sharedBtnCss = css `
   margin: 1.2rem auto;
   text-align: center;
   border: 1px solid #2e5c99;
-  font-size: 15px;
+  font-size: 1rem;
   color:#2671d3;
   padding: 16px 40px;
   &:hover {
-    background-color: #2a78cd;
+     background-color: #2a78cd;
      color:#fff;
      border: none;
    }
@@ -134,11 +134,14 @@ export const UserTitle = styled.h2`
   letter-spacing: 0.8px;
   color: #021b41;
 `
+export const InfoHeader = styled.h3`
+  font-family: 'Montserrat Alternates', sans-serif;
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+`
 export const UserInfo = styled.div`
   padding: 20px 14px;
-  h3 {
-    margin-bottom: 1rem;
-  }
   div {
     margin-top: 0.5rem;
     display: grid;
@@ -156,20 +159,10 @@ export const UserInfo = styled.div`
     font-size: 0.9rem;
   }
 `
-const Btngroup = styled.div`
-  ${sharedDivCss};
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  padding: 8px;
-  button {
-    ${sharedBtnCss}
-  }
-`
-
 
 const EditLink = styled(Link)`
   text-decoration: none;
-  ${sharedBtnCss}   
+  ${sharedBtnCss}
 `
 const SettingBtnGroup = styled.div`
   width: 100%;
@@ -219,7 +212,7 @@ export default function Profile({ setIsModal }) {
   const match = useRouteMatch();
   return (
     <ProfileContainer>
-     <h2 style={{marginTop: '15px'}}>{user.name}'s Profile</h2>
+     <h2 style={{marginTop: '15px'}}>{user.name }'s Profile</h2>
      <UserProfile>
        <UserImageContainer>   
         <UserCover>
@@ -231,7 +224,7 @@ export default function Profile({ setIsModal }) {
         <UserTitle>{ user.name }</UserTitle>
        </UserImageContainer>
        <UserInfo>
-         <h3>Info</h3> 
+         <InfoHeader>Infos</InfoHeader> 
          <div>
            <span><IoInformationCircleSharp /></span>
            <p><b>About:</b> { user.about }</p>

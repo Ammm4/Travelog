@@ -33,10 +33,10 @@ export const BtnGroup = styled.div`
      ${commonInput}
     }
 `
-  export const Button = styled(BtnAdd)`
+export const Button = styled(BtnAdd)`
    display: block;
    margin: 1.65rem auto;
-   width: 100%;
+   width: 99%;
   `
 export default function DeleteBox({ handleDeletePost, setModal, title }) {
   
