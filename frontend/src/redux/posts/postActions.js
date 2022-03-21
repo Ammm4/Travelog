@@ -19,7 +19,6 @@ import {
   DELETE_POST_SUCCESS,
   DELETE_POST_ERROR,
   
-  LIKE_POST_REQUEST,
   LIKE_POST_SUCCESS,
   LIKE_POST_ERROR,
 
@@ -127,11 +126,7 @@ export const getSinglePost = ( postId ) => {
 // ================================ Get Single Post Action End ====================== //
 
 // ================================ Like Post Action Start ====================== //
-const likePostRequest = () => {
-  return {
-    type: LIKE_POST_REQUEST
-  }
-}
+
 const likePostSuccess = (data) => {
   return {
     type: LIKE_POST_SUCCESS,
@@ -146,7 +141,6 @@ const likePostError = (error) => {
 }
 export const likePost = (postId) => {
   return async (dispatch) => {
-    dispatch(likePostRequest())
     try {
       let { data } = await axios.put(`/api/v1/posts/${postId}/like_post`);
       dispatch(likePostSuccess(data))

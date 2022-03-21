@@ -19,7 +19,6 @@ import {
   DELETE_POST_SUCCESS,
   DELETE_POST_ERROR,
 
-  LIKE_POST_REQUEST,
   LIKE_POST_SUCCESS,
   LIKE_POST_ERROR,
   
@@ -118,7 +117,6 @@ export const postReducer = (state = { posts: [] }, action) => {
 export const singlePostReducer = (state = { singlepost: {} }, action) => {  
     switch(action.type) {
      case GET_SINGLE_POST_REQUEST:
-     case LIKE_POST_REQUEST:
        return {
          ...state,
          loading: true,    

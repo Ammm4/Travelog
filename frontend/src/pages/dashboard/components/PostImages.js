@@ -123,7 +123,7 @@ export default function PostImages({ images, postId }) {
               currentIndex={currentIndex}
               onClick={(e) => handleImageClick(e)}
             >
-              <img src={ image.imgURL } alt="barcelona"/>
+              <img src={ image.imgURL } alt="Destination Images"/>
               <span className="image_number">{`${index + 1}/${ images.length }`}</span>
               <span className="image_name">{image.imgName}</span>
             </ImgContainer>)  

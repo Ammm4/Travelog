@@ -4,7 +4,7 @@ import Comment from './Comment';
 import { useSelector } from 'react-redux';
 
 
-const PostComments = styled.div`
+export const PostComments = styled.div`
   padding: 8px;
   margin-right: 5px;
   min-height: 250px;

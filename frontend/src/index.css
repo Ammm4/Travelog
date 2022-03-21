@@ -43,3 +43,12 @@ input::-webkit-inner-spin-button {
 input[type=number] {
   -moz-appearance: textfield;
 }
+
+button {
+  display: inline-block;
+  outline: none;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: #021b41;
+}

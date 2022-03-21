@@ -5,6 +5,7 @@ import { useSelector, useDispatch } from 'react-redux';
 export default function usePost( postId ) {
   const { singlepost: post } = useSelector(state => state.SinglePost);
   const [showComment, setShowComment] = useState(false);
+  const [showLikes, setShowLikes] = useState(false);
   const [commentText, setCommentText] = useState('');
   const dispatch = useDispatch();
   
@@ -24,6 +25,8 @@ export default function usePost( postId ) {
     {
       post,
       commentText,
+      showLikes,
+      setShowLikes,
       showComment,
       setShowComment,
       setCommentText,

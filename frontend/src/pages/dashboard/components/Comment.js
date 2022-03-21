@@ -17,30 +17,19 @@ export const useCommentAPI = () => {
   return useContext(ContextCommentAPI)
 };
 
-
-const sharedBtnCss = css`
-  display: inline-block;
-  outline: none;
-  border: none;
-  background: transparent;
-`
-const AvatarImage = styled.img`
-  src: ${props => props.src};
-  display: inline-block;
-  width: 35px;
-  height: 35px;
-  border-radius: 50%;
-  margin-right: 0.25rem;
-`
-const AvatarImage1 = styled.img`
-  src: ${props => props.src};
+export const AvatarImage = styled.img`
   display: inline-block;
   width: 28px;
   height: 28px;
-  border-radius: 50%;
   margin-right: 0.25rem;
 `
-const AuthorName = styled.span`
+const AvatarImage1 = styled.img`
+  display: inline-block;
+  width: 28px;
+  height: 28px;
+  margin-right: 0.25rem;
+`
+export const AuthorName = styled.span`
  display: flex;
  align-items: center;
  font-weight: 600;
@@ -53,7 +42,7 @@ const CommentLike = styled.div`
     padding: 1rem 1rem 0 0 ;
   }
 `
-const CommentContainer = styled.div`
+export const CommentContainer = styled.div`
  margin-bottom: 0.5rem;
  display: grid;
  grid-row-gap:0.08rem;
@@ -64,7 +53,6 @@ const CommentContainer = styled.div`
 `
 
 const Button = styled.button`
-  ${sharedBtnCss}
   display: inline-block;
   margin-left: 0.35rem;
   color: #888;
@@ -151,7 +139,6 @@ const CommentPost = styled.div`
         }
      }
       button {
-        ${sharedBtnCss}
         display: inline-block;
         background-color: #0275d8;
         color: #fff;
@@ -288,10 +275,6 @@ export default function Comment({ comment }) {
                 &&
               <Replies />
             }
-
-        
-            
-
             { 
               showReplyInput 
                 &&
@@ -302,7 +285,7 @@ export default function Comment({ comment }) {
                   </Link>
                   <div>
                     <textarea            
-                      placeholder="Got a question??, Ask John!"
+                      placeholder="Add a comment"
                       value={ text }
                       onChange={ (e) => setText(e.target.value) }
                       onKeyUp={ (e) => handleKeyUp(e) }

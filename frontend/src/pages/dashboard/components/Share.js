@@ -20,8 +20,6 @@ const ShareContainer = styled.article`
   background-color: #fff;
   box-shadow: 1px 1px 4px rgba(0,0,0,0.5);
   cursor:pointer;
-
-  
 `
 const ShareTitle = styled.div`
   padding: 20px 8px;
@@ -32,7 +30,7 @@ const ShareTitle = styled.div`
   img {
     width: 38px;
     height:38px;
-    border-radius: 50%;
+    //border-radius: 50%;
     margin-right: 5px;
   }
   input {
