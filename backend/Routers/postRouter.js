@@ -10,7 +10,9 @@ router.get('/posts/:id', getSinglePost);
 
 router.route('/posts').post( is_User_Authenticated, addPost);
 
-router.route('/posts/:id').put(is_User_Authenticated, updatePost).delete(is_User_Authenticated, deletePost);
+router.route('/posts/:id')
+.put(is_User_Authenticated, updatePost)
+.delete(is_User_Authenticated, deletePost);
 
 
 

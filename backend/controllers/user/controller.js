@@ -36,7 +36,7 @@ const signUpUser = asyncFunctionWrapper(async (req, res, next) => {
   // Check if email already exists
   const emailExists = await UserModel.findOne({email: email});
   if(emailExists) return next(new ErrorHandler('User already exists', 400));
-
+ 
  // If email doesnot exists hash the password
   const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -60,12 +60,12 @@ const signUpUser = asyncFunctionWrapper(async (req, res, next) => {
    });
 
   await user.save();
-  //const tokenPayload = { userId: user._id, name: user.username, avatarUrl: user.avatar.avatar_url}
-  const AccessToken = createAccessToken(user._id);
+  const payload = tokenPayload(user);
+  const AccessToken = createAccessToken(payload);
   return res.status(201).cookie('Token', AccessToken, cookie_Options).send({
     success: true,
     message: 'User Successfully created!!',
-    user
+    user: payload
   })
 }
 )
@@ -81,7 +81,7 @@ const loginUser = asyncFunctionWrapper(async (req, res, next) => {
  
   const match = await bcrypt.compare(password, user.password);
   if(!match) {
-      return next(new ErrorHandler('Wrong Email or Password!!', 401))
+      return next(new ErrorHandler('Invalid Credentials !!', 401))
     }
   const payload = tokenPayload(user);
   //========== Create AccessToken ========= //
@@ -107,7 +107,7 @@ const logOutUser = (req, res, next) => {
 // ======================= Update User Start ================================= //
 
 const updateUser = asyncFunctionWrapper( async(req, res, next) => {
-  const user_id = req.user.id;
+  const user_id = req.user.userId;
   const user = await UserModel.findById(user_id);
   const { coverImg, avatarImg } = req.body;
   req.body.cover = { ...user.cover };
@@ -142,18 +142,17 @@ const updateUser = asyncFunctionWrapper( async(req, res, next) => {
   }
   
   await user.save();
+  const payload = tokenPayload(user);
   res.status(200).json({
     success: true,
     message: "Profile Updated successfully!!",
-    user
+    user: payload
   })
 })
 // ======================= Update User End =================================== //
 
 
 const showMe = asyncFunctionWrapper(async(req, res, next) => {
-  //const user_id = req.user.id;
-  //const user = await UserModel.findById(user_id);
   res.status(200).json({
     success: true, 
     user: req.user
@@ -162,20 +161,21 @@ const showMe = asyncFunctionWrapper(async(req, res, next) => {
 
 
 const changePassword = asyncFunctionWrapper(
-  async(req,res,next) => {
-  const user = await UserModel.findById(req.user.id).select("+password");
+  async(req ,res, next) => {
+  const user = await UserModel.findById(req.user.userId).select("+password");
   const isPasswordMatch = await bcrypt.compare(req.body.oldPassword, user.password);
-  if(!isPasswordMatch) return next(new ErrorHandler("Current password is incorrect", 401));
+  if(!isPasswordMatch) return next(new ErrorHandler("Old password is incorrect", 401));
   
   if(req.body.newPassword !== req.body.confirmPassword) return next(new ErrorHandler("Passwords do not match", 401));
   
   const hashedPassword = await bcrypt.hash(req.body.newPassword, 10);
   user.password = hashedPassword;
   await user.save();
+  const payload = tokenPayload(user);
   res.status(200).json({
     success: true,
     message: "Password Changed successfully!!",
-    user
+    user: payload
   })
 
 }
@@ -190,9 +190,7 @@ const deleteUser = asyncFunctionWrapper( async(req,res,next) => {
       await deletePost(post)
    })
   deleteUserCloudinary(user.avatar.avatar_id, user.cover.cover_id);
-  
   await user.remove();
-
   res.cookie("Token", null, {
     expires: new Date( Date.now() ),
     httpOnly: true

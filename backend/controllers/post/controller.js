@@ -56,7 +56,7 @@ const updatePost = asyncFunctionWrapper(async (req, res, next) => {
   const user = await UserModel.findById(user_id);
   const post = await PostModel.findOne({ post_id: req.params.id});
   const userPost = user.posts.find(post => post.post_id === req.params.id);
-  if(!post || !userPost) return next(new ErrorHandler("Post not found", 400))
+  if(!post || !userPost) return next(new ErrorHandler("Post not found", 404))
   const { images, deletedImageIDs } = req.body;
   if (deletedImageIDs.length > 0) {
     deletedImageIDs.forEach(async (imgId) => {
