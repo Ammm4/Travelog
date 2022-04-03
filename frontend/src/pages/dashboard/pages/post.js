@@ -9,6 +9,7 @@ import { getSinglePost } from '../../../redux/posts/postActions';
 import SinglePost from '../components/SinglePost';
 import SinglePostImages from '../components/SinglePostImages';
 import Loading from '../components/Loading';
+import { setLoadingMessage } from '../../../redux/globals/globalActions';
 
 const SinglePostContainer = styled.div`
   width: 100%;
@@ -39,9 +40,12 @@ export default function Singlepost({ setModal }) {
     dispatch(getSinglePost(post_id));
   }, [post_id, dispatch])
   
+  useEffect(() => {
+    dispatch(setLoadingMessage('Post Loading'));
+  }, [loading, dispatch])
 
   if(loading || Object.keys(post).length < 1) {
-    return <Loading msg="Post Loading"/>
+    return <Loading />
   }
   return (
     <SinglePostContainer>

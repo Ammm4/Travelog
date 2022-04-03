@@ -68,14 +68,12 @@ export const postReducer = (state = { posts: [] }, action) => {
          loading: true,    
       }
      case ADD_NEW_POST_REQUEST:
-     case EDIT_POST_REQUEST:
      case DELETE_POST_REQUEST:
        return {
          ...state,
          postLoading: true
        }
      case ADD_NEW_POST_SUCCESS:
-     case EDIT_POST_SUCCESS:
      case DELETE_POST_SUCCESS:
        return {
         ...state,
@@ -91,7 +89,6 @@ export const postReducer = (state = { posts: [] }, action) => {
        }
      case GET_POSTS_ERROR:
      case ADD_NEW_POST_ERROR:
-     case EDIT_POST_ERROR:
      case DELETE_POST_ERROR:
        return {
          ...state,
@@ -140,6 +137,7 @@ export const singlePostReducer = (state = { singlepost: {} }, action) => {
        }
      case GET_SINGLE_POST_SUCCESS:
      case LIKE_POST_SUCCESS:
+     case EDIT_POST_SUCCESS:
      case ADD_COMMENT_SUCCESS:
      case DELETE_COMMENT_SUCCESS:
      case LIKE_COMMENT_SUCCESS:
@@ -166,6 +164,7 @@ export const singlePostReducer = (state = { singlepost: {} }, action) => {
      case LIKE_REPLY_ERROR:
      case EDIT_REPLY_ERROR:
      case DELETE_REPLY_ERROR:
+     case EDIT_POST_ERROR:
        return {
          ...state,
          loading: false,

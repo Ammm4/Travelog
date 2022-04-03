@@ -1,14 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { getSinglePost, addPost, editPost, deletePost } from '../../../redux/posts/postActions';
+import { useSelector } from 'react-redux';
 
-export default function usePostForm(postId, action) {
+
+export default function usePostForm() {
+  const {showModal : { action }} = useSelector(state => state.Globals); 
   const {loading: postLoading, singlepost: post, error: singlePostError} = useSelector(state => state.SinglePost);
   const { postLoading: postEditing, success } = useSelector(state => state.Post);
-  const [msg, setMsg] = useState(null);
   const [errors, setErrors ] = useState(null)
   const [showPostForm, setShowPostForm] = useState(true);
-  const [showReview, setShowReview] = useState(false);
   const [images, setImages] = useState([]);
   const [deletedImageIDs, setDeletedImageIDs] = useState([]);
   const [imgPreview, setImgPreview] = useState([]);
@@ -16,16 +15,12 @@ export default function usePostForm(postId, action) {
   const [travellerInfo, setTravellerInfo] = useState({ numOfPeople: '1', cost:'' });
   const [recommendations, setRecommendations] = useState({ numOfDays: '1 day', budget: '', heritages:[''], places:[''], todos:[''], others:'' });
   const imageInputRef = useRef();
-  const reviewRef = useRef();
-  const dispatch = useDispatch();
 
-  useEffect (() => {
-    if(!postId) return;
-    dispatch(getSinglePost(postId));
-   },[dispatch, postId])
-   
+  
+
+  
   useEffect(() => {
-   if(!Object.keys(post).length || action === 'Create Post') return;
+   if(!Object.keys(post).length || action === 'create post') return;
    setImages([...post.images.map(image => ({ public_id: image.img_id, imgFile: image.imgURL, imgTitle : image.imgName}))])
    setImgPreview([...post.images.map(image => ({ public_id: image.img_id, imgFile: image.imgURL, imgTitle : image.imgName}))]);
    setDestinationInfo({
@@ -80,27 +75,7 @@ export default function usePostForm(postId, action) {
     })
    }
 
-  const handleEditPost = (e) => {
-    e.preventDefault();
-    setMsg("Editing Post");
-    reviewRef.current.scrollIntoView();
-    let newPostData = {
-      travellerInfo,
-      recommendations,
-      destinationInfo,
-      images,
-      deletedImageIDs
-    }
-    dispatch(editPost(postId, newPostData));
-  }
-
-  const handleDeletePost = (e) =>{
-    e.preventDefault();
-    setMsg('Deleting Post');
-    const imagesToDelete = images.map(img => img.public_id);
-    dispatch(deletePost(postId, { payload: imagesToDelete }))
-  }
-   
+  
   const removeImg = (i) => {
     let newImages = images.filter(( img, index) => index !== i);
     let deletedImage = images.find((img,index) => index === i);
@@ -178,51 +153,30 @@ export default function usePostForm(postId, action) {
 
   const toggleForm = (e, btnName) => { 
     e.preventDefault();
-    reviewRef.current.scrollIntoView();
-    let postData = {
-      travellerInfo,
-      recommendations,
-      destinationInfo,
-      images
-    }
-    
+    window.scrollTo(0,0);
     if(btnName === 'create') {
+      let postData = {
+        travellerInfo,
+        recommendations,
+        destinationInfo,
+        images
+     }
       setErrors(null);
       let err = checkFormErrors(postData);
       if(Object.keys(err).length !== 0) {
       return setErrors(err);
       }
       setShowPostForm(false);
-      setShowReview(true);
       return
     }
 
     if(btnName === 'review') {
       setShowPostForm(true);
-      setShowReview(false);
       return
     }   
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setMsg("Creating Post");
-    reviewRef.current.scrollIntoView();
-    let postData = {
-      travellerInfo,
-      recommendations,
-      destinationInfo,
-      images
-    }
-    let err = checkFormErrors(postData);
-    if(Object.keys(err).length !== 0) {
-      setErrors(err);
-    } else {
-      dispatch(addPost(postData));
-    }
-  }
   
-
   const handleTravellerInfo = (e) => {
     setTravellerInfo({...travellerInfo, [e.target.name] : e.target.value})
   }
@@ -241,13 +195,11 @@ export default function usePostForm(postId, action) {
       singlePostError,
       postEditing,
       success,
-      msg,
       imageInputRef,
-      reviewRef,
       showPostForm,
-      showReview, 
       images,
       imgPreview,
+      deletedImageIDs,
       errors,
       destinationInfo, handleDestinationInfo,
       setDestinationInfo,
@@ -257,9 +209,6 @@ export default function usePostForm(postId, action) {
       handleTitle, removeImg,
       addMoreInput, removeInput,
       handleChange, toggleForm,
-      handleSubmit, 
-      handleEditPost,
-      handleDeletePost
     }
   )
 }
@@ -307,6 +256,5 @@ const error = {};
  if(recommendations.todos.some(todo => todo.trim() === "")) {
    error.todos="Please add a todo"
  }
-
  return error;
 }

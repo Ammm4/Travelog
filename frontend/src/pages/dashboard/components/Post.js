@@ -1,15 +1,12 @@
 import React, { useState, } from 'react';
-import { Link, useRouteMatch, useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import styled,{ css } from 'styled-components';
 import { Rating } from 'react-simple-star-rating';
-import { useSelector } from 'react-redux';
-import CommonHeader from './CommonHeader';
+import CommonPostHeader from './CommonPostHeader';
+
 
 // Components
 import PostDetails from './PostDetails';
-
-
-
 
 export const sharedBtnCss = css`
   display: inline-block;
@@ -105,9 +102,17 @@ text-align: right;
 cursor: pointer;
 `
 export const InteractionButton = styled.button`
-  font-size: 1.5rem;
+  font-size: 1.4rem;
+  height: 2.2rem;
+  width: 2.2rem;
+  vertical-align: -0.125rem;
+  line-height: 1rem;
   display: inline-block;
   margin-right: 18px;
+  &:hover {
+    background-color: #aaa;
+    color:#fff;
+  }
 `
 
 export const CommentPost = styled.div` 
@@ -209,14 +214,14 @@ export const Button = styled.button`
     color:#2e5c99;
   }
 `
-export default function Post({ post, setModal, singlePost }) {
+export default function Post({ post, singlePost }) {
   const location = useLocation();
   const [showMore, setShowMore] = useState(false);
   let summary = showMore ? post.destinationInfo.summary : post.destinationInfo.summary.slice(0, 150);
   return (
         <PostWrapper singlePost={singlePost}>
-          <CommonHeader post={ post } setModal={setModal}/>
           <LinkToPostDetails to={`${location.pathname}/posts/${post.post_id}`}>
+          <CommonPostHeader post={ post } />
           <PostTitle>
             <h4>Summary </h4> 
             { post.destinationInfo.ratings 
@@ -248,103 +253,3 @@ export default function Post({ post, setModal, singlePost }) {
   )
 }
 
-/* 
-<PostAuthor>
-            <div>
-              <InfoHeader>
-                { post.destinationInfo.destination }, { post.destinationInfo.country }
-              </InfoHeader>
-               { post.author.authorId === user.userId && 
-                <ActionContainer>
-                  <DeleteButton onClick={() => setShowSubmenu(!showSubmenu)} showSubmenu={showSubmenu}>
-                    { showSubmenu ? <IoClose /> : <BiDotsHorizontalRounded /> }
-                  </DeleteButton>
-                  <Submenu showSubmenu={showSubmenu}>
-                    <button onClick={ (e) => setModal({ postId: post.post_id, action: 'Edit Post' }) }><AiFillEdit /> Edit </button>
-                    <span></span>
-                    <button onClick={ (e) => setModal({ postId: post.post_id, action: 'delete' })}><MdDelete /> Delete </button>
-                  </Submenu>
-                </ActionContainer>
-               }
-            </div>
-            <AuthLink to={ `${ url }/users/${ post.author.authorId }` }>
-              <span>By </span><AvatarImage src={ post.author.authorAvatar } alt="avatar"/>
-              <AuthorName>{ post.author.authorName }</AuthorName>
-            </AuthLink>
-            { post.destinationInfo.ratings 
-                &&
-                <Rating
-                  ratingValue={ post.destinationInfo.ratings }
-                  iconsCount={5}
-                  allowHalfIcon={true}
-                  size={22}
-                  readonly={true}
-                  style={{marginTop: '0.65rem'}}
-                />
-              } 
-          </PostAuthor>
-
-
-
-
-
-<CommentPost singlePost={singlePost}>
-                <AvatarImage src={ user.avatarURL } alt="avatar" />
-                <textarea 
-                  placeholder="Got a question??, Ask John!"
-                  disabled={true}
-                />
-                <button 
-                 disabled={true}
-                >
-                  Post
-                </button>        
-            </CommentPost> 
-            
-     { 
-               post.comments.length > 0 && 
-                 <PostComments>
-                   <Line/>
-                   <Button disabled={true}>
-                     { post.comments.length } { post.comments.length === 1 ? 'Comment' : 'Comments' }
-                   </Button>
-                </PostComments>
-             }       
-            <PostInteractions>
-                 <InteractionButton 
-                  >
-                   { 
-                     post.likes.find(like => like.user_id === user.userId) ? 
-                     <AiFillHeart /> 
-                     :
-                     <AiOutlineHeart /> 
-                   } 
-                 </InteractionButton> 
-                 <InteractionButton 
-                   disabled={true}  >
-                  <FaComments/> 
-                 </InteractionButton> 
-              </PostInteractions>
-            <Button 
-              onClick={ () => setShowInfo(!showInfo) } > 
-              <BsFillInfoCircleFill/> { showInfo ? 'Less Info... ': 'More Info...' }
-            </Button>
-            { 
-            <PostImages images={ post.images } postId={ post.post_id } />
-          } 
-          <CommentsAndLikes>
-                 { post.likes.length > 0 && 
-                   <div >
-                     <span className="number_container">{ post.likes.length }</span> 
-                     <span>{ post.comments.length ===  1 || 0 ? 'like' :  'likes' }</span>
-                   </div>
-                 }
-                 { post.comments.length > 0 &&
-                   <div > 
-                    <span className="number_container">{ post.comments.length }</span>
-                    <span>{ post.comments.length ===  1 || 0 ? 'comment' :  'comments' }</span>
-                   </div>
-                 }
-          </CommentsAndLikes>  
-            
-            */

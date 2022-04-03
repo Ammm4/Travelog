@@ -1,5 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
+import { useSelector, useDispatch } from 'react-redux';
+import { addPost, editPost } from '../../../redux/posts/postActions';
+import { setLoadingMessage } from '../../../redux/globals/globalActions';
 import { Rating } from 'react-simple-star-rating';
 import { 
   commonWrapper, 
@@ -9,7 +12,7 @@ import {
   ImagePreview,
   ImagePreviewImg,
   commonGroupWrapper,
-  BtnAdd} from './PostForm';
+  BtnAdd } from './PostForm';
 
 const PostWrapper = styled.article`
   ${commonWrapper}
@@ -45,15 +48,48 @@ const Answer = styled.p`
 const List = styled.ul`
   padding-left: 1.75rem;
 `
-export default function PostConfirm(props) {
-  const {
-    imgPreview,
-    travellerInfo,
-    destinationInfo,
-    recommendations,
-    toggleForm,
-    handleSubmit
-  } = props;
+export default function PostConfirm({ toggleForm }) {
+  const { 
+    showModal: { action },
+    postDetails: { images, 
+      imgPreview, 
+      travellerInfo, 
+      destinationInfo, 
+      recommendations, 
+      deletedImageIDs }
+   } = useSelector(state => state.Globals);
+
+  const { singlepost:{ post_id }} = useSelector(state => state.SinglePost)
+  const submitType = action.split(' ')[0];
+  const dispatch = useDispatch();
+  
+  const handleSubmit = (e) => {
+    if(submitType === 'create') {
+      e.preventDefault();
+      dispatch(setLoadingMessage('Creating Post'))
+      window.scrollTo(0,0);
+      let postData = {
+      travellerInfo,
+      recommendations,
+      destinationInfo,
+      images
+      }
+      dispatch(addPost(postData))
+    }
+    if(submitType === 'edit') {
+      e.preventDefault();
+      dispatch(setLoadingMessage('Editing Post'))
+      window.scrollTo(0,0);
+      let newPostData = {
+      travellerInfo,
+      recommendations,
+      destinationInfo,
+      images,
+      deletedImageIDs
+    }
+    dispatch(editPost(post_id, newPostData));
+    }
+  }
   return (
     <PostWrapper>
       <PostTitle>Review & Submit</PostTitle>

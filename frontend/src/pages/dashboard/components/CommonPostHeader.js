@@ -1,17 +1,15 @@
 import React, {useState} from 'react';
-import { Link, useRouteMatch, useLocation } from 'react-router-dom';
-import { Rating } from 'react-simple-star-rating';
-import { useSelector } from 'react-redux';
-
-import styled,{css} from 'styled-components';
+import { Link, useRouteMatch } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import styled from 'styled-components';
 import { InfoHeader } from '../pages/profile';
 import { AiFillEdit } from "react-icons/ai";
 import { MdDelete } from "react-icons/md";
 import { IoClose} from "react-icons/io5";
 import { BiDotsHorizontalRounded } from "react-icons/bi";
+import { setShowModal } from '../../../redux/globals/globalActions';
 
-
-const PostAuthor = styled.div`
+export const PostAuthor = styled.div`
   margin-bottom: 0.75rem;
   letter-spacing: 1px; 
   div {
@@ -19,13 +17,13 @@ const PostAuthor = styled.div`
     justify-content: space-between;
   }
 `
-const AuthLink = styled(Link)`
+export const AuthLink = styled(Link)`
  text-decoration: none;
  display: flex;
  align-items: center;
  color: #021b41;
 `
-const AvatarImage = styled.img`
+export const AvatarImage = styled.img`
   display: inline-block;
   width: 35px;
   height: 35px;
@@ -35,7 +33,7 @@ const AvatarImage = styled.img`
 export const AuthorName = styled.span`
  font-weight: 600;
 `
-const Submenu = styled.aside`
+export const Submenu = styled.aside`
   position: absolute;
   display: ${ props => props.showSubmenu ? 'block' : 'none' };
   top: 2.5rem;
@@ -62,6 +60,7 @@ const Submenu = styled.aside`
 `
 export const ActionContainer = styled.div`
   position: relative;
+  margin-left: 1rem;
 `
 export const DeleteButton = styled.button`
   font-size: 1.8rem;
@@ -75,10 +74,11 @@ export const DeleteButton = styled.button`
     background-color: ${ props => props.showSubmenu ? 'transparent' : '#f0f0f0'};
   }
 `
-export default function CommonHeader({post, setModal}) {
+export default function CommonPostHeader({ post }) {
   const [showSubmenu, setShowSubmenu] = useState(false);
   const { user } = useSelector(state => state.User);
   let { url } = useRouteMatch();
+  const dispatch = useDispatch();
   return (
     <PostAuthor>
         <div>
@@ -90,10 +90,10 @@ export default function CommonHeader({post, setModal}) {
                   <DeleteButton onClick={() => setShowSubmenu(!showSubmenu)} showSubmenu={showSubmenu}>
                     { showSubmenu ? <IoClose /> : <BiDotsHorizontalRounded /> }
                   </DeleteButton>
-                  <Submenu showSubmenu={showSubmenu}>
-                    <button onClick={ (e) => setModal({ postId: post.post_id, action: 'Edit Post' }) }><AiFillEdit /> Edit </button>
+                  <Submenu showSubmenu={ showSubmenu }>
+                    <button onClick={ (e) => dispatch(setShowModal({ modalType: 'post', postId: post.post_id, action: 'Edit Post' })) }><AiFillEdit /> Edit </button>
                     <span></span>
-                    <button onClick={ (e) => setModal({ postId: post.post_id, action: 'delete' })}><MdDelete /> Delete </button>
+                    <button onClick={ (e) => dispatch(setShowModal({ modalType: 'post', postId: post.post_id, action: 'delete post' }))}><MdDelete /> Delete </button>
                   </Submenu>
                 </ActionContainer>
                }
@@ -101,19 +101,7 @@ export default function CommonHeader({post, setModal}) {
             <AuthLink to={ `${ url }/users/${ post.author.authorId }` }>
               <span>By </span><AvatarImage src={ post.author.authorAvatar } alt="avatar"/>
               <AuthorName>{ post.author.authorName }</AuthorName>
-            </AuthLink>
-            
+            </AuthLink>     
           </PostAuthor>
   )
 }
-/* { post.destinationInfo.ratings 
-                &&
-                <Rating
-                  ratingValue={ post.destinationInfo.ratings }
-                  iconsCount={5}
-                  allowHalfIcon={true}
-                  size={22}
-                  readonly={true}
-                  style={{marginTop: '0.65rem'}}
-                />
-              }  */

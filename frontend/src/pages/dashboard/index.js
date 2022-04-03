@@ -11,7 +11,9 @@ import Home from './pages/home';
 import Profile from './pages/profile';
 import ProfileEdit from './components/profileEdit';
 import Singlepost from './pages/post';
+import SingleForum from './components/SingleForum';
 import PostModal from './components/PostModal';
+import ForumModal from './components/ForumModal';
 import Userprofile from './pages/userprofile';
 import { clearError } from '../../redux/posts/postActions';
 import { clearError as clearUserError } from '../../redux/users/userActions';
@@ -23,6 +25,7 @@ export default function Dashboard() {
   const { success, error } = useSelector(state => state.Post);
   const { error: singlePostError } = useSelector(state => state.SinglePost);
   const { error: singleUserError } = useSelector(state => state.SingleUser);
+  const { showModal } = useSelector(state => state.Globals);
   const [ active, setActive ] = useState();
   const [ isModal, setIsModal ] = useState(null);
   const alert = useAlert();
@@ -105,6 +108,19 @@ export default function Dashboard() {
          >
            <Singlepost setModal={ setIsModal }  /> 
         </Route>
+        <Route 
+           exact 
+           path={
+             [
+               `${match.path}/home/*/forums/:forumId`,
+               `${match.path}/profile/*/forums/:forumId`,
+               `${match.path}/home/forums/:forumId`,
+               `${match.path}/profile/forums/:forumId` 
+             ]
+             }
+         >
+           <SingleForum setModal={ setIsModal }  /> 
+        </Route>
         <Route exact 
           path= {
             [ 
@@ -120,7 +136,13 @@ export default function Dashboard() {
           <Redirect to={`${match.path}/home`} />
         </Route>
       </Switch>
-      { isModal && <PostModal setModal={setIsModal} postModalInfo={isModal}/> }
+       { 
+        showModal 
+          &&
+        ( 
+          showModal.modalType === 'post' ? <PostModal /> : <ForumModal  />
+        )
+      }
     </>
   )
 }

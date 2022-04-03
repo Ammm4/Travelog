@@ -1,18 +1,19 @@
 import React, { useState } from 'react';
 import { Link, useRouteMatch } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import styled, {css} from 'styled-components';
 import Post from '../components/Post';
-import { PostsWrapper } from './home';
+import { PostsWrapper } from '../components/Posts';
 import Share from '../components/Share';
+import PostBar from '../components/PostBar';
+import { setShowModal } from '../../../redux/globals/globalActions';
 
+//Icons 
 
-//Icons SiAboutdotme FaUserCog 
-import { BsFillGrid3X3GapFill } from "react-icons/bs";
 import { FaUserCog } from "react-icons/fa";
 import { IoInformationCircleSharp } from "react-icons/io5";
 import Zeropost from '../components/zeropost';
-import ProfileModal from '../components/ProfileModal';
+
 
 const sharedImgCss = css`
   display: inline-block;
@@ -187,10 +188,16 @@ const CogButton = styled.button`
   margin: auto;
   text-align: center;
   font-size: 2.5rem;
-  color: #021b41;
+  color: ${props => props.showSettings ? '#2a78cd' : '#021b41'};
+  &:hover {
+    color:${props => props.showSettings ? '#021b41' : '#2a78cd'}
+  }
 `
 export const PostHeading = styled.div`
   ${sharedDivCss}
+  box-shadow: none;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   padding: 8px;
   text-align: center;
   * {
@@ -204,11 +211,12 @@ export const PostHeading = styled.div`
   }
 `
 
-export default function Profile({ setIsModal }) {
+export default function Profile() {
   const { user } = useSelector(state => state.User);
   const { posts } = useSelector(state => state.Post);
   const [showSettings, setShowSettings] = useState(false);
-  const [showModal, setShowModal] = useState(false);
+  const [showPost, setShowPost] = useState(true);
+  const dispatch = useDispatch();
   const match = useRouteMatch();
   return (
     <ProfileContainer>
@@ -238,24 +246,27 @@ export default function Profile({ setIsModal }) {
           <p><b>Location:</b> { user.city }, { user.country }</p>
          </div>   
        </UserInfo>
-       <CogButton onClick={() => setShowSettings(!showSettings)}><FaUserCog /></CogButton>
-       <SettingBtnGroup showSettings={showSettings}>
+       <CogButton 
+         onClick={() => setShowSettings(!showSettings)}
+         showSettings={showSettings}
+         >
+         <FaUserCog />
+        </CogButton>
+       <SettingBtnGroup showSettings={ showSettings }>
          <EditLink to={`${ match.url }/edit`}> Edit Profile</EditLink>
          <EditLink to={`${ match.url }/change_password`}> Reset Password</EditLink>
-         <button onClick={ (e) => setShowModal(true) }> Delete Profile</button>
+         <button onClick={ () => dispatch(setShowModal({ modalType: 'forum', action: 'delete profile'})) }> Delete Profile</button>
        </SettingBtnGroup>
      </UserProfile>
-     <Share setModal={setIsModal}/>
-     <PostHeading>
-       <BsFillGrid3X3GapFill />
-     </PostHeading>
+     <Share />
+     <PostBar showPost={ showPost } setShowPost={ setShowPost }/>
      { 
       posts.filter(post => post.author.authorId === user.userId).length > 0 ? 
         <PostsWrapper>
           { 
            posts.map(post => {
             if( post.author.authorId === user.userId ) {
-             return <Post key={ post.post_id } post={ post } setModal={ setIsModal } singlePost={false} />
+             return <Post key={ post.post_id } post={ post } singlePost={false} />
           }
              return null
           }) 
@@ -264,7 +275,6 @@ export default function Profile({ setIsModal }) {
         : 
         <Zeropost />
      }
-     { showModal && <ProfileModal setShowModal={ setShowModal }/>}
     </ProfileContainer>
   )
 }

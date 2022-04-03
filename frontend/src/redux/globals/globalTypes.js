@@ -1,0 +1,4 @@
+export const SHOW_CREATE_COMMENT = 'SHOW_CREATE_COMMENT';
+export const SHOW_MODAL = 'SHOW_MODAL';
+export const POST_DETAILS = 'POST_DETAILS';
+export const LOADING_MESSAGE = 'LOADING_MESSAGE';

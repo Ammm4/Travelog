@@ -1,11 +1,18 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
+import { useSelector, useDispatch } from 'react-redux';
+import { deletePost } from '../../../redux/posts/postActions';
+import { deleteForum } from '../../../redux/forums/forumActions';
+import { deleteUser } from '../../../redux/users/userActions';
+import { setShowModal } from '../../../redux/globals/globalActions';
 import { PostTitle, commonLabel, commonInput, BtnAdd} from './PostForm';
 
 export const Container = styled.div`
-  margin: auto;
-  margin-top: 15%;
-  border-radius: 10px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 2px;
   padding: 10px;
   width: 98%;
   max-width: 800px;
@@ -38,15 +45,53 @@ export const Button = styled(BtnAdd)`
    margin: 1.65rem auto;
    width: 99%;
   `
-export default function DeleteBox({ handleDeletePost, setModal, title }) {
-  
+export default function DeleteBox({ handleDeletePost }) {
+  const { showModal: { action } } = useSelector(state => state.Globals);
+  const { singlepost: { post_id, images } } = useSelector(state => state.SinglePost);
+  const { forum } = useSelector(state => state.Forum);
+  const [ password, setPassword ] = useState('')
+  const [ showConfirm, setShowConfirm ] = useState(false);
+  const dispatch = useDispatch();
+  const itemToDelete = action.split(' ')[1];
+  const handleDelete = () => {
+    console.log('hi')
+    if(itemToDelete === 'post') {
+      //setMsg(Post Deleting)
+      const imagesToDelete = images.map(img => img.public_id);
+      return dispatch(deletePost(post_id, { payload: imagesToDelete }))
+    }
+    if(itemToDelete === 'forum') {
+      return dispatch(deleteForum(forum._id))
+    }
+    if(itemToDelete === 'profile') {
+      setShowConfirm(true);
+    }
+  }
   return (
     <Container>
-      <PostTitle>{ title }</PostTitle>
-      <p>Do you confirm to delete the profile ?</p>
+      <PostTitle>{ action }</PostTitle>
+      { !showConfirm && <p>Do you confirm to delete the { itemToDelete } ?</p> }
+      { showConfirm 
+         &&  
+        <BtnGroup>
+          <label htmlFor='password'>Enter Password</label>
+          <input 
+          type="password"
+          value={ password }
+          name="password" 
+          id="password"
+          onChange={(e) => setPassword(e.target.value)}/>
+         </BtnGroup>
+      }
+       
       <BtnGroup>
-        <Button className="red-btn" onClick={(e) => handleDeletePost(e)}>Confirm</Button>
-        <Button className="green-btn" onClick={() => setModal(null)}>Cancel</Button>
+        { 
+          showConfirm ? 
+          <Button className="red-btn" onClick={(e) => dispatch(deleteUser({ payload: password }))}>Delete</Button>
+           :
+          <Button onClick={handleDelete}>Confirm</Button>
+        } 
+        <Button onClick={() => dispatch(setShowModal(null))}>Cancel</Button>
       </BtnGroup>
     </Container>
   )

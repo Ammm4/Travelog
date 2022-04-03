@@ -1,13 +1,9 @@
 import React from 'react';
+import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { useSelector } from 'react-redux';
-
+import { setShowModal } from '../../../redux/globals/globalActions';
 //Icons 
-import { ImImages } from "react-icons/im";
-import { ImSpoonKnife } from "react-icons/im";
-import { ImLocation2 } from "react-icons/im";
-import { BsCashCoin } from "react-icons/bs";
-import { FaSkiing } from "react-icons/fa";
 import { IoAddCircle } from "react-icons/io5";
 
 
@@ -15,7 +11,7 @@ const ShareContainer = styled.article`
   width: 98%;
   max-width: 600px;
   padding: 8px;
-  border-radius: 8px;
+  border-radius: 3px;
   margin: ${props => props.homepage ? '7.5rem auto 3rem auto': '3rem auto 3rem auto'};
   background-color: #fff;
   box-shadow: 1px 1px 4px rgba(0,0,0,0.5);
@@ -30,7 +26,6 @@ const ShareTitle = styled.div`
   img {
     width: 38px;
     height:38px;
-    //border-radius: 50%;
     margin-right: 5px;
   }
   input {
@@ -53,15 +48,7 @@ const ShareTitle = styled.div`
     color: #021b41;
   }
 `
-const IconHolders =  styled.div`
-  margin-top: 1.5rem;
-  margin-bottom: 1.1rem;
-  display: flex;
-  font-size: 1.75rem;
-  * {
-    flex: 1;
-  }
-`
+
 const BtnGroup = styled.div`
   display: grid;
   grid-template-columns: 1fr 2px 1fr;
@@ -80,8 +67,8 @@ const BtnGroup = styled.div`
   font-size: 19px;
   color:#021b41;
   padding: 16px 40px;
-  &:hover {
-    background-color: #f9f9f9;
+  &:hover * {
+    color: #2a78cd;
    }
   }
 `
@@ -90,18 +77,25 @@ const Divider = styled.div`
   margin: auto 0;
   border-left: 2px solid #f0f0f0;
 `
-export default function Share({ setModal, homepage }) {
+export default function Share({ homepage }) {
   const { user } = useSelector(state => state.User);
+  const dispatch = useDispatch();
   return (
-    <ShareContainer homepage={homepage} onClick={() => setModal({ postId: null, action: 'Create Post' })}>
+    <ShareContainer homepage={ homepage } >
       <ShareTitle>
         <img src={user.avatarURL} alt="avatar"/>
          <p>Create Post, Start a Forum ...</p>
       </ShareTitle>
       <BtnGroup>
-        <button title="Create a Post"><IoAddCircle style={{fontSize:'2.2rem', color: '#021b41'}} />Post</button>
+        <button title="Create a Post" onClick={() => dispatch(setShowModal({ modalType: 'post', action: 'create post' }))}>
+          <IoAddCircle style={{ fontSize:'2.2rem', color: '#021b41' }} />
+          <span>Post</span>
+        </button>
         <Divider />
-        <button title="Start a Forum"><IoAddCircle style={{fontSize:'2.2rem', color: '#021b41'}}/>Forum</button>
+        <button title="Start a Forum" onClick={() => dispatch(setShowModal({ modalType: 'forum', action: 'create forum' }))}>
+          <IoAddCircle style={{fontSize:'2.2rem', color: '#021b41'}}/>
+          <span>Forum</span>
+        </button>
       </BtnGroup>
       
     </ShareContainer>

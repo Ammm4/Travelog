@@ -10,7 +10,6 @@ import { BiMenuAltLeft } from "react-icons/bi";
 import { MdClear } from "react-icons/md";
 import { Link, useRouteMatch } from 'react-router-dom';
 import { AiFillHome } from "react-icons/ai";
-import { MdOutlineLogout } from "react-icons/md";
 import { AiOutlineLogout } from "react-icons/ai";
 
 

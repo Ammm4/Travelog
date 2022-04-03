@@ -1,0 +1,48 @@
+import React, { useState } from 'react';
+import { useRouteMatch } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { setShowModal } from '../../../redux/globals/globalActions';
+import { PostAuthor,
+  ActionContainer, 
+  DeleteButton, 
+  Submenu, 
+  AuthLink,
+  AuthorName,
+  AvatarImage} from './CommonPostHeader';
+import { InfoHeader } from '../pages/profile';
+import { AiFillEdit } from "react-icons/ai";
+import { MdDelete } from "react-icons/md";
+import { IoClose} from "react-icons/io5";
+import { BiDotsHorizontalRounded } from "react-icons/bi";
+
+export default function CommonForumHeader({ forum }) {
+  const { user } = useSelector(state => state.User);
+  const [showSubmenu, setShowSubmenu] = useState(false);
+  let { url } = useRouteMatch();
+  const dispatch = useDispatch();
+  return (
+    <PostAuthor>
+      <div>
+        <InfoHeader>
+          { forum.body }
+        </InfoHeader>
+         { forum.user._id === user.userId && 
+                <ActionContainer>
+                  <DeleteButton onClick={() => setShowSubmenu(!showSubmenu)} showSubmenu={showSubmenu}>
+                    { showSubmenu ? <IoClose /> : <BiDotsHorizontalRounded /> }
+                  </DeleteButton>
+                  <Submenu showSubmenu={ showSubmenu }>
+                    <button onClick={ (e) => dispatch(setShowModal({ modalType: 'forum', action: 'edit forum' })) }><AiFillEdit /> Edit </button>
+                    <span></span>
+                    <button onClick={ (e) => dispatch(setShowModal({ modalType: 'forum', action: 'delete forum' }))}><MdDelete /> Delete </button>
+                  </Submenu>
+                </ActionContainer>
+               }
+      </div>
+      <AuthLink to={ `${ url }/users/${ forum.user._id }` }>
+              <span>By </span><AvatarImage src={ forum.user.avatar.avatar_url } alt="avatar"/>
+              <AuthorName>{ forum.user.username }</AuthorName>
+      </AuthLink>
+    </PostAuthor>
+  )
+}

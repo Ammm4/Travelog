@@ -1,6 +1,7 @@
 import React from 'react';
 import styled, { css } from 'styled-components';
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { setPostDetails } from '../../../redux/globals/globalActions';
 import { ErrorDisplay } from '../../signup/components/form';
 import { Rating } from 'react-simple-star-rating';
 
@@ -15,7 +16,7 @@ const commonBtnStyle = css`
   font-size: 1rem;
 `
 export const commonWrapper = css`
- margin: auto;
+  margin: auto;
   margin-top: 6rem;
   border-radius: 6px;
   padding: 10px;
@@ -105,6 +106,7 @@ export const PostTitle = styled.h1`
   font-family: 'Montserrat Alternates', sans-serif;
   text-align: center;
   color: #021b41;
+  text-transform: capitalize;
 `
 const BtnImg = styled.button`
   ${commonBtnStyle} 
@@ -216,9 +218,11 @@ export default function PostForm(props) {
          handleTravellerInfo,
          recommendations,
          handleRecommendations,
+         images,
          imageInputRef,
          imageUploader, 
          imgPreview,
+         deletedImageIDs,
          handleFileUpload,
          removeImg,
          removeInput,
@@ -227,12 +231,24 @@ export default function PostForm(props) {
          toggleForm,
          handleTitle
   } = props;
-  
+  const dispatch = useDispatch();
+
   const handleKeyUp = (e) => {
     e.target.style.height = '48px';
     e.target.style.height = `${e.target.scrollHeight}px`;
   }
-  
+  const handleDone = (e) => {
+    e.preventDefault();
+    dispatch(setPostDetails({
+      images,
+      travellerInfo,
+      recommendations,
+      destinationInfo,
+      imgPreview, 
+      deletedImageIDs
+    }))
+    toggleForm(e,'create')
+  }
   if(loading) {
     return <Loading msg="Post Loading" />
   }
@@ -476,7 +492,7 @@ export default function PostForm(props) {
           </div>
         </div> 
       <div className="form-group" style={{marginTop:'0'}}>
-        <BtnAdd onClick={(e) => toggleForm(e, 'create')}>Done</BtnAdd>
+        <BtnAdd onClick={(e) => handleDone(e, 'create')}>Done</BtnAdd>
       </div>
       </Container>
   )

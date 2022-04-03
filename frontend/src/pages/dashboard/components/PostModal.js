@@ -1,4 +1,6 @@
 import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { setShowModal } from '../../../redux/globals/globalActions';
 import styled from 'styled-components';
 import usePostForm from './usePostForm';
 import PostForm from './PostForm';
@@ -7,8 +9,7 @@ import Loading from './Loading';
 
 import { MdClear } from "react-icons/md";
 import DeleteBox from './DeleteBox';
-import { useDispatch } from 'react-redux';
-import { SINGLE_POST_RESET } from '../../../redux/posts/postTypes';
+
 export const Container = styled.div`
  position: fixed;
  top:0; left:0;
@@ -30,18 +31,17 @@ export const CloseModalBtn = styled.span`
   }
 `
 
-export default function PostModal({ setModal, postModalInfo }) {
-  const { postId, action } = postModalInfo;
+export default function PostModal() {
+  const { showModal: { action }} = useSelector(state => state.Globals)
   const {
       singlePostError,
       postEditing,
       success,
       errors,
-      msg,
+      images,
       imageInputRef,
-      reviewRef,
+      deletedImageIDs,
       showPostForm,
-      showReview, 
       imgPreview,
       destinationInfo, handleDestinationInfo,
       setDestinationInfo,
@@ -51,24 +51,24 @@ export default function PostModal({ setModal, postModalInfo }) {
       handleTitle, removeImg,
       addMoreInput, removeInput,
       handleChange, toggleForm,
-      handleSubmit,
-      handleEditPost,
-      handleDeletePost
-  } = usePostForm(postId, action);
-  
+  } = usePostForm();
   const dispatch = useDispatch();
+
   useEffect(() => {
     if(singlePostError) {
-      setModal(null);
+      dispatch(setShowModal(null));
     }
      if(success) {
-      setModal(null);
+      dispatch(setShowModal(null));
     } 
-  }, [singlePostError, success, setModal]); 
+    
+  }, [ singlePostError, success, dispatch]); 
+  useEffect(() => {
+    window.scrollTo(0,0)
+  }, [showPostForm])
 
   const handleClose = () => {
-    dispatch({ type: SINGLE_POST_RESET })
-    setModal(null)
+    dispatch(setShowModal(null));
   }
   const handleModalClose = (e) => {
     if(e.target.classList.contains('modal')) {
@@ -77,19 +77,20 @@ export default function PostModal({ setModal, postModalInfo }) {
   }
   return (
     <Container className='modal' onClick={ (e) => handleModalClose(e) }>
-     <CloseModalBtn onClick={ handleClose } ref={reviewRef} ><MdClear /></CloseModalBtn>
-       { postEditing && <Loading msg={msg} />} 
+     <CloseModalBtn onClick={ handleClose }><MdClear /></CloseModalBtn>
+       { postEditing && <Loading />} 
        {
-         action === 'delete' ? 
-           <DeleteBox title="Delete Post" handleDeletePost={handleDeletePost} setModal={setModal}>
-           </DeleteBox>
+         action === 'delete post' ? 
+           <DeleteBox></DeleteBox>
            :
            <>
            { 
             showPostForm && <PostForm
               errors={errors}
+              images={images}
               imageInputRef={imageInputRef}
               imageUploader={imageUploader}
+              deletedImageIDs={deletedImageIDs}
               imgPreview={imgPreview}
               handleFileUpload={handleFileUpload}
               removeImg={removeImg}
@@ -108,17 +109,7 @@ export default function PostModal({ setModal, postModalInfo }) {
               modalName={ action }
             />
            }
-
-           { 
-            showReview && <PostConfirm
-            imgPreview={imgPreview}
-            destinationInfo={destinationInfo}       
-            travellerInfo={travellerInfo}
-            recommendations={recommendations}
-            toggleForm={toggleForm}
-            handleSubmit={ !postId ? handleSubmit : handleEditPost }
-            /> 
-           }
+           { !showPostForm && <PostConfirm toggleForm={ toggleForm } /> }
           </>
           }
     </Container>

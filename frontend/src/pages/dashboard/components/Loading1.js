@@ -23,11 +23,16 @@ const Spinner = styled.div`
  animation-duration: 1s;
  animation-iteration-count: infinite;
 `
-
-export default function Loading1() {
+const LoadingText = styled.h2`
+ margin-top: 2rem;
+ font-family: 'Montserrat Alternates', sans-serif;
+ color: #021B41;
+`
+export default function Loading1({ msg }) {
   return (
     <Container>
       <Spinner />
+      <LoadingText>{ msg && `${msg}...`}</LoadingText>
     </Container>
   )
 }

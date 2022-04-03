@@ -1,9 +1,7 @@
 import React, { useState, useRef, useContext } from  'react';
-import { useRouteMatch } from 'react-router-dom';
 import { useSelector } from "react-redux";
 import styled from 'styled-components';
 import { Rating } from 'react-simple-star-rating';
-
 
 // Styled Components Import
 import {
@@ -18,19 +16,19 @@ import {
 
 import usePost from "./usePost";
 import PostDetails from './PostDetails';
-import CommonHeader from './CommonHeader';
+import CommonPostHeader from './CommonPostHeader';
 import Comments from './Comments';
 import Likes from './Likes';
 import Loading1 from './Loading1';
 
 //Icons 
-import { FaComments } from "react-icons/fa";
-import { AiOutlineHeart } from "react-icons/ai";
-import { AiFillHeart } from "react-icons/ai";
+import { FaHeart } from "react-icons/fa";
+import { FaRegHeart } from "react-icons/fa";
+import {FaRegComment} from "react-icons/fa";
 
 
 
-const PostContainer = styled.article`
+export const PostContainer = styled.article`
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -58,7 +56,7 @@ export const usePostAPI = () => {
   return useContext(ContextAPI)
 }
 
-function SinglePost({ post, setModal, singlePost}) {
+function SinglePost({ singlePost }) {
   const { 
     showComment,
     setShowComment,
@@ -68,10 +66,10 @@ function SinglePost({ post, setModal, singlePost}) {
     commentText,
     setCommentText,
     handlePostComment
-  } = usePost(post.post_id);
+  } = usePost();
 
   const { user } = useSelector(state => state.User);
-  const { commentLoading } = useSelector(state => state.SinglePost);
+  const { commentLoading, singlepost: post } = useSelector(state => state.SinglePost);
   const [showMore, setShowMore] = useState(false);
   const [replyInfo, setReplyInfo] = useState({ replyTo: null, commentId: null }); 
   const commentInputRef = useRef();
@@ -107,7 +105,8 @@ function SinglePost({ post, setModal, singlePost}) {
     <ContextAPI.Provider value={{ postId: post.post_id}}>
        <PostContainer>
           <div className="post_top_part">
-          <CommonHeader post={post} setModal={setModal}/>
+          <CommonPostHeader post={ post 
+          } />
             <PostTitle>
               <h4>Summary</h4>
               { post.destinationInfo.ratings 
@@ -121,8 +120,9 @@ function SinglePost({ post, setModal, singlePost}) {
                   style={{marginTop: '-0.5rem'}}
                 />
               }        
-              <p> { summary }
-                  {post.destinationInfo.summary.length > 100 && <Button onClick= { () => setShowMore(!showMore)}> { showMore ? 'less...' :'more...'}</Button>}
+              <p>
+                 { summary }
+                 {post.destinationInfo.summary.length > 100 && <Button onClick= { () => setShowMore(!showMore)}> { showMore ? 'less...' :'more...'}</Button>}
               </p>   
             </PostTitle>
             <PostTitle>
@@ -134,14 +134,14 @@ function SinglePost({ post, setModal, singlePost}) {
                  onClick={ (e) => handlePostLike(e) } >
                   { 
                     post.likes.find(like => like.user_id === user.userId) ? 
-                     <AiFillHeart style={{color: '#021b41'}}/> 
+                     <FaHeart /> 
                        :
-                      <AiOutlineHeart /> 
-                    } 
+                      <FaRegHeart />
+                  } 
                </InteractionButton> 
                <InteractionButton 
                     onClick={ (e) => handleCommentIconClick(e) } >
-                    <FaComments style={{color: '#021b41'}}/> 
+                    <FaRegComment /> 
                </InteractionButton> 
            </PostInteractions>
             <CommentsAndLikes>
@@ -192,12 +192,3 @@ function SinglePost({ post, setModal, singlePost}) {
 }
 
 export default SinglePost
-/* { 
-            post.comments.length > 0 && 
-            <PostComments>
-                    <Line/>
-                    <Button onClick={ (e) => toggleHideShow(e) }>
-                     { showComment ? 'Hide' : 'Show' } { post.comments.length } { post.comments.length === 1 ? 'Comment' : 'Comments' }
-                    </Button>
-            </PostComments>
-          } */

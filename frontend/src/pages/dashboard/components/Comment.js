@@ -93,15 +93,15 @@ const Line = styled.span`
   vertical-align: middle;
   background-color: #f1f1f1;
 `
-const CommentText = styled.p`
-  display: ${ props => props.isEdit? 'none' : 'block' };
+export const CommentText = styled.p`
+  display: ${ props => props.isEdit ? 'none' : 'block' };
   background-color: #f1f1f1;
   font-size: 0.825rem;
   padding: 8px;
-  border-radius: 10px;
+  border-radius: 2px;
   letter-spacing: 1px;
 `
-const EditBox = styled.textarea`
+export const EditBox = styled.textarea`
   display: ${ props => props.isEdit? 'block' : 'none' };
   font-family: inherit;
   width: 100%;
@@ -199,7 +199,7 @@ export default function Comment({ comment }) {
               { comment.text }            
           </CommentText>
           { 
-            comment.user_id === user._id 
+            comment.user_id === user.userId 
               &&
             <EditBox 
               isEdit={ isEdit } 
@@ -213,8 +213,9 @@ export default function Comment({ comment }) {
             { 
               comment.likes.length > 0 
                 && 
-              <span>{ comment.likes.length } { comment.likes.length === 1 ? 'Like' : 'Likes' }
-                      </span> 
+              <span>
+                { comment.likes.length } { comment.likes.length === 1 ? 'Like' : 'Likes' }
+               </span> 
             }
             <Button 
               onClick={(e) => handleReply(e, comment.username)} >
@@ -222,7 +223,7 @@ export default function Comment({ comment }) {
             </Button>
             </div>
             {
-              comment.user_id === user._id &&
+              comment.user_id === user.userId &&
                 <div>
                 { isEdit 
                   && 
@@ -230,11 +231,11 @@ export default function Comment({ comment }) {
                     Done
                   </Button> 
                 }
-                    <Button onClick={ (e) => handleEdit(e) }> 
-                        { isEdit ? `Cancel` : `Edit` } 
-                        </Button>
-                      {!isEdit && <Button onClick={ (e) => handleDelete(e, postId, comment.comment_id) }> Delete </Button>}
-                    </div>
+                  <Button onClick={ (e) => handleEdit(e) }> 
+                    { isEdit ? `Cancel` : `Edit` } 
+                  </Button>
+                   {!isEdit && <Button onClick={ (e) => handleDelete(e, postId, comment.comment_id) }> Delete </Button>}
+                  </div>
                   }
                 </Count>
                 { 

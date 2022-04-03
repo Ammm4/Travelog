@@ -3,7 +3,7 @@ import { Link, useHistory, useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import styled, {css} from 'styled-components';
 import Post from '../components/Post';
-import { PostsWrapper } from './home';
+import { PostsWrapper } from '../components/Posts';
 import { ProfileContainer, UserProfile } from './profile';
 
 //Icons SiAboutdotme

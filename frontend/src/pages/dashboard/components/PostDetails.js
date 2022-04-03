@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import BtnArray from './BtnArray';
 const Container = styled.div`
@@ -23,10 +23,10 @@ const InfoBtn = styled.button`
   margin: 0rem 0.75rem 0.6rem 0;
   border-radius: 2px;
   background-color: #e1e1e1;
-  color: #021b41;
+  color:${props => props.infoType === props.btnType ? '#2a78cd' : '#021b41'};
   &:hover {
     text-decoration: underline;
-    color: #2a78cd;
+    color: ${props => props.infoType === props.btnType ? '#021b41' : '#2a78cd'}
   }
 `
 
@@ -50,8 +50,10 @@ export default function PostDetails({ data }) {
         BtnArray.map(item => {
           return <InfoBtn
                    key={item.btnType} 
-                   style={{ color: infoType === item.btnType? '#f00' : ''}} 
-                   onClick={(e) => handleClick(e,item.btnType)}> 
+                   
+                   onClick={(e) => handleClick(e,item.btnType)}
+                   btnType={item.btnType}
+                   infoType={infoType}> 
                   {item.name}
                  </InfoBtn>
         })
@@ -115,37 +117,6 @@ export default function PostDetails({ data }) {
     </Container>
   )
 }
-/*  <div className="traveller_info">
-          <PostHeading>Travellers' Info:</PostHeading>
-          <p><h5>No. of people: </h5><span>{ data.numOfPeople}</span></p>
-          <p><h5>Costs: </h5><span>£{ data.cost }</span> </p>     
-      </div>
-      <div className="recommendations">
-          <PostRecommendation>
-            <p><h5>No. of days:</h5><span>{ numOfDays}</span></p> 
-            <p><h5>Budget:</h5><span> £{ budget } pp.</span> </p>
-          </PostRecommendation>
-          <PostRecommendation>
-            <h5>Heritages To See:</h5>
-            <ul>
-              {heritages.map((item, index) => <li key={index}>{item}</li>)}
-            </ul>
-          <h5>Places to See:</h5> 
-            <ul>
-              {places.map((item, index) => <li key={index}>{item}</li>)}
-            </ul>
-          </PostRecommendation>
-          <PostRecommendation>
-            <h5>Things To Do:</h5>
-            <ul>
-              {todos.map((item, index) => <li key={index}>{item}</li>)}
-            </ul>
-          </PostRecommendation>
-        </div>
-        <div>
-          <PostHeading>Others: </PostHeading>
-           <p>{others}</p>
-        </div> 
-      
-      
-      */
+
+          
+  
