@@ -99,7 +99,7 @@ export default function Hero() {
       <HeroBanner>
         <Quote><RiDoubleQuotesL/> To travel is to live <RiDoubleQuotesR /> - <span>Hans Christian Anderson</span> </Quote>
         <IconContainer><IoIosAirplane /></IconContainer>
-        <h2>share your travel experiences</h2>
+        <h2>share your travelling experiences & knowledge</h2>
         <ButtonGroup>
           <BtnLink to="/signup"> SIGN UP </BtnLink>
           <Button>DEMO </Button>

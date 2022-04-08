@@ -32,7 +32,7 @@ export const CloseModalBtn = styled.span`
 `
 
 export default function PostModal() {
-  const { showModal: { action }} = useSelector(state => state.Globals)
+  const { showModal: { action }} = useSelector(state => state.Globals);
   const {
       singlePostError,
       postEditing,
@@ -47,6 +47,7 @@ export default function PostModal() {
       setDestinationInfo,
       travellerInfo, handleTravellerInfo,
       recommendations, handleRecommendations,
+      setRecommendations,
       imageUploader, handleFileUpload,
       handleTitle, removeImg,
       addMoreInput, removeInput,
@@ -100,6 +101,7 @@ export default function PostModal() {
               travellerInfo={travellerInfo}
               handleTravellerInfo={handleTravellerInfo}
               recommendations={recommendations}
+              setRecommendations={setRecommendations}
               handleRecommendations={handleRecommendations}
               removeInput={removeInput}
               handleChange={handleChange}

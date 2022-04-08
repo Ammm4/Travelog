@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import {  useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
-
+import PostDelete from '../components/PostDelete';
 import { getSinglePost } from '../../../redux/posts/postActions';
 
 //import Post from '../components/Post';
@@ -31,9 +31,9 @@ const ImageGridWrapper = styled.div`
   padding: 0%;
 `
 
-export default function Singlepost({ setModal }) {
+export default function Singlepost() {
   const { post_id } = useParams();
-  const { loading, singlepost:post } = useSelector(state => state.SinglePost);
+  const { loading, singlepost: post } = useSelector(state => state.SinglePost);
   const dispatch = useDispatch();
   
   useEffect(() => {
@@ -47,12 +47,15 @@ export default function Singlepost({ setModal }) {
   if(loading || Object.keys(post).length < 1) {
     return <Loading />
   }
+  if(post.deleted) {
+    return <PostDelete />
+  }
   return (
     <SinglePostContainer>
       <ImageGridWrapper>
         <SinglePostImages images={ post.images }/>
       </ImageGridWrapper>
-      <SinglePost post={post} setModal={ setModal } singlePost={ true } />
+      <SinglePost  singlePost={ true } />
     </SinglePostContainer>
   )
 }

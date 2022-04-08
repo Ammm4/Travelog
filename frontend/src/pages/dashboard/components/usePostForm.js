@@ -11,35 +11,43 @@ export default function usePostForm() {
   const [images, setImages] = useState([]);
   const [deletedImageIDs, setDeletedImageIDs] = useState([]);
   const [imgPreview, setImgPreview] = useState([]);
-  const [destinationInfo, setDestinationInfo] = useState({ destination: '', country: '', summary: '', ratings: 2.5 });
-  const [travellerInfo, setTravellerInfo] = useState({ numOfPeople: '1', cost:'' });
-  const [recommendations, setRecommendations] = useState({ numOfDays: '1 day', budget: '', heritages:[''], places:[''], todos:[''], others:'' });
+  const [destinationInfo, setDestinationInfo] = useState({ destination: '', country: '', summary: '', ratings: 0 });
+  const [travellerInfo, setTravellerInfo] = useState({ travelType: '', time:'' });
+  const [recommendations, setRecommendations] = useState({ numOfDays: '', daysSummary:'', budget: 0, budgetSummary:'', heritages:[''], places:[''], todos:[''], others:'' });
   const imageInputRef = useRef();
 
   
-
-  
   useEffect(() => {
-   if(!Object.keys(post).length || action === 'create post') return;
-   setImages([...post.images.map(image => ({ public_id: image.img_id, imgFile: image.imgURL, imgTitle : image.imgName}))])
-   setImgPreview([...post.images.map(image => ({ public_id: image.img_id, imgFile: image.imgURL, imgTitle : image.imgName}))]);
+   if(!Object.keys(post).length > 0 || action === 'create post') return;
+   const { images, destinationInfo, travellerInfo, recommendations} = post;
+   setImages([...images.map(image => ({ public_id: image.img_id, imgFile: image.imgURL, imgTitle : image.imgName}))])
+   setImgPreview([...images.map(image => ({ public_id: image.img_id, imgFile: image.imgURL, imgTitle : image.imgName}))]);
    setDestinationInfo({
-     destination: post.destinationInfo.destination, 
-     country: post.destinationInfo.country, 
-     summary: post.destinationInfo.summary,
-     ratings: post.destinationInfo.ratings
+     destination: destinationInfo.destination, 
+     country: destinationInfo.country, 
+     summary: destinationInfo.summary,
+     ratings: destinationInfo.ratings
     })
    setTravellerInfo({
-     numOfPeople: post.travellerInfo.numOfPeople, 
-     cost: post.travellerInfo.cost
+     travelType: travellerInfo.travelType, 
+     time: travellerInfo.time
     })
    setRecommendations({
-     numOfDays:post.recommendations.numOfDays, 
-     budget: post.recommendations.budget, 
-     heritages: post.recommendations.heritages, 
-     places: post.recommendations.places, 
-     todos: post.recommendations.todos, 
-     others: post.recommendations.others});
+     ...recommendations,
+     numOfDays:recommendations.numOfDays,
+     daysSummary: recommendations.daysSummary,
+     budget:recommendations.budget, 
+     budgetSummary:recommendations.budgetSummary, 
+     others:recommendations.others
+    });
+
+    let items = ['heritages','places','todos'];
+    items.forEach(item => {
+      if( recommendations[item].length > 0) {
+      setRecommendations({...recommendations, [item]: recommendations[item] })
+    }
+    })
+    
   },[post, action]);
 
    
@@ -204,7 +212,7 @@ export default function usePostForm() {
       destinationInfo, handleDestinationInfo,
       setDestinationInfo,
       travellerInfo, handleTravellerInfo,
-      recommendations, handleRecommendations,
+      recommendations, handleRecommendations,setRecommendations,
       imageUploader, handleFileUpload,
       handleTitle, removeImg,
       addMoreInput, removeInput,
@@ -215,8 +223,7 @@ export default function usePostForm() {
 
 const checkFormErrors = (data) => {
 const error = {};
- const { destinationInfo, travellerInfo, recommendations, images } = data;
-
+ const { destinationInfo, travellerInfo } = data;
  if(destinationInfo.destination.trim() === "") {
    error.destination = "Please enter the destination"
  } else if(destinationInfo.destination.trim().length > 20) {
@@ -234,8 +241,20 @@ const error = {};
  } else if(destinationInfo.country.trim().length > 300) {
    error.summary = "Summary must be lesser than 300 characters"
  } 
+ if(destinationInfo.ratings <= 0) {
+   error.ratings = "Please rate your travel"
+ } 
+ if(!travellerInfo.travelType) {
+   error.travelType ="Please add type of travel"
+ }
+ if(!travellerInfo.time) {
+   error.time ="Please add length of travel time"
+ }
+ return error;
+}
 
- if(images.length < 1) {
+
+/* if(images.length < 1) {
    error.images="Please add an image"
  }
  if(!travellerInfo.cost) {
@@ -255,6 +274,4 @@ const error = {};
 
  if(recommendations.todos.some(todo => todo.trim() === "")) {
    error.todos="Please add a todo"
- }
- return error;
-}
+ } */

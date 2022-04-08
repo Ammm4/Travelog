@@ -3,7 +3,7 @@ import { likePost, addComment } from '../../../redux/posts/postActions';
 import { useSelector, useDispatch } from 'react-redux';
 
 export default function usePost() {
-  const { singlepost: { post_id } } = useSelector(state => state.SinglePost);
+  const { singlepost: { _id: postId} } = useSelector(state => state.SinglePost);
   const [showComment, setShowComment] = useState(false);
   const [showLikes, setShowLikes] = useState(false);
   const [commentText, setCommentText] = useState('');
@@ -11,12 +11,12 @@ export default function usePost() {
   
   const handlePostLike = async (e) => {
      e.preventDefault();
-     dispatch(likePost(post_id));
+     dispatch(likePost(postId));
   } 
 
-  const handlePostComment = async (e, post_id) => {
+  const handlePostComment = async (e, postId) => {
     e.preventDefault();
-    dispatch(addComment( post_id, { text: commentText }));
+    dispatch(addComment( postId, { text: commentText }));
      if(!showComment) setShowComment(true);
      setCommentText('')
   } 

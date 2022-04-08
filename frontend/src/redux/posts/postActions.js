@@ -80,11 +80,11 @@ const getPostsError = ( error ) => {
   }
 } 
 
-export const getPosts = () => {
+export const getPosts = (userId) => {
   return async(dispatch) => {
      dispatch(getPostsRequest());
      try {
-       const { data } = await axios.get('/api/v1/posts')
+       const { data } = await axios.get(`/api/v1/posts/users/${userId}`)
        dispatch(getPostsSuccess(data))
       } catch(error) {
        dispatch(getPostsError(error.response.data.error || error.message))

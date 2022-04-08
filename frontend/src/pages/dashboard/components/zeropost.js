@@ -3,6 +3,7 @@ import styled from 'styled-components';
 
 //
 import { FiInbox } from "react-icons/fi";
+import { MdOutlineForum } from "react-icons/md";
 
 const Container = styled.div`
   width: 98%;
@@ -42,12 +43,12 @@ const Banner = styled.div`
 `
 
 
-export default function Zeropost() {
+export default function Zeropost({ blogType, text}) {
   return (
     <Container>
       <Banner>
-        <span><FiInbox/></span>
-        <h2>No Posts Yet</h2>
+        { blogType === 'post' ? <span><FiInbox/></span>: <span><MdOutlineForum/></span> }
+        <h2>{text}</h2>
       </Banner>
     </Container>
   )

@@ -3,7 +3,8 @@ import { Link, useLocation } from 'react-router-dom';
 import styled,{ css } from 'styled-components';
 import { Rating } from 'react-simple-star-rating';
 import CommonPostHeader from './CommonPostHeader';
-
+import { ForumNumbers } from './ForumBody';
+import { FaRegComment, FaRegHeart, FaHeart, FaReply } from "react-icons/fa";
 
 // Components
 import PostDetails from './PostDetails';
@@ -66,6 +67,9 @@ export const PostTitle = styled.div`
  }
  h4 {
    font-size: 0.96rem;
+   span {
+     font-weight: 400;
+   }
  }
  p {
    font-size: 0.9375rem;
@@ -101,13 +105,22 @@ margin: 0.55rem 0;
 text-align: right;
 cursor: pointer;
 `
+const Box = styled.div`
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  justify-content: center;
+  align-items: start;
+  //background-color: red;
+`
 export const InteractionButton = styled.button`
   font-size: 1.4rem;
   height: 2.2rem;
   width: 2.2rem;
-  vertical-align: -0.125rem;
+  //vertical-align: -0.125rem;
   line-height: 1rem;
   display: inline-block;
+  
   margin-right: 18px;
   &:hover {
     background-color: #aaa;
@@ -195,7 +208,13 @@ export const LinkToPostDetails = styled(Link)`
   text-decoration: none;
   color: #021b41;
 `
-
+const PostBody = styled.main`
+  display: grid;
+  grid-template-columns: 1fr 38px;
+  @media(max-width: 450px) {
+    grid-template-rows: 1fr;
+  }
+`
 const PostImg = styled.img`
   display:inline-block;
   height: 35px;
@@ -220,8 +239,16 @@ export default function Post({ post, singlePost }) {
   let summary = showMore ? post.destinationInfo.summary : post.destinationInfo.summary.slice(0, 150);
   return (
         <PostWrapper singlePost={singlePost}>
-          <LinkToPostDetails to={`${location.pathname}/posts/${post.post_id}`}>
+          <LinkToPostDetails to={`${location.pathname}/posts/${post._id}`}>
           <CommonPostHeader post={ post } />
+          <PostBody>
+            <div style={{paddingRight: '20px'}}>
+              <PostTitle>
+            <h4>Type of Travel: <span>{ post.travellerInfo.travelType }</span></h4>  
+          </PostTitle>
+          <PostTitle>
+            <h4>Time Spent: <span>{ post.travellerInfo.time }</span> </h4>   
+          </PostTitle>
           <PostTitle>
             <h4>Summary </h4> 
             { post.destinationInfo.ratings 
@@ -240,14 +267,34 @@ export default function Post({ post, singlePost }) {
           </PostTitle>
            <PostTitle>
              <h4>Images ({post.images.length})</h4>
-             {post.images.map((img) => {
+             {post.images.length < 1 && <PostImg src="../../images/image-0.jpg"/>}
+             { 
+              post.images.map((img) => {
                return <PostImg key={img.imgURL} src={img.imgURL} alt="pic" />
-             })}
-           </PostTitle>
-          <PostTitle>
-            <h4>Recommendations</h4>    
-          </PostTitle>    
-          { <PostDetails data={ post }/> }          
+              })
+             }
+           </PostTitle>  
+          { <PostDetails data={ post }/> }  
+            </div>
+              <Box>
+                <InteractionButton disabled={true}><FaHeart /></InteractionButton>
+                <InteractionButton disabled={true}><FaRegComment /></InteractionButton>
+              </Box>
+          </PostBody>
+        <CommentsAndLikes>
+             <ForumNumbers>
+               <span className='number'> { post.comments.length }</span>
+               <span>comments</span>
+             </ForumNumbers>
+             <ForumNumbers>
+               <span className='number'>{ post.likes.length }</span>
+               <span>likes</span> 
+             </ForumNumbers>
+             <ForumNumbers>
+               <span className='number'>{ post.views }</span>
+               <span>views</span> 
+             </ForumNumbers>   
+          </CommentsAndLikes>      
         </LinkToPostDetails>
     </PostWrapper>
   )

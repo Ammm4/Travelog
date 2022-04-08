@@ -1,4 +1,10 @@
-import { SHOW_CREATE_COMMENT, SHOW_MODAL, POST_DETAILS, LOADING_MESSAGE } from "./globalTypes";
+import { 
+  SHOW_CREATE_COMMENT, 
+  SHOW_MODAL, 
+  POST_DETAILS, 
+  LOADING_MESSAGE, 
+  POSTS_USER_TYPE,
+  FORUMS_USER_TYPE } from "./globalTypes";
 
 export const showCreateCommentForm = ( toggle ) => {
   return (dispatch) => {
@@ -21,5 +27,17 @@ export const setPostDetails = ( details ) => {
 export const setLoadingMessage = ( message ) => {
   return (dispatch) => {
     dispatch( { type: LOADING_MESSAGE, payload: message })
+  }
+}
+
+export const setPostsUserType = ( user ) => {
+  return (dispatch) => {
+    dispatch( { type: POSTS_USER_TYPE, payload: user })
+  }
+}
+
+export const setForumsUserType = ( user ) => {
+  return (dispatch) => {
+    dispatch( { type: FORUMS_USER_TYPE, payload: user })
   }
 }

@@ -31,8 +31,18 @@ const Nav = styled.nav`
   display: flex;
   justify-content: space-between;
 `
-const NavLogo = styled.div`
+/* const NavLogo = styled.div`
   display: flex;
+  align-items: center;
+  padding-left: 8px;
+  span {
+    margin-right: 0.5rem;
+    font-size: 2rem;
+  }
+` */
+const NavLogo = styled(Link)`
+  display: flex;
+  text-decoration: none;
   align-items: center;
   padding-left: 8px;
   span {
@@ -185,11 +195,11 @@ export default function Navbar({ active }) {
   
   return (
     <NavContainer>
-      <Nav>
-        <NavLogo>
-          <span><SiYourtraveldottv /></span>
-          <Logo>TravelLog</Logo>
-        </NavLogo>
+      <Nav> 
+          <NavLogo to={`${match.url}/home`}>
+            <span><SiYourtraveldottv style={{ color: '#021b41' }}/></span>
+            <Logo>TravelLog</Logo>
+          </NavLogo>
         <MenuBar onClick={ () => setMenubar(!menuBar) }>
           { menuBar ?  <MdClear /> : <BiMenuAltLeft /> }
         </MenuBar>

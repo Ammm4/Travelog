@@ -5,9 +5,10 @@ import { setPostDetails } from '../../../redux/globals/globalActions';
 import { ErrorDisplay } from '../../signup/components/form';
 import { Rating } from 'react-simple-star-rating';
 
-//Icons 
+//Icons CgAsterisk
 import { IoIosImages } from "react-icons/io";
 import { MdClear } from "react-icons/md";
+import { CgAsterisk } from "react-icons/cg";
 import Loading from "./Loading";
 
 const commonBtnStyle = css`
@@ -66,10 +67,13 @@ const Container = styled.form`
     input {
      ${commonInput}
     }
+    p {
+      font-size: 0.95rem;
+      margin: 0.85rem auto;
+      font-style: italic; 
+    }
 
-    #summary, #others, #transportations {
-      resize: none;
-      outline: none;
+    #summary, #others, #daysSummary, #budgetSummary{
       width: 100%;
       height: 150px;
       border: 1px solid #ccc;
@@ -237,6 +241,7 @@ export default function PostForm(props) {
     e.target.style.height = '48px';
     e.target.style.height = `${e.target.scrollHeight}px`;
   }
+
   const handleDone = (e) => {
     e.preventDefault();
     dispatch(setPostDetails({
@@ -260,7 +265,7 @@ export default function PostForm(props) {
         <div className="form-group">
           <InputsGroupHeading>Destination Info: </InputsGroupHeading>
           <div className="form-group-input">
-            <label htmlFor="destination">Name of Place</label>
+            <label htmlFor="destination">Name of Place<CgAsterisk style={{color:'#007bff'}}/></label>
             <input 
               id="destination" 
               name="destination" 
@@ -272,7 +277,7 @@ export default function PostForm(props) {
             { errors && errors.destination && <ErrorDisplay>{ errors.destination }</ErrorDisplay> }
           </div>
           <div className="form-group-input">
-            <label htmlFor="country">Country</label>
+            <label htmlFor="country">Country<CgAsterisk style={{color:'#007bff'}}/></label>
             <input 
               id="country" 
               name="country" 
@@ -285,7 +290,7 @@ export default function PostForm(props) {
              { errors && errors.country && <ErrorDisplay>{ errors.country }</ErrorDisplay> }
           </div>
           <div className="form-group-input">
-            <label htmlFor="summary">Summary</label>
+            <label htmlFor="summary">Summary<CgAsterisk style={{color:'#007bff'}}/></label>
             <textarea 
               id="summary"
               name="summary"
@@ -298,7 +303,7 @@ export default function PostForm(props) {
             
            </div>
           <div className="form-group-input">
-            <label htmlFor="ratings">Ratings </label>
+            <label htmlFor="ratings">Ratings<CgAsterisk style={{color:'#007bff'}}/> </label>
             <Rating
              ratingValue={ destinationInfo.ratings }
              iconsCount={5}
@@ -306,7 +311,7 @@ export default function PostForm(props) {
              allowHalfIcon={true}
              onClick={ newValue => setDestinationInfo({ ...destinationInfo, ratings: newValue }) }
             />
-                
+          { errors && errors.ratings && <ErrorDisplay>{ errors.ratings }</ErrorDisplay> }      
           </div>
           <div className="form-group-input">
             <BtnImg htmlFor="images" onClick={ imageUploader }><IoIosImages style={{fontSize: '2rem'}} /> 
@@ -351,46 +356,31 @@ export default function PostForm(props) {
         </div>
         
         <div className="form-group">
-          <InputsGroupHeading>Traveller's Info: </InputsGroupHeading>
+          <InputsGroupHeading>Travel Details: </InputsGroupHeading>
           <div className="form-group-input">
-            <label htmlFor="numOfPeople">Number of Travellers</label>
-            <select id="numOfPeople" 
-               name="numOfPeople"
-               value={ travellerInfo.numOfPeople }
+            <label htmlFor="travelType">Type of Travel<CgAsterisk style={{color:'#007bff'}}/></label>
+            <select id="travelType" 
+               name="travelType"
+               value={ travellerInfo.travelType }
                onChange = {(e) => handleTravellerInfo(e) }
                >
-              <option disabled></option>
-              <option value="1">1</option>
-              <option value="2">2</option>
-              <option value="3">3</option>
-              <option value="4">4</option>
-              <option value="5">5</option>
-              <option value="6">6</option>
-              <option value="7">7</option>
-              <option value="8">8</option>
-              <option value="9">9</option>
+              <option value='' disabled>Select Type</option>
+              <option value="Solo Travel">Solo Travel</option>
+              <option value="Travel with Friends">Travel with Friends</option>
+              <option value="Family Travel">Family Travel</option>
+              <option value="Travel with Group">Travel with Group</option>
+              <option value="Luxury Travel">Luxury Travel</option>
+              <option value="Adventure Travel">Adventure Travel</option>
+              <option value="Business Travel">Business Travel</option>          
             </select>
+            { errors && errors.travelType && <ErrorDisplay>{ errors.travelType }</ErrorDisplay> }
           </div>
           <div className="form-group-input">
-            <label htmlFor="cost">Costs- <b>£/person</b></label>
-            <input 
-              id="cost" 
-              name="cost" 
-              type="number"
-              value={ travellerInfo.cost }
-              onChange = {(e) => handleTravellerInfo(e) }
-              />
-            { errors && errors.costs && <ErrorDisplay>{ errors.costs }</ErrorDisplay> }
-          </div>
-        </div>
-
-        <div className="form-group">
-          <InputsGroupHeading>Recommendations: </InputsGroupHeading>
-          <div className="form-group-input">
-            <label htmlFor="numOfDays">Number of Days To Spent</label>
-            <select id="numOfDays" name="numOfDays" value = { recommendations.numOfDays } 
-              onChange = {(e) => handleRecommendations(e) }>
-              <option disabled></option>
+            <label htmlFor="time">Length of the Holiday<CgAsterisk style={{color:'#007bff'}} /></label>
+            <select id="time" name="time" value = { travellerInfo.time } 
+              onChange = {(e) => handleTravellerInfo(e) }>
+              <option disabled>Select No. of Days</option>
+              <option value=''>0</option>
               <option value="1 day">1 day</option>
               <option value="2 days">2 days</option>
               <option value="3 days">3 days</option>
@@ -398,10 +388,47 @@ export default function PostForm(props) {
               <option value="5 days">5 days</option>
               <option value="6 days">6 days</option>
               <option value="1 week">1 week</option>
+              <option value="8 days">8 days</option>
+              <option value="9 days">9 days</option>
+              <option value="10 days">10 days</option>
               <option value="2 weeks">2 weeks</option>
               <option value="3 weeks">3 weeks</option>
               <option value="4 weeks">4 weeks</option>
             </select>
+          { errors && errors.time && <ErrorDisplay>{ errors.time }</ErrorDisplay> }
+          </div>
+        </div>
+
+        <div className="form-group">
+          <InputsGroupHeading>Recommendations: </InputsGroupHeading>
+          <div className="form-group-input">
+            <label htmlFor="numOfDays">Number of Days To Spend</label>
+            <select id="numOfDays" name="numOfDays" value = { recommendations.numOfDays } 
+              onChange = {(e) => handleRecommendations(e) }>
+              <option disabled>Select No. of Days </option>
+              <option value=''>0</option>
+              <option value="1 day">1 day</option>
+              <option value="2 days">2 days</option>
+              <option value="3 days">3 days</option>
+              <option value="4 days">4 days</option>
+              <option value="5 days">5 days</option>
+              <option value="6 days">6 days</option>
+              <option value="1 week">1 week</option>
+              <option value="8 days">8 days</option>
+              <option value="9 days">9 days</option>
+              <option value="10 days">10 days</option>
+              <option value="2 weeks">2 weeks</option>
+              <option value="3 weeks">3 weeks</option>
+              <option value="4 weeks">4 weeks</option>
+            </select>
+            <p> Description (Optional) </p>
+            <textarea 
+               id="daysSummary"
+               name="daysSummary"
+               value = { recommendations.daysSummary }
+               disabled={ !recommendations.numOfDays }
+               onChange = {(e) => handleDestinationInfo(e) }
+              />      
           </div>
           <div className="form-group-input">
             <label htmlFor="budget">Budget- <b>£ / person</b></label>
@@ -412,6 +439,14 @@ export default function PostForm(props) {
               value={ recommendations.budget }
               onChange = {(e) => handleRecommendations(e) }
               />
+              <p> Description (Optional) </p>
+              <textarea 
+               id="budgetSummary"
+               name="budgetSummary"
+               disabled={!recommendations.budget }
+               value = { recommendations.budgetSummary }
+               onChange = {(e) => handleDestinationInfo(e) }
+               />
             { errors && errors.budget && <ErrorDisplay>{ errors.budget }</ErrorDisplay> }
           </div>
           <div className="form-group-input">

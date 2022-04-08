@@ -8,13 +8,14 @@ import ForumBody from './ForumBody';
 import ForumComments from './ForumComments';
 import Loading from './Loading';
 import CreateComment from './CreateComment';
+import GoBackBtn from './GoBackBtn';
+
 export const ForumContainer = styled.div`
    width: 100%;
    max-width: 750px;
    margin: 70px auto 15px auto;
    border-bottom: 1px solid #021b41;
 `
-
 export default function SingleForum() {
   const { forumId } = useParams();
   const { loading, forum } = useSelector(state => state.Forum);
@@ -31,6 +32,7 @@ export default function SingleForum() {
   
   return (
     <PostContainer style={{ marginBottom: '80px'}}>
+      <GoBackBtn />
       <ForumContainer>
         <ForumBody forum={ forum } />
       </ForumContainer>

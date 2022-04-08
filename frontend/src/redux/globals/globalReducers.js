@@ -1,10 +1,18 @@
-import { SHOW_CREATE_COMMENT, SHOW_MODAL, POST_DETAILS, LOADING_MESSAGE } from "./globalTypes";
+import { 
+  SHOW_CREATE_COMMENT, 
+  SHOW_MODAL, 
+  POST_DETAILS, 
+  LOADING_MESSAGE, 
+  POSTS_USER_TYPE,
+  FORUMS_USER_TYPE } from "./globalTypes";
 
 let initialState = {
   showCreateComment: false,
   showModal: null,
   postDetails: null,
-  loadingMsg:''
+  loadingMsg:'',
+  postsUserType:'allUsers',
+  forumsUserType:'allUsers'
 }
 
 export const globalReducers = ( state = initialState, action) => {
@@ -28,6 +36,16 @@ export const globalReducers = ( state = initialState, action) => {
       return {
         ...state,
         loadingMsg: action.payload
+      }
+    case POSTS_USER_TYPE: 
+      return {
+        ...state,
+        postsUserType: action.payload
+      }
+    case FORUMS_USER_TYPE: 
+      return {
+        ...state,
+        forumsUserType: action.payload
       }
        default:
     return state

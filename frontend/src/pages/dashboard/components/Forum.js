@@ -5,7 +5,6 @@ import { PostWrapper,
   LinkToPostDetails, 
 } from './Post';
 import ForumBody from './ForumBody';
-
 export const ForumNumbers = styled.span`
   display: inline-flex;
   flex-direction: column;

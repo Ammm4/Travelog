@@ -1,18 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useRouteMatch } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import styled, {css} from 'styled-components';
-import Post from '../components/Post';
-import { PostsWrapper } from '../components/Posts';
+import Posts from '../components/Posts';
+import Forums from '../components/Forums';
 import Share from '../components/Share';
 import PostBar from '../components/PostBar';
-import { setShowModal } from '../../../redux/globals/globalActions';
+import { setShowModal, setPostsUserType,setForumsUserType } from '../../../redux/globals/globalActions';
 
 //Icons 
-
 import { FaUserCog } from "react-icons/fa";
 import { IoInformationCircleSharp } from "react-icons/io5";
-import Zeropost from '../components/zeropost';
+
 
 
 const sharedImgCss = css`
@@ -213,11 +212,14 @@ export const PostHeading = styled.div`
 
 export default function Profile() {
   const { user } = useSelector(state => state.User);
-  const { posts } = useSelector(state => state.Post);
   const [showSettings, setShowSettings] = useState(false);
   const [showPost, setShowPost] = useState(true);
   const dispatch = useDispatch();
   const match = useRouteMatch();
+  useEffect(() => {
+    dispatch(setPostsUserType(user.userId));
+    dispatch(setForumsUserType(user.userId))
+  },[dispatch, user])
   return (
     <ProfileContainer>
      <h2 style={{marginTop: '15px'}}>{user.name }'s Profile</h2>
@@ -260,13 +262,21 @@ export default function Profile() {
      </UserProfile>
      <Share />
      <PostBar showPost={ showPost } setShowPost={ setShowPost }/>
-     { 
-      posts.filter(post => post.author.authorId === user.userId).length > 0 ? 
+     {
+       showPost? <Posts /> : <Forums />
+     }
+     
+    </ProfileContainer>
+  )
+}
+
+/* { 
+      posts.filter(post => post.user._id === user.userId).length > 0 ? 
         <PostsWrapper>
           { 
            posts.map(post => {
-            if( post.author.authorId === user.userId ) {
-             return <Post key={ post.post_id } post={ post } singlePost={false} />
+            if( post.user._id === user.userId ) {
+             return <Post key={ post._id } post={ post } singlePost={false} />
           }
              return null
           }) 
@@ -274,7 +284,4 @@ export default function Profile() {
         </PostsWrapper>
         : 
         <Zeropost />
-     }
-    </ProfileContainer>
-  )
-}
+     } */

@@ -79,28 +79,36 @@ export default function CommonPostHeader({ post }) {
   const { user } = useSelector(state => state.User);
   let { url } = useRouteMatch();
   const dispatch = useDispatch();
+  const handleEdit = () => {
+    setShowSubmenu(false);
+    return dispatch(setShowModal({ modalType: 'post', action: 'edit post' }))
+  }
+  const handleDelete = () => {
+    setShowSubmenu(false);
+    return dispatch(setShowModal({ modalType: 'post', action: 'delete post' }))
+  }
   return (
     <PostAuthor>
         <div>
               <InfoHeader>
                 { post.destinationInfo.destination }, { post.destinationInfo.country }
               </InfoHeader>
-               { post.author.authorId === user.userId && 
+               { post.user._id === user.userId && 
                 <ActionContainer>
                   <DeleteButton onClick={() => setShowSubmenu(!showSubmenu)} showSubmenu={showSubmenu}>
                     { showSubmenu ? <IoClose /> : <BiDotsHorizontalRounded /> }
                   </DeleteButton>
                   <Submenu showSubmenu={ showSubmenu }>
-                    <button onClick={ (e) => dispatch(setShowModal({ modalType: 'post', postId: post.post_id, action: 'Edit Post' })) }><AiFillEdit /> Edit </button>
+                    <button onClick={ handleEdit }><AiFillEdit /> Edit </button>
                     <span></span>
-                    <button onClick={ (e) => dispatch(setShowModal({ modalType: 'post', postId: post.post_id, action: 'delete post' }))}><MdDelete /> Delete </button>
+                    <button onClick={ handleDelete }><MdDelete /> Delete </button>
                   </Submenu>
                 </ActionContainer>
                }
             </div>
-            <AuthLink to={ `${ url }/users/${ post.author.authorId }` }>
-              <span>By </span><AvatarImage src={ post.author.authorAvatar } alt="avatar"/>
-              <AuthorName>{ post.author.authorName }</AuthorName>
+            <AuthLink to={ `${ url }/users/${ post.user._id }` }>
+              <span>By </span><AvatarImage src={ post.user.avatar.avatar_url } alt="avatar"/>
+              <AuthorName>{ post.user.username }</AuthorName>
             </AuthLink>     
           </PostAuthor>
   )

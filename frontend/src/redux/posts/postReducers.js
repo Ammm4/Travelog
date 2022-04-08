@@ -68,13 +68,11 @@ export const postReducer = (state = { posts: [] }, action) => {
          loading: true,    
       }
      case ADD_NEW_POST_REQUEST:
-     case DELETE_POST_REQUEST:
        return {
          ...state,
          postLoading: true
        }
      case ADD_NEW_POST_SUCCESS:
-     case DELETE_POST_SUCCESS:
        return {
         ...state,
         postLoading: false,
@@ -120,6 +118,7 @@ export const singlePostReducer = (state = { singlepost: {} }, action) => {
        }
 
      case ADD_COMMENT_REQUEST:
+     case DELETE_POST_REQUEST:
      case DELETE_COMMENT_REQUEST:
      case LIKE_COMMENT_REQUEST:
      case EDIT_COMMENT_REQUEST:
@@ -153,7 +152,12 @@ export const singlePostReducer = (state = { singlepost: {} }, action) => {
          replyLoading: false,
          singlepost: action.payload.post
        }
-
+     case DELETE_POST_SUCCESS:
+       return {
+         ...state,
+         loading: false,
+         singlepost: { ...action.payload.post, deleted: true }
+       }
      case GET_SINGLE_POST_ERROR:
      case LIKE_POST_ERROR:
      case ADD_COMMENT_ERROR:

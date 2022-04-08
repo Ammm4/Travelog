@@ -9,41 +9,22 @@ import {
   UserCover, 
   UserTitle } from '../pages/profile';
 import { Button } from './DeleteBox';
+import GoBackBtn from './GoBackBtn';
 import { useHistory } from 'react-router-dom';
 
 import { updateUser } from '../../../redux/users/userActions';
-//Icons FiCamera
-import { BiArrowBack } from "react-icons/bi";
+//Icons 
 import { FaCamera } from "react-icons/fa";
 import EditForm from './EditForm';
 import Loading from './Loading';
+
 
 
 export const Container = styled.div`
   width: 99%;
   margin: 5.5rem auto 1.5rem auto;
 `
-export const EditHeading = styled.div`
-  width: 100%;
-  button {
-    display: inline-block;
-    display: flex;
-    align-items: center;
-    outline: none;
-    border: none;
-    background: transparent;
-    letter-spacing: 0.8px;
-    font-size: 1.15rem;
-    cursor: pointer;
-    span {
-      margin-left: 5px;
-    }
-    &:hover {
-      text-decoration: underline;
-      color: #2a78cd;
-    }
-  }
-`
+
 const EditButton = styled(Button)``
   
 
@@ -114,10 +95,8 @@ export default function ProfileEdit() {
   return (
     <Container ref={containerRef}>
       {userUpdating && <Loading msg="Profile Updating"/>}
-     <EditHeading>
-       <button onClick={(e) => history.goBack()}><BiArrowBack/> <span>Go Back</span></button>
-     </EditHeading>
-     <ProfileContainer style={{marginTop: '0px'}}>
+     <GoBackBtn />
+     <ProfileContainer style={{ marginTop: '0px' }}>
        <h2>Edit Profile</h2>
        <UserProfile>
         <UserImageContainer>

@@ -15,6 +15,10 @@ body {
   /* background-color: #E1E1E1; */
 }
 
+textarea {
+  resize: none;
+  outline: none;
+}
 
 textarea:is(:focus, :valid) {
   border-color: #888;
@@ -51,4 +55,10 @@ button {
   background: transparent;
   cursor: pointer;
   color: #021b41;
+}
+
+div.sticky {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 75px;
 }

@@ -1,7 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import { sharedBtnCss } from '../pages/profile';
 import { MdOutlineForum } from "react-icons/md";
 import { MdGridView } from "react-icons/md";
 
@@ -29,8 +28,6 @@ const Button = styled.button`
   border-bottom: ${ props => props.btnStyle ? '1px solid #021b41' : ''};
   padding: 16px 40px;
   &:hover {
-     //background-color: #2a78cd;
-     //color:#fff;
      color:${ props => props.btnStyle ? '#2671d3' : '#021b41'};
      border: none;
    }
@@ -55,7 +52,7 @@ const Button = styled.button`
 
 export default function PostBar({ showPost, setShowPost }) {
   return (
-    <Container>
+    <Container className='sticky'>
       <Button btnStyle={showPost} onClick={() => setShowPost(true)}>
         <MdGridView /><span className='tooltip'>Posts</span>
       </Button>

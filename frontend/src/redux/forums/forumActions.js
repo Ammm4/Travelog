@@ -61,11 +61,11 @@ import {
 } from "./forumTypes";
 import axios from 'axios';
 
-export const getForums = () => {
+export const getForums = (userId) => {
   return async(dispatch) => {
      dispatch({ type: GET_FORUMS_REQUEST });
      try {
-       const { data } = await axios.get('/api/v1/forums')
+       const { data } = await axios.get(`/api/v1/forums/users/${userId}`)
        dispatch({ type: GET_FORUMS_SUCCESS, payload: data })
       } catch(error) {
        dispatch({ type: GET_FORUMS_ERROR, payload: error.response.data.error || error.message })

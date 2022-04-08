@@ -97,16 +97,14 @@ function SinglePost({ singlePost }) {
       setShowLikes(false);
       setShowComment(!showComment); 
       return
-    }
-    
+    } 
   }
  
   return (
-    <ContextAPI.Provider value={{ postId: post.post_id}}>
+    <ContextAPI.Provider value={{ postId: post._id}}>
        <PostContainer>
           <div className="post_top_part">
-          <CommonPostHeader post={ post 
-          } />
+          <CommonPostHeader post={ post } />
             <PostTitle>
               <h4>Summary</h4>
               { post.destinationInfo.ratings 
@@ -125,15 +123,13 @@ function SinglePost({ singlePost }) {
                  {post.destinationInfo.summary.length > 100 && <Button onClick= { () => setShowMore(!showMore)}> { showMore ? 'less...' :'more...'}</Button>}
               </p>   
             </PostTitle>
-            <PostTitle>
-              <h4>Recommendations</h4>    
-            </PostTitle>    
+         
             { <PostDetails data={ post }/> }
            <PostInteractions>
                <InteractionButton 
                  onClick={ (e) => handlePostLike(e) } >
                   { 
-                    post.likes.find(like => like.user_id === user.userId) ? 
+                    post.likes.find(like => like.user._id === user.userId) ? 
                      <FaHeart /> 
                        :
                       <FaRegHeart />
@@ -170,7 +166,7 @@ function SinglePost({ singlePost }) {
             &&
             <Likes />
           }
-          <CommentPost singlePost={singlePost}>
+          <CommentPost singlePost={ singlePost }>
             <AvatarImage src={ user.avatarURL } alt="avatar" />
             <textarea 
               ref={ commentInputRef } 
@@ -181,7 +177,7 @@ function SinglePost({ singlePost }) {
             />
             <button 
               disabled={ !commentText.trim() ? true : false } 
-              onClick={ (e) => handlePostComment(e, post.post_id) }
+              onClick={ (e) => handlePostComment(e, post._id) }
               >
                Post
             </button>        

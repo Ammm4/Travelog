@@ -106,7 +106,7 @@ export default function Dashboard() {
              ]
              }
          >
-           <Singlepost setModal={ setIsModal }  /> 
+           <Singlepost /> 
         </Route>
         <Route 
            exact 
@@ -119,7 +119,7 @@ export default function Dashboard() {
              ]
              }
          >
-           <SingleForum setModal={ setIsModal }  /> 
+           <SingleForum /> 
         </Route>
         <Route exact 
           path= {
@@ -130,7 +130,7 @@ export default function Dashboard() {
               `${match.path}/profile/users/:user_id`,
             ]}  
         >
-          <Userprofile setModal={ setIsModal } />
+          <Userprofile />
         </Route>
         <Route exact path="/dashboard">
           <Redirect to={`${match.path}/home`} />

@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import CommonForumHeader from './CommonForumHeader';
 import { likeForum } from '../../../redux/forums/forumActions';
 import { showCreateCommentForm } from '../../../redux/globals/globalActions';
-import { FaRegComment, FaRegHeart, FaHeart, FaReply } from "react-icons/fa";
+import { FaRegHeart, FaHeart, FaReply } from "react-icons/fa";
 import { 
   CommentsAndLikes,
   PostInteractions,

@@ -2,11 +2,11 @@ import React, {useState, useEffect} from 'react';
 import styled from 'styled-components';
 import { useHistory } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { Container, EditHeading } from './profileEdit';
+import { Container } from './profileEdit';
 import { commonLabel, commonInput } from './PostForm';
 import { ErrorDisplay } from '../../signup/components/form';
+import GoBackBtn from './GoBackBtn';
 import { changePassword } from '../../../redux/users/userActions';
-import { BiArrowBack } from "react-icons/bi";
 import Loading from './Loading';
 import { UPDATE_USER_RESET } from '../../../redux/users/userTypes';
 
@@ -105,10 +105,7 @@ export default function ChangePassword() {
 
   return (
     <Container>
-      <EditHeading>
-        <button onClick={(e) => history.goBack()}><BiArrowBack/> <span>Go Back</span></button>
-      </EditHeading>
-      
+      <GoBackBtn />
       <Form>
         <h2>Change Password</h2>
         <div className="form-group">

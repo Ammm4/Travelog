@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useSelector, useDispatch } from 'react-redux';
+import { setLoadingMessage } from '../../../redux/globals/globalActions';
 import { deletePost } from '../../../redux/posts/postActions';
 import { deleteForum } from '../../../redux/forums/forumActions';
 import { deleteUser } from '../../../redux/users/userActions';
 import { setShowModal } from '../../../redux/globals/globalActions';
-import { PostTitle, commonLabel, commonInput, BtnAdd} from './PostForm';
+import { PostTitle, commonLabel, commonInput, BtnAdd } from './PostForm';
 
 export const Container = styled.div`
   position: absolute;
@@ -45,23 +46,24 @@ export const Button = styled(BtnAdd)`
    margin: 1.65rem auto;
    width: 99%;
   `
-export default function DeleteBox({ handleDeletePost }) {
+export default function DeleteBox() {
   const { showModal: { action } } = useSelector(state => state.Globals);
-  const { singlepost: { post_id, images } } = useSelector(state => state.SinglePost);
+  const { singlepost: { _id: postId, images } } = useSelector(state => state.SinglePost);
   const { forum } = useSelector(state => state.Forum);
   const [ password, setPassword ] = useState('')
   const [ showConfirm, setShowConfirm ] = useState(false);
   const dispatch = useDispatch();
   const itemToDelete = action.split(' ')[1];
   const handleDelete = () => {
-    console.log('hi')
     if(itemToDelete === 'post') {
-      //setMsg(Post Deleting)
+      dispatch(setLoadingMessage('Deleting Post'))
       const imagesToDelete = images.map(img => img.public_id);
-      return dispatch(deletePost(post_id, { payload: imagesToDelete }))
+      dispatch(deletePost( postId, { payload: imagesToDelete }))
+      return dispatch(setShowModal(null))
     }
     if(itemToDelete === 'forum') {
-      return dispatch(deleteForum(forum._id))
+      dispatch(deleteForum(forum._id));
+       return dispatch(setShowModal(null))
     }
     if(itemToDelete === 'profile') {
       setShowConfirm(true);

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
+import { PostTitle } from './Post';
 import BtnArray from './BtnArray';
 const Container = styled.div`
 `
@@ -33,7 +34,15 @@ const InfoBtn = styled.button`
 export default function PostDetails({ data }) {
   const [info, setInfo] = useState(false);
   const [infoType, setInfoType] = useState('');
-  const { numOfDays, budget, heritages, places, todos, others }  = data.recommendations;
+  const { numOfDays, 
+    daysSummary, 
+    budget,
+    budgetSummary, 
+    heritages, 
+    places, 
+    todos, 
+    others }  = data.recommendations;
+
   const handleClick = (e, btnType) => {
     e.preventDefault();
     if(btnType === infoType) {
@@ -44,18 +53,29 @@ export default function PostDetails({ data }) {
     setInfo(true);
     setInfoType(btnType);
   }
+  let requiredBtn = checkRecommendations( data );
+
+  if(requiredBtn.length < 1) {
+    return null
+  }
   return (
-    <Container>
+    <>
+      <PostTitle>
+        <h4>Recommendations</h4>
+      </PostTitle>
+      <Container>
       {
         BtnArray.map(item => {
-          return <InfoBtn
-                   key={item.btnType} 
-                   
+          if(requiredBtn.includes(item.btnType)) {
+            return <InfoBtn
+                   key={item.btnType}                
                    onClick={(e) => handleClick(e,item.btnType)}
                    btnType={item.btnType}
                    infoType={infoType}> 
                   {item.name}
                  </InfoBtn>
+          }
+          return null
         })
       }
         
@@ -68,6 +88,7 @@ export default function PostDetails({ data }) {
               && <>
                    <PostHeading>No. of days :</PostHeading>
                    <p>{ numOfDays }</p>
+                   <p>{ daysSummary }</p>
                  </>
            } 
            { 
@@ -76,6 +97,7 @@ export default function PostDetails({ data }) {
              <>
               <PostHeading>Budget:</PostHeading>
               <p>£{ budget} per person</p>
+              <p>{ budgetSummary } </p>
              </>
            } 
            { 
@@ -111,12 +133,40 @@ export default function PostDetails({ data }) {
              </>
            }  
         </PostRecommendation>
-      }
-     
-        
+      }     
     </Container>
+    </>
   )
 }
 
-          
+const checkRecommendations = ( data ) => {
+  const { numOfDays, 
+    daysSummary, 
+    budget,
+    budgetSummary, 
+    heritages, 
+    places, 
+    todos, 
+    others }  = data.recommendations;
+  let requiredBtn = []; 
+if(( numOfDays !== '') || ( daysSummary.trim() !== '')) {
+  requiredBtn.push('days')
+}
+if (( budget !== 0) || ( budgetSummary.trim() !== '')) {
+  requiredBtn.push('budget')
+}
+if (heritages.length > 0 ) {
+  requiredBtn.push('heritages')
+}
+if (places.length > 0 ) {
+  requiredBtn.push('places')
+}
+if (todos.length > 0 ) {
+  requiredBtn.push('todos')
+}
+if (others.trim() !== '') {
+  requiredBtn.push('others')
+}
+ return requiredBtn
+}         
   
