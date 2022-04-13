@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout } from '../../../redux/users/userActions';
+import { resetGlobals } from '../../../redux/globals/globalActions';
 
 //============== Icons =====================//
-//AiOutlineLogout
 import { SiYourtraveldottv } from "react-icons/si";
 import { BiMenuAltLeft } from "react-icons/bi";
 import { MdClear } from "react-icons/md";
@@ -31,15 +31,6 @@ const Nav = styled.nav`
   display: flex;
   justify-content: space-between;
 `
-/* const NavLogo = styled.div`
-  display: flex;
-  align-items: center;
-  padding-left: 8px;
-  span {
-    margin-right: 0.5rem;
-    font-size: 2rem;
-  }
-` */
 const NavLogo = styled(Link)`
   display: flex;
   text-decoration: none;
@@ -78,7 +69,7 @@ const NavMenu = styled.div`
   .nav-list {
     width: 75px;
     list-style-type: none;
-    border-bottom: ${props => props.active === 'home' ? '2.5px solid #021b41':''};
+    border-bottom: ${props => props.active === 'home' ? '2.5px solid #021b41': '' };
     display: flex;
     align-items: center;
     justify-content: center;
@@ -87,7 +78,7 @@ const NavMenu = styled.div`
   .avatar {
     display: flex;
     padding: 8px 0px;
-    border-bottom: ${props => props.active === 'avatar' ? '2.5px solid #021b41' : ''};
+    border-bottom: ${props => props.active === 'profile' ? '2.5px solid #021b41' : '' };
     align-items: center;
     justify-content: center;
     margin-left: 50px;
@@ -187,16 +178,20 @@ const Img = styled.span`
   }
 `
 
-export default function Navbar({ active }) {
+export default function Navbar() {
   const { user } = useSelector(state => state.User)
+  const { activePage: active } = useSelector(state => state.Globals);
   const [menuBar, setMenubar] = useState(false);
   const dispatch = useDispatch();
   const match = useRouteMatch();
-  
+  const handleClick = () => {
+    dispatch(resetGlobals());
+    setMenubar(false);
+  }
   return (
     <NavContainer>
       <Nav> 
-          <NavLogo to={`${match.url}/home`}>
+          <NavLogo to={`${match.url}/home`} onClick={() => dispatch(resetGlobals())}>
             <span><SiYourtraveldottv style={{ color: '#021b41' }}/></span>
             <Logo>TravelLog</Logo>
           </NavLogo>
@@ -205,14 +200,14 @@ export default function Navbar({ active }) {
         </MenuBar>
         <NavMenu menuBar={ menuBar } active={active}>
           <ul className="nav-list">
-            <li className="nav-item" onClick={() => setMenubar(false)}>
-                <NavLink to={`${match.url}/home`} active={active} >
+            <li className="nav-item" onClick={handleClick}>
+                <NavLink to={`${match.url}/home`} active={active}>
                   <AiFillHome />
                 </NavLink>   
             </li>
           </ul>
-          <div className="avatar" >
-            <AvatarLink to={`${match.url}/profile`} onClick={() => setMenubar(false)}>
+          <div className="avatar" active={active}>
+            <AvatarLink to={`${match.url}/profile`} onClick={handleClick}>
               <Img>
                   <img src={ user.avatarURL } alt="avatar"/>
               </Img>

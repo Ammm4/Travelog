@@ -31,10 +31,10 @@ export default function SingleForum() {
   }
   
   return (
-    <PostContainer style={{ marginBottom: '80px'}}>
+    <PostContainer style={{ paddingTop:'0', marginBottom: '80px'}}>
       <GoBackBtn />
       <ForumContainer>
-        <ForumBody forum={ forum } />
+        <ForumBody forum={ forum } singleForum={true}/>
       </ForumContainer>
       <ForumComments />
       { showCreateComment && <CreateComment forum = { forum }/> }    

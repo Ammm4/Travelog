@@ -34,7 +34,7 @@ function App() {
             <Homepage />
           </Route>
           <Route path="/dashboard">
-            { user ? <Dashboard user={user}/> : <Redirect to="/login" />}
+            { user ? <Dashboard /> : <Redirect to="/login" />}
           </Route>
           <Route path="/login">
             <Login />

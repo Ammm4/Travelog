@@ -46,7 +46,7 @@ export default function ForumComment({ comment }) {
   }
   return (
     <CommentContainer>
-         <Link>
+         <Link to={`/dashboard/user_profile/users/${comment.user._id}`}>
            <AvatarImage src={comment.user.avatar.avatar_url}/>     
          </Link>
          <h4>{ comment.user.username }</h4>

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setShowModal } from '../../../redux/globals/globalActions';
 import styled from 'styled-components';
@@ -33,6 +33,7 @@ export const CloseModalBtn = styled.span`
 
 export default function PostModal() {
   const { showModal: { action }} = useSelector(state => state.Globals);
+  const modalRef = useRef();
   const {
       singlePostError,
       postEditing,
@@ -64,8 +65,9 @@ export default function PostModal() {
     } 
     
   }, [ singlePostError, success, dispatch]); 
+
   useEffect(() => {
-    window.scrollTo(0,0)
+    modalRef.current.scrollIntoView(true);
   }, [showPostForm])
 
   const handleClose = () => {
@@ -77,8 +79,9 @@ export default function PostModal() {
     }
   }
   return (
-    <Container className='modal' onClick={ (e) => handleModalClose(e) }>
-     <CloseModalBtn onClick={ handleClose }><MdClear /></CloseModalBtn>
+    <Container  className='modal' onClick={ (e) => handleModalClose(e) }>
+     <span ref={modalRef}></span>
+     <CloseModalBtn  onClick={ handleClose }><MdClear /></CloseModalBtn>
        { postEditing && <Loading />} 
        {
          action === 'delete post' ? 

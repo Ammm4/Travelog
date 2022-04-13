@@ -6,7 +6,7 @@ import Posts from '../components/Posts';
 import Forums from '../components/Forums';
 import Share from '../components/Share';
 import PostBar from '../components/PostBar';
-import { setShowModal, setPostsUserType,setForumsUserType } from '../../../redux/globals/globalActions';
+import { setShowModal, setPostsUserType, setForumsUserType, setShowPostProfile } from '../../../redux/globals/globalActions';
 
 //Icons 
 import { FaUserCog } from "react-icons/fa";
@@ -212,14 +212,17 @@ export const PostHeading = styled.div`
 
 export default function Profile() {
   const { user } = useSelector(state => state.User);
+  const { profilePageData: { showPost }} = useSelector(state => state.Globals);
   const [showSettings, setShowSettings] = useState(false);
-  const [showPost, setShowPost] = useState(true);
   const dispatch = useDispatch();
   const match = useRouteMatch();
   useEffect(() => {
     dispatch(setPostsUserType(user.userId));
-    dispatch(setForumsUserType(user.userId))
-  },[dispatch, user])
+    dispatch(setForumsUserType(user.userId));
+  },[dispatch, user]);
+  const setShowPost = () => {
+    dispatch(setShowPostProfile(!showPost))
+  }
   return (
     <ProfileContainer>
      <h2 style={{marginTop: '15px'}}>{user.name }'s Profile</h2>
@@ -263,25 +266,10 @@ export default function Profile() {
      <Share />
      <PostBar showPost={ showPost } setShowPost={ setShowPost }/>
      {
-       showPost? <Posts /> : <Forums />
+       showPost ? <Posts /> : <Forums />
      }
      
     </ProfileContainer>
   )
 }
 
-/* { 
-      posts.filter(post => post.user._id === user.userId).length > 0 ? 
-        <PostsWrapper>
-          { 
-           posts.map(post => {
-            if( post.user._id === user.userId ) {
-             return <Post key={ post._id } post={ post } singlePost={false} />
-          }
-             return null
-          }) 
-          }
-        </PostsWrapper>
-        : 
-        <Zeropost />
-     } */

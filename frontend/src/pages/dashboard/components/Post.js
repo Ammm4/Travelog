@@ -1,10 +1,12 @@
-import React, { useState, } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import styled,{ css } from 'styled-components';
+import { useDispatch } from 'react-redux';
 import { Rating } from 'react-simple-star-rating';
 import CommonPostHeader from './CommonPostHeader';
 import { ForumNumbers } from './ForumBody';
 import { FaRegComment, FaRegHeart, FaHeart, FaReply } from "react-icons/fa";
+import { setHomePostMarkerId } from '../../../redux/globals/globalActions';
 
 // Components
 import PostDetails from './PostDetails';
@@ -111,13 +113,11 @@ const Box = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: start;
-  //background-color: red;
 `
 export const InteractionButton = styled.button`
   font-size: 1.4rem;
   height: 2.2rem;
   width: 2.2rem;
-  //vertical-align: -0.125rem;
   line-height: 1rem;
   display: inline-block;
   
@@ -131,7 +131,9 @@ export const InteractionButton = styled.button`
 export const CommentPost = styled.div` 
   position: -webkit-sticky;
   position: sticky;
-  bottom: 0;
+  bottom: 0.5rem;
+  left:0;
+  width:100%;
   background-color: #fff;
   display: grid;
   grid-template-columns: 45px 1fr 45px;
@@ -169,9 +171,9 @@ export const CommentPost = styled.div`
         }
      } 
      @media only screen and (max-width: 600px) {
-      position: ${props => props.singlePost ? 'fixed': 'sticky'};
-      width:100%;
-  } 
+      position: fixed;
+      padding: 0 5px 0 5px;
+  }
 `
 
 export const PostComments = styled.div`
@@ -210,7 +212,7 @@ export const LinkToPostDetails = styled(Link)`
 `
 const PostBody = styled.main`
   display: grid;
-  grid-template-columns: 1fr 38px;
+  grid-template-columns: 1fr 30px;
   @media(max-width: 450px) {
     grid-template-rows: 1fr;
   }
@@ -233,19 +235,28 @@ export const Button = styled.button`
     color:#2e5c99;
   }
 `
-export default function Post({ post, singlePost }) {
-  const location = useLocation();
+export default function Post({ post, singlePost, postMarkerRef }) {
   const [showMore, setShowMore] = useState(false);
   let summary = showMore ? post.destinationInfo.summary : post.destinationInfo.summary.slice(0, 150);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if(!postMarkerRef) return;
+    postMarkerRef.current.scrollIntoView({ behavior: 'auto', block: 'center' });
+  },[postMarkerRef])
+  
+  const handleClick = (postId) => {
+    dispatch(setHomePostMarkerId(postId))
+  }
   return (
-        <PostWrapper singlePost={singlePost}>
-          <LinkToPostDetails to={`${location.pathname}/posts/${post._id}`}>
+        <PostWrapper singlePost={ singlePost } ref={ postMarkerRef }>
+          <LinkToPostDetails to={`/dashboard/posts/${post._id}`} onClick={() => handleClick(post._id)}>
           <CommonPostHeader post={ post } />
           <PostBody>
-            <div style={{paddingRight: '20px'}}>
+            <div style={{ paddingRight: '20px' }}>
               <PostTitle>
-            <h4>Type of Travel: <span>{ post.travellerInfo.travelType }</span></h4>  
-          </PostTitle>
+                <h4>Type of Travel: <span>{ post.travellerInfo.travelType }</span></h4>  
+              </PostTitle>
           <PostTitle>
             <h4>Time Spent: <span>{ post.travellerInfo.time }</span> </h4>   
           </PostTitle>
@@ -266,10 +277,10 @@ export default function Post({ post, singlePost }) {
                 {post.destinationInfo.summary.length > 150 && <Button onClick= { () => setShowMore(!showMore)}> { showMore ? 'less...' :'more...'}</Button>}</p>   
           </PostTitle>
            <PostTitle>
-             <h4>Images ({post.images.length})</h4>
-             {post.images.length < 1 && <PostImg src="../../images/image-0.jpg"/>}
+             <h4>Images ({ post.images.length })</h4>
+             { post.images.length < 1 && <PostImg src='https://res.cloudinary.com/ddocnijls/image/upload/v1649796037/postImages/no-image-available-icon-6_necjkv.png'/> }
              { 
-              post.images.map((img) => {
+               post.images.map((img) => {
                return <PostImg key={img.imgURL} src={img.imgURL} alt="pic" />
               })
              }
@@ -277,7 +288,7 @@ export default function Post({ post, singlePost }) {
           { <PostDetails data={ post }/> }  
             </div>
               <Box>
-                <InteractionButton disabled={true}><FaHeart /></InteractionButton>
+                <InteractionButton disabled={true}><FaRegHeart /></InteractionButton>
                 <InteractionButton disabled={true}><FaRegComment /></InteractionButton>
               </Box>
           </PostBody>

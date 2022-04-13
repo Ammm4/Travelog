@@ -1,24 +1,22 @@
 import React, { useState } from 'react';
-import { useRouteMatch } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { setShowModal } from '../../../redux/globals/globalActions';
 import { PostAuthor,
   ActionContainer, 
   DeleteButton, 
-  Submenu, 
-  AuthLink,
-  AuthorName,
-  AvatarImage} from './CommonPostHeader';
+  Submenu 
+ } from './CommonPostHeader';
 import { InfoHeader } from '../pages/profile';
+import { LinkAuthor, NoLinkAuthor } from './GlobalComponent';
+// ====================== Icons ============================== //
 import { AiFillEdit } from "react-icons/ai";
 import { MdDelete } from "react-icons/md";
 import { IoClose} from "react-icons/io5";
 import { BiDotsHorizontalRounded } from "react-icons/bi";
 
-export default function CommonForumHeader({ forum }) {
+export default function CommonForumHeader({ forum, singleForum }) {
   const { user } = useSelector(state => state.User);
   const [showSubmenu, setShowSubmenu] = useState(false);
-  let { url } = useRouteMatch();
   const dispatch = useDispatch();
   return (
     <PostAuthor>
@@ -39,10 +37,9 @@ export default function CommonForumHeader({ forum }) {
                 </ActionContainer>
                }
       </div>
-      <AuthLink to={ `${ url }/users/${ forum.user._id }` }>
-              <span>By </span><AvatarImage src={ forum.user.avatar.avatar_url } alt="avatar"/>
-              <AuthorName>{ forum.user.username }</AuthorName>
-      </AuthLink>
+      {
+        singleForum ? <LinkAuthor blog={forum}/> : <NoLinkAuthor blog={forum}/>
+      }
     </PostAuthor>
   )
 }

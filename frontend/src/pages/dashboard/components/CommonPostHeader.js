@@ -1,5 +1,5 @@
-import React, {useState} from 'react';
-import { Link, useRouteMatch } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { InfoHeader } from '../pages/profile';
@@ -8,6 +8,7 @@ import { MdDelete } from "react-icons/md";
 import { IoClose} from "react-icons/io5";
 import { BiDotsHorizontalRounded } from "react-icons/bi";
 import { setShowModal } from '../../../redux/globals/globalActions';
+import { LinkAuthor, NoLinkAuthor } from './GlobalComponent';
 
 export const PostAuthor = styled.div`
   margin-bottom: 0.75rem;
@@ -16,22 +17,6 @@ export const PostAuthor = styled.div`
     display: flex;
     justify-content: space-between;
   }
-`
-export const AuthLink = styled(Link)`
- text-decoration: none;
- display: flex;
- align-items: center;
- color: #021b41;
-`
-export const AvatarImage = styled.img`
-  display: inline-block;
-  width: 35px;
-  height: 35px;
- 
-  margin: 0 0.3rem 0 0.35rem;
-`
-export const AuthorName = styled.span`
- font-weight: 600;
 `
 export const Submenu = styled.aside`
   position: absolute;
@@ -74,10 +59,9 @@ export const DeleteButton = styled.button`
     background-color: ${ props => props.showSubmenu ? 'transparent' : '#f0f0f0'};
   }
 `
-export default function CommonPostHeader({ post }) {
+export default function CommonPostHeader({ post, singlePost }) {
   const [showSubmenu, setShowSubmenu] = useState(false);
   const { user } = useSelector(state => state.User);
-  let { url } = useRouteMatch();
   const dispatch = useDispatch();
   const handleEdit = () => {
     setShowSubmenu(false);
@@ -106,10 +90,9 @@ export default function CommonPostHeader({ post }) {
                 </ActionContainer>
                }
             </div>
-            <AuthLink to={ `${ url }/users/${ post.user._id }` }>
-              <span>By </span><AvatarImage src={ post.user.avatar.avatar_url } alt="avatar"/>
-              <AuthorName>{ post.user.username }</AuthorName>
-            </AuthLink>     
+            { singlePost ? <LinkAuthor blog={post}/>  : <NoLinkAuthor blog={post}/>  } 
           </PostAuthor>
   )
 }
+
+

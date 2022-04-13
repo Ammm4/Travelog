@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { getPosts } from '../../../redux/posts/postActions';
@@ -13,9 +13,16 @@ export const PostsWrapper = styled.section`
 `
 export default function Posts() {
   const { loading, posts } = useSelector(state => state.Post);
-  const { postsUserType } = useSelector(state => state.Globals)
+  const { postsUserType, homePageData } = useSelector(state => state.Globals);
+  const [postMarkerId] = useState(() => {
+    if(postsUserType === 'allUsers') {
+      return homePageData.post.postMarkerId
+    }
+  })
+  
   const dispatch = useDispatch();
-
+  const postMarkerRef = useRef();
+  
   useEffect(() => {
   dispatch(getPosts(postsUserType))
   }, [dispatch, postsUserType]);
@@ -28,7 +35,7 @@ export default function Posts() {
       { 
         posts 
          &&
-        posts.length > 0 ? (posts.map(post => <Post key={post._id} post={post}  singlePost={false}/>)) :  <Zeropost text="no posts yet" blogType="post"/>  
+        posts.length > 0 ? (posts.map(post => <Post key={post._id} postMarkerRef={ postMarkerId === post._id ? postMarkerRef : null} post={post}  singlePost={false}/>)) :  <Zeropost text="no posts yet" blogType="post"/>  
       }  
     </PostsWrapper>
   )

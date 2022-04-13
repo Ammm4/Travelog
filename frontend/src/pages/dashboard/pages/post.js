@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import {  useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
@@ -16,11 +16,11 @@ const SinglePostContainer = styled.div`
   height: 100vh;
   overflow: hidden;
   display: grid;
-  grid-template-columns: 1.35fr .65fr;
-  grid-template-rows: 100vh;
+  grid-template-columns: ${ props => props.expand ? '1fr' : '1.35fr 0.65fr'};
+  grid-template-rows: 100vh auto;
   @media only screen and (max-width: 600px) {
     grid-template-columns: 1fr;
-    grid-template-rows: 50vh;
+    grid-template-rows: ${ props => props.expand ? '100vh' : '50vh auto'};
   }
 `
 const ImageGridWrapper = styled.div`
@@ -32,6 +32,7 @@ const ImageGridWrapper = styled.div`
 `
 
 export default function Singlepost() {
+  const [ expand, setExpand ] = useState(false);
   const { post_id } = useParams();
   const { loading, singlepost: post } = useSelector(state => state.SinglePost);
   const dispatch = useDispatch();
@@ -51,9 +52,9 @@ export default function Singlepost() {
     return <PostDelete />
   }
   return (
-    <SinglePostContainer>
+    <SinglePostContainer expand={expand}>
       <ImageGridWrapper>
-        <SinglePostImages images={ post.images }/>
+        <SinglePostImages expand={expand} setExpand={setExpand}/>
       </ImageGridWrapper>
       <SinglePost  singlePost={ true } />
     </SinglePostContainer>

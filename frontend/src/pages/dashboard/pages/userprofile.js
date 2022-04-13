@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useEffect } from 'react'
 import { Link, useHistory, useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import styled, {css} from 'styled-components';
@@ -7,15 +7,15 @@ import Forums from '../components/Forums';
 import PostBar from '../components/PostBar';
 import { ProfileContainer, UserProfile } from './profile';
 import GoBackBtn from '../components/GoBackBtn';
+import { resetUserPageData } from '../../../redux/globals/globalActions';
 
 
-//Icons SiAboutdotme
-import { BsFillGrid3X3GapFill } from "react-icons/bs";
+//Icons 
 import { IoInformationCircleSharp } from "react-icons/io5";
 
 import Loading from '../components/Loading';
 import { getSingleUser } from '../../../redux/users/userActions';
-import { setPostsUserType, setForumsUserType } from '../../../redux/globals/globalActions';
+import { setPostsUserType, setForumsUserType, setShowPostUser } from '../../../redux/globals/globalActions';
 
 const sharedImgCss = css`
   display: inline-block;
@@ -162,7 +162,7 @@ export const PostHeading = styled.div`
 export default function Userprofile() {
   const history = useHistory();
   const {loading, singleUser: user, error} = useSelector(state => state.SingleUser);
-  const [showPost, setShowPost] = useState(true);
+  const { userPageData: { showPost } } = useSelector(state => state.Globals)
   const { user_id } = useParams();
   const dispatch = useDispatch();
 
@@ -178,12 +178,22 @@ export default function Userprofile() {
     }
   },[error, history])
 
+  useEffect(() => {
+     if (history.action !== 'POP') {
+      dispatch(resetUserPageData())
+    }
+  },[dispatch, history])
+
+  const setShowPost = () => {
+    dispatch(setShowPostUser(!showPost))
+  }
+
   if(loading || Object.keys(user).length < 1) {
     return <Loading msg="Profile Loading"/>
   }
   return (
     <ProfileContainer>
-      <GoBackBtn />
+     <GoBackBtn />
      <h2 style={{marginTop: '15px'}}>{user.username}'s Profile</h2>
      <UserProfile>
        <UserImageContainer>   
@@ -211,9 +221,6 @@ export default function Userprofile() {
          </div>   
        </UserInfo>
      </UserProfile>
-     <PostHeading>
-       <BsFillGrid3X3GapFill />
-     </PostHeading>
      <PostBar showPost={showPost} setShowPost={setShowPost}/>
      {
        showPost? <Posts /> : <Forums />
@@ -221,11 +228,3 @@ export default function Userprofile() {
     </ProfileContainer>
   )
 }
-
-
-/* { user.posts.length > 0 ? 
-        <PostsWrapper>
-          { user.posts.map(post => <Post key={ post._id } post={ post }  singlePost={false} />) }
-        </PostsWrapper>
-        : <Zeropost />
-     } */

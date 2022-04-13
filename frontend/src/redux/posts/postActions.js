@@ -464,6 +464,7 @@ export const addPost = (body) => {
     dispatch(addPostRequest());
     try {
       const { data } = await axios.post('/api/v1/posts', body);
+      console.log(data);
       dispatch(addPostSuccess( data ))
     } catch (error) {
       dispatch(addPostError(error.response.data.error || error.message))
@@ -530,11 +531,11 @@ export const editPost = (postId, body) => {
     }
   }
 
-export const deletePost = (postId, body) => {
+export const deletePost = (postId) => {
   return async (dispatch) => {
     dispatch(deletePostRequest());
     try {
-      const { data } = await axios.delete(`/api/v1/posts/${ postId }`, { data: body });
+      const { data } = await axios.delete(`/api/v1/posts/${ postId }`);
       dispatch(deletePostSuccess( data ))
     } catch (error) {
       dispatch(deletePostError(error.response.data.error || error.message))

@@ -76,7 +76,7 @@ export const postReducer = (state = { posts: [] }, action) => {
        return {
         ...state,
         postLoading: false,
-        posts: action.payload.posts,
+        posts: [action.payload.post, ...state.posts],
         success: action.payload.message       
       }
      case GET_POSTS_SUCCESS:

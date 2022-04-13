@@ -57,8 +57,7 @@ export default function DeleteBox() {
   const handleDelete = () => {
     if(itemToDelete === 'post') {
       dispatch(setLoadingMessage('Deleting Post'))
-      const imagesToDelete = images.map(img => img.public_id);
-      dispatch(deletePost( postId, { payload: imagesToDelete }))
+      dispatch(deletePost(postId))
       return dispatch(setShowModal(null))
     }
     if(itemToDelete === 'forum') {

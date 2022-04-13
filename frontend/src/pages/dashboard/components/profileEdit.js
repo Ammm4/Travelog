@@ -93,7 +93,9 @@ export default function ProfileEdit() {
   }
   
   return (
-    <Container ref={containerRef}>
+    <>
+    <span ref={containerRef}></span>
+    <Container>
       {userUpdating && <Loading msg="Profile Updating"/>}
      <GoBackBtn />
      <ProfileContainer style={{ marginTop: '0px' }}>
@@ -143,6 +145,7 @@ export default function ProfileEdit() {
       </UserProfile>
      </ProfileContainer>
     </Container>
+    </>
   )
 }
 

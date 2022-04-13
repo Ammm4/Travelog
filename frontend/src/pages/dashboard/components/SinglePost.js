@@ -26,8 +26,6 @@ import { FaHeart } from "react-icons/fa";
 import { FaRegHeart } from "react-icons/fa";
 import {FaRegComment} from "react-icons/fa";
 
-
-
 export const PostContainer = styled.article`
   display: flex;
   flex-direction: column;
@@ -104,7 +102,7 @@ function SinglePost({ singlePost }) {
     <ContextAPI.Provider value={{ postId: post._id}}>
        <PostContainer>
           <div className="post_top_part">
-          <CommonPostHeader post={ post } />
+          <CommonPostHeader post={ post } singlePost={singlePost}/>
             <PostTitle>
               <h4>Summary</h4>
               { post.destinationInfo.ratings 
@@ -178,7 +176,7 @@ function SinglePost({ singlePost }) {
             <button 
               disabled={ !commentText.trim() ? true : false } 
               onClick={ (e) => handlePostComment(e, post._id) }
-              >
+             >
                Post
             </button>        
           </CommentPost>

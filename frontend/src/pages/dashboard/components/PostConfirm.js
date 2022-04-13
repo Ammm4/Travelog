@@ -81,14 +81,12 @@ export default function PostConfirm({ toggleForm }) {
      if(submitType === 'create') {
       e.preventDefault();
       dispatch(setLoadingMessage('Creating Post'))
-      window.scrollTo(0,0);
       dispatch(addPost(postData))
     }
    
     if(submitType === 'edit') {  
       e.preventDefault();
       dispatch(setLoadingMessage('Editing Post'))
-      window.scrollTo(0,0);
       postData.deletedImageIDs = deletedImageIDs
       dispatch(editPost(_id, postData));
     }
@@ -123,7 +121,7 @@ export default function PostConfirm({ toggleForm }) {
         </Infos>
         <InfoLabel>Images({ imgPreview.length })</InfoLabel>
         <ImagePreview>
-          { imgPreview.length < 1 && <ImagePreviewImg> <img src="../../images/image-0.jpg" alt="no photos"/></ImagePreviewImg> }
+          { imgPreview.length < 1 && <ImagePreviewImg> <img src='https://res.cloudinary.com/ddocnijls/image/upload/v1649796037/postImages/no-image-available-icon-6_necjkv.png' alt="no photos"/></ImagePreviewImg> }
           { imgPreview && imgPreview.map((img, index) => {
             return  <ImagePreviewImg key={ index }>
                       <img src={ img.imgFile } alt={ img.imgTitle }/>

@@ -86,7 +86,7 @@ export default function PostDetails({ data }) {
            { 
              infoType === 'days' 
               && <>
-                   <PostHeading>No. of days :</PostHeading>
+                   <PostHeading>No. of days</PostHeading>
                    <p>{ numOfDays }</p>
                    <p>{ daysSummary }</p>
                  </>
@@ -95,7 +95,7 @@ export default function PostDetails({ data }) {
              infoType === 'budget' 
               && 
              <>
-              <PostHeading>Budget:</PostHeading>
+              <PostHeading>Budget</PostHeading>
               <p>£{ budget} per person</p>
               <p>{ budgetSummary } </p>
              </>
@@ -104,13 +104,13 @@ export default function PostDetails({ data }) {
              infoType === 'others' 
                && 
              <>
-               <PostHeading>Others:</PostHeading>
+               <PostHeading>Others</PostHeading>
                <p>{ others }</p>
              </>
            }   
            { infoType === 'heritages'  
              && <>
-              <PostHeading>Heritages To See:</PostHeading>
+              <PostHeading>Heritages To See</PostHeading>
               <ul>
                 {heritages.map((item, index) => <li key={index}>{item}</li>)}
               </ul>
@@ -118,7 +118,7 @@ export default function PostDetails({ data }) {
            }    
             { infoType === 'places'  
              && <>
-              <PostHeading>Places To Visit:</PostHeading>
+              <PostHeading>Places To Visit</PostHeading>
               <ul>
                 {places.map((item, index) => <li key={index}>{item}</li>)}
               </ul>
@@ -126,7 +126,7 @@ export default function PostDetails({ data }) {
            }  
            { infoType === 'todos'  
              && <>
-              <PostHeading>Things To Do:</PostHeading>
+              <PostHeading>Things To Do</PostHeading>
               <ul>
                 {todos.map((item, index) => <li key={index}>{item}</li>)}
               </ul>

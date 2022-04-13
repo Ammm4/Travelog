@@ -3,7 +3,7 @@ import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import { FaArrowAltCircleLeft } from "react-icons/fa";
 const Container = styled.div`
-  padding-left: 0.8rem;
+  padding: 0.2rem 0 0 0.2rem;
   z-index: 5;
   button {
     display: inline-block;

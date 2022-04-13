@@ -20,7 +20,7 @@ export const ForumNumbers = styled.span`
   }
 `
 
-export default function ForumBody({ forum }) {
+export default function ForumBody({ forum, singleForum }) {
   const { comments, likes } = forum;
   const { user } = useSelector(state => state.User);
   const { showCreateComment } = useSelector(state => state.Globals);
@@ -31,7 +31,7 @@ export default function ForumBody({ forum }) {
 
   return (
     <>
-      <CommonForumHeader forum={ forum }/>
+      <CommonForumHeader forum={ forum } singleForum={singleForum}/>
       <PostInteractions>
                <InteractionButton onClick={() => dispatch(likeForum(forum._id))}>         
                  { likedForum ? <FaHeart /> : <FaRegHeart /> }        

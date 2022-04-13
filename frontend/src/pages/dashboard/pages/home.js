@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
-import { useDispatch } from 'react-redux';
-import { setPostsUserType, setForumsUserType } from '../../../redux/globals/globalActions';
+import { useSelector, useDispatch } from 'react-redux';
+import { setPostsUserType, setForumsUserType, setShowPostHome } from '../../../redux/globals/globalActions';
 import Share from '../components/Share';
 import PostBar from '../components/PostBar';
 import Posts from '../components/Posts';
@@ -11,16 +11,19 @@ const HomeContainer = styled.section`
  color:#1e1e1e;
 `
 export default function Home() {
-  const [showPost, setShowPost] = useState(true);
+  const { homePageData: { showPost, post: { postMarkerId } }} = useSelector(state => state.Globals)
   const dispatch = useDispatch();
+  const setShowPost = () =>{
+    dispatch(setShowPostHome(!showPost))
+  }
   useEffect(() => {
-    dispatch(setPostsUserType('allUsers'))
-    dispatch(setForumsUserType('allUsers'))
+    dispatch(setPostsUserType('allUsers'));
+    dispatch(setForumsUserType('allUsers'));
   },[dispatch])
   return (
     <HomeContainer>
       <Share homepage={true}/>
-      <PostBar showPost={showPost} setShowPost={setShowPost}/>
+      <PostBar showPost={showPost} setShowPost={setShowPost} />
       {
         showPost ? <Posts/> : <Forums />
       }

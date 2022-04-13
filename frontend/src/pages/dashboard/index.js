@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import Navbar from './components/Navbar';
 import { Switch, Route, useRouteMatch, Redirect, useLocation } from 'react-router';
 import { useSelector, useDispatch } from 'react-redux';
@@ -17,6 +17,7 @@ import ForumModal from './components/ForumModal';
 import Userprofile from './pages/userprofile';
 import { clearError } from '../../redux/posts/postActions';
 import { clearError as clearUserError } from '../../redux/users/userActions';
+import { setActivePage } from '../../redux/globals/globalActions';
 import ChangePassword from './components/ChangePassword';
 
 
@@ -26,8 +27,6 @@ export default function Dashboard() {
   const { error: singlePostError } = useSelector(state => state.SinglePost);
   const { error: singleUserError } = useSelector(state => state.SingleUser);
   const { showModal } = useSelector(state => state.Globals);
-  const [ active, setActive ] = useState();
-  const [ isModal, setIsModal ] = useState(null);
   const alert = useAlert();
   const dispatch = useDispatch();
   const match = useRouteMatch();
@@ -35,18 +34,18 @@ export default function Dashboard() {
   
   useEffect( () => {
     if( location.pathname.match(/\/dashboard\/home/) ) {
-     setActive('home')
-    } else if( location.pathname.match(/\/dashboard\/profile/) ) {
-      setActive('avatar')
+      dispatch(setActivePage('home'))
+    } else if( location.pathname.match(/\/dashboard\/profile/) ) { 
+      dispatch(setActivePage('profile'));  
     }
-  }, [location]);
+  }, [location, dispatch]);
 
   useEffect(() => {
-    if(isModal) {
+    if(showModal) {
       return document.body.style.overflow = 'hidden';
     }
     document.body.style.overflow = 'unset';
-  }, [isModal]);
+  }, [showModal]);
 
   useEffect(() => {
     if(error) {
@@ -81,13 +80,13 @@ export default function Dashboard() {
   
   return (
     <>
-      <Navbar active={active}/>
+      <Navbar />
       <Switch>   
         <Route exact path={`${match.path}/home`}>
-          <Home setModal={setIsModal}/> 
+          <Home /> 
         </Route>
         <Route exact path={`${match.path}/profile`}>
-          <Profile setIsModal={setIsModal} /> 
+          <Profile /> 
         </Route>
         <Route exact path={`${match.path}/profile/edit`}>
           <ProfileEdit /> 
@@ -95,45 +94,20 @@ export default function Dashboard() {
         <Route exact path={`${match.path}/profile/change_password`}>
           <ChangePassword /> 
         </Route>
-        <Route 
-           exact 
-           path={
-             [
-               `${match.path}/home/*/posts/:post_id`,
-               `${match.path}/profile/*/posts/:post_id`,
-               `${match.path}/home/posts/:post_id`,
-               `${match.path}/profile/posts/:post_id` 
-             ]
-             }
-         >
+        <Route exact path={ `${match.path}/posts/:post_id` }>
            <Singlepost /> 
         </Route>
-        <Route 
-           exact 
-           path={
-             [
-               `${match.path}/home/*/forums/:forumId`,
-               `${match.path}/profile/*/forums/:forumId`,
-               `${match.path}/home/forums/:forumId`,
-               `${match.path}/profile/forums/:forumId` 
-             ]
-             }
-         >
-           <SingleForum /> 
+        <Route exact path={`${match.path}/forums/:forumId`}>
+          <SingleForum /> 
         </Route>
-        <Route exact 
-          path= {
-            [ 
-              `${match.path}/home/*/users/:user_id`, 
-              `${match.path}/profile/*/users/:user_id`,
-              `${match.path}/home/users/:user_id`,
-              `${match.path}/profile/users/:user_id`,
-            ]}  
-        >
+        <Route exact path={`${match.path}/user_profile/users/:user_id`} >
           <Userprofile />
         </Route>
-        <Route exact path="/dashboard">
+        <Route exact path="/dashboard"> 
           <Redirect to={`${match.path}/home`} />
+        </Route>
+        <Route exact path='/dashboard/*'> 
+          <div>Page Not Found</div>
         </Route>
       </Switch>
        { 
