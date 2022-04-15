@@ -4,15 +4,24 @@ const ErrorHandler = require("../../utils/errorHandler.js");
 const asyncFunctionWrapper =  require('../../utils/asyncFunctionWrapper');
 
 const getAllForums = async (req,res) => {
-  const forums = await ForumModel.find();
+  const { params: { id } } = req;
+  var forums; 
+  if(id === 'allUsers') {
+    forums = await ForumModel.find().sort({ createdAt: -1 });
+  } else {
+    forums = await ForumModel.find({ user: id }).sort({ createdAt: -1 });
+  }
   const trimmedForums = forums.map(forum => {
     return {
+      _id: forum._id,
       user: forum.user,
-      likes: forum.likes.length,
-      comments: forum.comments.length
+      views: forum.views,
+      likes: forum.likes,
+      comments: forum.comments.length,
+      body: forum.body
     }
   })
-  res.status(200).json({msg: 'success', trimmedForums})
+  res.status(200).json({ msg: 'success', forums: trimmedForums })
 }
 
 const getSingleForum = asyncFunctionWrapper(async (req,res, next) => {
@@ -21,6 +30,8 @@ const getSingleForum = asyncFunctionWrapper(async (req,res, next) => {
   if(!forum) {
      return next(new ErrorHandler('Forum Not Found', 404))
   }
+  forum.views++;
+  await forum.save();
   res.status(200).json({ msg: 'success', forum })
 })
 

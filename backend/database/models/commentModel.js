@@ -9,8 +9,11 @@ const CommentSchema = new mongoose.Schema({
   },
   forum: {
     type: mongoose.Schema.Types.ObjectId,
-    required: [true, "Forum Id is required"],
     ref:'Forum'
+  },
+  post: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref:'Post'
   },
   body: {
     type: String,
@@ -31,7 +34,6 @@ CommentSchema.virtual('likes', {
 })
 
 CommentSchema.pre('deleteOne', { document: true, query: false}, async function(next) {
-   console.log('Hi Comment');
     const replies = await ReplyModel.find({ comment: this._id });
     for (const reply of replies) {
       await reply.deleteOne()

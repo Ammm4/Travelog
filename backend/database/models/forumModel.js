@@ -12,9 +12,12 @@ const ForumSchema = new mongoose.Schema({
     required: [true, "Forum Topic is required!"],
     minLength:[20, "Forum cannot be less than 20 characters!"]
   },
+  views: {
+    type: Number,
+    default: 0,
+  }
 
 }, { timestamps: true,  toJSON: { virtuals: true }, toObject: { virtuals: true }});
-
 
 ForumSchema.virtual('comments', {
   ref: 'Comment',
@@ -34,7 +37,7 @@ ForumSchema.pre(/^find/, function() {
   .populate(
     { path:'comments', 
       populate: [{ path: 'user', select: 'username avatar'}, 
-                 { path: 'likes', select: 'username avatar'}, 
+                 { path: 'likes', populate: { path:'user', select:'username avatar' } }, 
                  { path: 'replies', 
                   populate:([ { path: 'user', select:'username avatar'}, 
                               { path: 'likes', 

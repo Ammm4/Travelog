@@ -2,7 +2,6 @@
 const { UserModel } = require("../../database/models/userModel.js");
 const { PostModel } = require("../../database/models/postModel.js");
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
 const { validationResult } = require('express-validator');
 const asyncFunctionWrapper = require('../../utils/asyncFunctionWrapper.js');
 const ErrorHandler = require('../../utils/errorHandler.js');
@@ -10,17 +9,10 @@ const cloudinary = require('cloudinary');
 var nodemailer = require('nodemailer');
 var smtpTransport = require('nodemailer-smtp-transport');
 const tokenPayload = require('../../utils/tokenPayload');
+const createAccessToken = require('../../utils/accessTokenCreator');
+const cookie_Options = require('../../utils/cookieOptions')
 
-//================== Token Generator ========================//
 
-function createAccessToken(id) {
-  return jwt.sign({ id } , process.env.ACCESS_TOKEN_SECRET, { expiresIn:'15m' });
-}
-
-const cookie_Options = {
-  expires:new Date(Date.now + process.env.COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000),
-  httpOnly: true
-}
 
 // ===================== Controllers ===========================//
 
@@ -49,14 +41,11 @@ const signUpUser = asyncFunctionWrapper(async (req, res, next) => {
        avatar_id: "avatars/xik6iypxmxlfyxwmoylr",
        avatar_url: "https://res.cloudinary.com/ddocnijls/image/upload/v1642801880/avatars/xik6iypxmxlfyxwmoylr.jpg"
      },
-     about:"A Travel freak",
+     about:"Add something about you",
      cover:{
        cover_id: "covers/cover_u0dro6",
        cover_url: "https://res.cloudinary.com/ddocnijls/image/upload/v1642936888/covers/cover_u0dro6.jpg"
       },
-     posts:[],
-     likes:[],
-     comments:[]
    });
 
   await user.save();
@@ -85,7 +74,7 @@ const loginUser = asyncFunctionWrapper(async (req, res, next) => {
     }
   const payload = tokenPayload(user);
   //========== Create AccessToken ========= //
-  const AccessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, { expiresIn: process.env.TOKEN_EXPIRES_IN });
+  const AccessToken = createAccessToken(payload);
   return res.status(200).cookie('Token', AccessToken, cookie_Options ).send({ success: true, message:'Logged In Successfully', user: payload })
 
 })
@@ -107,9 +96,8 @@ const logOutUser = (req, res, next) => {
 // ======================= Update User Start ================================= //
 
 const updateUser = asyncFunctionWrapper( async(req, res, next) => {
-  const user_id = req.user.userId;
-  const user = await UserModel.findById(user_id);
-  const { coverImg, avatarImg } = req.body;
+  const { user:{ userId }, body : { coverImg, avatarImg } } = req;
+  const user = await UserModel.findById(userId);
   req.body.cover = { ...user.cover };
   req.body.avatar = { ...user.avatar };
   if( coverImg ) {
@@ -183,9 +171,9 @@ const changePassword = asyncFunctionWrapper(
 
 // ======================= Delete User Start =================================== //
 const deleteUser = asyncFunctionWrapper( async(req,res,next) => {
-  const user = await UserModel.findById(req.user.id).select("+password");
+  const user = await UserModel.findById(req.user.userId).select("+password");
   const isPasswordMatch = await bcrypt.compare(req.body.payload, user.password);
-  if(!isPasswordMatch) return next(new ErrorHandler("Current password is incorrect", 401));
+  if(!isPasswordMatch) return next(new ErrorHandler("Invalid Credentials", 401));
   user.posts.forEach( async (post) => {
       await deletePost(post)
    })

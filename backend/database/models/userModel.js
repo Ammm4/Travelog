@@ -1,11 +1,8 @@
 const mongoose = require('mongoose');
-const { Like, Comment, Post } = require('./global_Schema.js');
 const validator = require('validator');
 const crypto = require('crypto');
 
-
 const userSchema = new mongoose.Schema({
-  createdAt: { type: Date, default: Date.now},
   username: { 
     type: String, 
     required: [true, "Please Enter Your Name!"],
@@ -51,12 +48,9 @@ const userSchema = new mongoose.Schema({
   about: { type:  String, default: "Add Something about Yourself" },
   hobbies: { type:  String, default: "Add Your Hobbies" },
   country: { type:  String, default: "Add the Country You Live" },
-  posts: [Post],
-  likes: [Like],
-  comments: [Comment],
   resetPasswordToken: String,
   resetPasswordExpire: Date
-});
+}, { timestamps: true });
 
 //Password Reset Token
 userSchema.methods.GenerateToken = function() {
@@ -92,7 +86,7 @@ userSchema.methods.Compare = async function(enteredPassword) {
 
 
 */
-const UserModel = mongoose.model('User', userSchema);
+const UserModel = mongoose.models.Users || mongoose.model('User', userSchema);
 
 module.exports = {
  UserModel

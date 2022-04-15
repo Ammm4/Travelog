@@ -25,8 +25,8 @@ const {
 
 const is_User_Authenticated = require('../middleware/checkAuthentication');
 
+router.route('/forums/users/:id').get( getAllForums)
 router.route('/forums')
- .get( getAllForums)
  .post( is_User_Authenticated, createForum);
 router.route('/forums/:id')
 .get(getSingleForum)

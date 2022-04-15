@@ -12,17 +12,18 @@ const getALLForumComments = asyncFunctionWrapper(
 )
 const createComment = asyncFunctionWrapper(async (req,res, next) => {
   const { params: { id: forumId }, user: { userId }, body: { body }} = req;
+  const Forum = await ForumModel.findById(forumId);
+  if(!Forum) {
+    return next(new ErrorHandler('Forum Not Found', 404));
+  }
   let details = {
     user: mongoose.Types.ObjectId(userId),
     forum: mongoose.Types.ObjectId(forumId),
     body
   }
-  const Forum = await ForumModel.findById(forumId);
-  if(!Forum) {
-    return next(new ErrorHandler('Forum Not Found', 404));
-  }
-  const comment = await CommentForumModel.create(details);
-  res.status(200).json({msg: 'success', comment})
+  await CommentForumModel.create(details);
+  const forum = await ForumModel.findById(forumId);
+  res.status(200).json({ msg: 'success', forum })
  }
 )
 
@@ -36,8 +37,9 @@ const updateComment = asyncFunctionWrapper(async (req,res, next) => {
     return next(new ErrorHandler('Not Authorised', 401));
   }
   Comment.body = body;
-   await Comment.save();
-  res.status(200).json({msg: 'success', comment: Comment})
+  await Comment.save();
+  const forum = await ForumModel.findById(Comment.forum)
+  res.status(200).json({msg: 'success', forum})
  }
 )
 

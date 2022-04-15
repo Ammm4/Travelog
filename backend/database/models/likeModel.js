@@ -18,25 +18,12 @@ const LikeSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref:'Reply'
   },
+  post: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref:'Post'
+  }
   
 }, { timestamps: true, supressReservedKeysWarning: true })
 
-/* const LikeSchema = new mongoose.Schema({
-  user: {
-    type: mongoose.Schema.Types.ObjectId,
-    required: [true, "User Id is required"],
-    ref:'User'
-  },
-  on: {
-    type: mongoose.Schema.Types.ObjectId,
-    required: true,
-    refPath:'onModel'
-  },
-  onModel: {
-    type: String,
-    required: true,
-    enum:['Forum', 'Comment', 'Reply']
-  },
-   */
 
 module.exports = mongoose.model('Like', LikeSchema);

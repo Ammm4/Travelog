@@ -1,22 +1,29 @@
 const { PostModel }  = require("../../database/models/postModel.js");
-const { UserModel } = require("../../database/models/userModel.js");
-const { v4: uuidv4 } = require('uuid');
 const ErrorHandler = require("../../utils/errorHandler.js");
 const cloudinary = require('cloudinary');
 
 const asyncFunctionWrapper =  require('../../utils/asyncFunctionWrapper');
 
 const getAllPosts = asyncFunctionWrapper(async (req, res, next) => {
-    const posts = await PostModel.find(); 
-    res.status(201).json({
-      success: true,
-      posts
-    })
+     const { params: { userId } } = req;
+     var posts;
+     if(userId === 'allUsers') {
+       posts = await PostModel.find().sort({ createdAt: -1 });  
+     } else {
+       posts = await PostModel.find({ user: userId }).sort({ createdAt: -1 });
+     }
+     return res.status(200).json({
+       success: true,
+       posts
+     })
+  
 });
 
 const getSinglePost = asyncFunctionWrapper(async (req, res, next) => {
-   const post = await PostModel.findOne({ post_id: req.params.id});
+   const post = await PostModel.findById( req.params.id );
    if(!post) return next(new ErrorHandler("Post not found", 404))
+   post.views++;
+   await post.save();
    res.status(200).json({
       success: true,
       post
@@ -24,39 +31,24 @@ const getSinglePost = asyncFunctionWrapper(async (req, res, next) => {
 })
 
 const addPost = asyncFunctionWrapper( async ( req, res, next ) => {
-  const user_id = req.user.id;
-  const user = await UserModel.findById(user_id);
-  const post_id = uuidv4();
-  const author = {
-    authorId: user._id,
-    authorAvatar: user.avatar.avatar_url,
-    authorName: user.username,
+  const { user: { userId  }, body: { images } }= req;
+  if(images.length > 0) {
+    let uploadedImages = await createImageDetails(images);
+    req.body.images = uploadedImages;
   }
-  const { images } = req.body;
-  let uploadedImages = await createImageDetails(images);
-
-  req.body.images = uploadedImages;
   let newPost = {
-     post_id, 
-     author,
+     user: userId,
      ...req.body,
-     likes: [],
-     comments: []
   }
-  user.posts = [...user.posts, newPost];
-  const post = new PostModel( newPost ); 
-  await user.save();
-  await post.save();
-  const posts = await PostModel.find(); 
-  res.status(201).send({ success: true, message: "Post Created successfully!!", posts });
+  const post = await PostModel.create(newPost);
+  const newlyAddedPost = await PostModel.findById(post._id)
+  res.status(201).send({ success: true, message: "Post Created successfully!!", post: newlyAddedPost});
 })
 
 const updatePost = asyncFunctionWrapper(async (req, res, next) => {
-  const user_id = req.user.id;
-  const user = await UserModel.findById(user_id);
-  const post = await PostModel.findOne({ post_id: req.params.id});
-  const userPost = user.posts.find(post => post.post_id === req.params.id);
-  if(!post || !userPost) return next(new ErrorHandler("Post not found", 404))
+  const { params: { id }} = req;
+  const post = await PostModel.findById(id);
+  if(!post) return next(new ErrorHandler("Post not found", 404))
   const { images, deletedImageIDs } = req.body;
   if (deletedImageIDs.length > 0) {
     deletedImageIDs.forEach(async (imgId) => {
@@ -80,39 +72,30 @@ const updatePost = asyncFunctionWrapper(async (req, res, next) => {
     }
   })
   )
-  
   req.body.images = uploadedImages;
   
   for( let key in req.body) {
     post[key] = req.body[key];
-    userPost[key] = req.body[key];
   }
-  
   await post.save();
-  await user.save();
-  const posts = await PostModel.find(); 
   res.status(200).json({
     success: true,
     message:"Post edited successfully!!",
-    posts
+    post
   })
 })
 
 const deletePost = asyncFunctionWrapper(async (req, res, next) => {
-  const user_id = req.user.id;
-  const user = await UserModel.findById(user_id);
-  const post = await PostModel.findOne({ post_id: req.params.id});
-  if(!post) return next(new ErrorHandler("Post not found", 400));
-  let userNewPosts = user.posts.filter(post => post.post_id !== req.params.id);
-  user.posts = userNewPosts;
-  deleteAllImages(req.body.payload);
-  await post.remove();
-  await user.save();
-  const posts = await PostModel.find();
+  const { params: { id } } = req;
+  const post = await PostModel.findById(id);
+  if(!post) return next(new ErrorHandler("Post not found", 404));
+  const imagesToDelete = post.images.map(img => img.public_id);
+  deleteAllImages(imagesToDelete);
+  await post.deleteOne();
    res.status(201).json({
     success: true,
     message: "Post Deleted successfully!!",
-    posts 
+    post
   })
 })
 
