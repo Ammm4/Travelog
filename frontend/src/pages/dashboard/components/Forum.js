@@ -1,8 +1,9 @@
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
+import { useLocation } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { PostWrapper, LinkToPostDetails } from './Post';
-import { setHomeForumMarkerId } from '../../../redux/globals/globalActions';
+import { setHomeForumMarkerId, setProfileForumMarkerId, setUserForumMarkerId } from '../../../redux/globals/globalActions';
 import ForumBody from './ForumBody';
 export const ForumNumbers = styled.span`
   display: inline-flex;
@@ -15,21 +16,29 @@ export const ForumNumbers = styled.span`
 `
 export default function Forum({ forum, forumMarkerRef }) {
   const dispatch = useDispatch();
-
+  const location = useLocation();
   useEffect(() => {
     if(!forumMarkerRef) return;
     forumMarkerRef.current.scrollIntoView({ behavior: 'auto', block: 'center' })
   })
 
   const handleClick = () => {
-    dispatch(setHomeForumMarkerId(forum._id))
+    if( location.pathname.match(/\/dashboard\/home/)) {
+      return dispatch(setHomeForumMarkerId(forum._id))
+    }
+    if( location.pathname.match(/\/dashboard\/profile/)) {
+      return dispatch(setProfileForumMarkerId(forum._id))
+    }
+    if( location.pathname.match(/\/dashboard\/user_profile/)) {
+      return dispatch(setUserForumMarkerId(forum._id))
+    }  
   }
   
   return (
-    <PostWrapper ref={forumMarkerRef}>
-      <LinkToPostDetails to={`/dashboard/forums/${forum._id}`} onClick={handleClick}>
-        <ForumBody forum={forum}/>
-      </LinkToPostDetails>
-    </PostWrapper>
+    <LinkToPostDetails to={`/dashboard/forums/${forum._id}`} onClick={handleClick}>
+      <PostWrapper ref={forumMarkerRef}>
+          <ForumBody forum={forum}/>
+      </PostWrapper>
+    </LinkToPostDetails>
   )
 }

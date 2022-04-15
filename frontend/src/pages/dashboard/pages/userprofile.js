@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { Link, useHistory, useParams } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import styled, {css} from 'styled-components';
 import Posts from '../components/Posts';
@@ -130,20 +130,7 @@ export const UserInfo = styled.div`
     font-size: 0.9rem;
   }
 `
-const Btngroup = styled.div`
-  padding: 8px;
-  width: 100%;
-  display: flex;
-  justify-content: space-around;
-  button {
-    ${sharedBtnCss}
-  }
-`
-const EditLink = styled(Link)`
-   ${sharedBtnCss}
-   text-decoration: none;
-   text-align: center;
-`
+
 export const PostHeading = styled.div`
   ${sharedDivCss}
   padding: 8px;
@@ -223,7 +210,7 @@ export default function Userprofile() {
      </UserProfile>
      <PostBar showPost={showPost} setShowPost={setShowPost}/>
      {
-       showPost? <Posts /> : <Forums />
+       showPost ? <Posts /> : <Forums />
      }
     </ProfileContainer>
   )

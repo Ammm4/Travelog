@@ -3,7 +3,6 @@ import { useDispatch } from 'react-redux';
 import { signUpUser } from '../../../redux/users/userActions';
 import styled from 'styled-components';
 
-import { Link } from 'react-router-dom';
 import  validator  from 'validator';
 import { FormContainer, Form, InputContainer, ToggleLink, AuthLink  } from '../../login/components/form';
 

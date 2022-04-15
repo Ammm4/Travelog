@@ -8,9 +8,6 @@ const CommentsContainer = styled.div`
    max-width: 750px;
    margin: auto;
 `
-const Comment = styled.article`
-
-`
 
 export default function ForumComments() {
   const { forum: { comments } } = useSelector(state => state.Forum);

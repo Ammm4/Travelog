@@ -1,9 +1,9 @@
 import React, { useState, useRef, useContext } from  'react';
 import { useSelector } from "react-redux";
 import styled from 'styled-components';
-import { Rating } from 'react-simple-star-rating';
+import Ratings from './Ratings';
 
-// Styled Components Import
+// ================= Imported Styled Components ==================== //
 import {
   AvatarImage,
   PostTitle,
@@ -13,19 +13,19 @@ import {
   CommentPost,
   Button
 } from './Post';
-
+// ====================== Imported Components ===================== //
 import usePost from "./usePost";
 import PostDetails from './PostDetails';
 import CommonPostHeader from './CommonPostHeader';
 import Comments from './Comments';
 import Likes from './Likes';
 import Loading1 from './Loading1';
-
-//Icons 
+//===================== Icons ===================== //
 import { FaHeart } from "react-icons/fa";
 import { FaRegHeart } from "react-icons/fa";
 import {FaRegComment} from "react-icons/fa";
 
+// ======================= Styled Components ==========================//
 export const PostContainer = styled.article`
   display: flex;
   flex-direction: column;
@@ -47,9 +47,7 @@ export const PostContainer = styled.article`
   } 
   
 `
-
 const ContextAPI = React.createContext();
-
 export const usePostAPI = () => {
   return useContext(ContextAPI)
 }
@@ -104,25 +102,14 @@ function SinglePost({ singlePost }) {
           <div className="post_top_part">
           <CommonPostHeader post={ post } singlePost={singlePost}/>
             <PostTitle>
-              <h4>Summary</h4>
-              { post.destinationInfo.ratings 
-                &&
-                <Rating
-                  ratingValue={ post.destinationInfo.ratings }
-                  iconsCount={5}
-                  allowHalfIcon={true}
-                  size={15}
-                  readonly={true}
-                  style={{marginTop: '-0.5rem'}}
-                />
-              }        
+              <h4>Summary</h4> 
+              <Ratings ratings={post.destinationInfo.ratings}/>
               <p>
                  { summary }
                  {post.destinationInfo.summary.length > 100 && <Button onClick= { () => setShowMore(!showMore)}> { showMore ? 'less...' :'more...'}</Button>}
               </p>   
             </PostTitle>
-         
-            { <PostDetails data={ post }/> }
+            <PostDetails data={ post }/> 
            <PostInteractions>
                <InteractionButton 
                  onClick={ (e) => handlePostLike(e) } >
@@ -130,7 +117,7 @@ function SinglePost({ singlePost }) {
                     post.likes.find(like => like.user._id === user.userId) ? 
                      <FaHeart /> 
                        :
-                      <FaRegHeart />
+                     <FaRegHeart />
                   } 
                </InteractionButton> 
                <InteractionButton 

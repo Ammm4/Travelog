@@ -2,6 +2,7 @@ import React, { useState, useEffect} from 'react';
 import styled, {css} from 'styled-components';
 import { Link, useHistory } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
+import { resetGlobals } from '../../../redux/globals/globalActions';
 import { SINGLE_POST_RESET } from '../../../redux/posts/postTypes';
 
 //========================   Icons =====================================//
@@ -165,7 +166,9 @@ export default function SinglePostImages({ expand, setExpand}) {
     dispatch({ type: SINGLE_POST_RESET});
     history.goBack()
   }
-
+  const handleClick = () => {
+    dispatch(resetGlobals());
+  }
   return (
     <Container>
         { 
@@ -187,10 +190,10 @@ export default function SinglePostImages({ expand, setExpand}) {
           <Button><GrClose className='close-btn' onClick={ handleClose }/></Button>
           { images.length > 0 && <Button onClick={() => setExpand(!expand)}> { expand ? <AiOutlineShrink className='close-btn' title='Exit Full-Screen'/> : <AiOutlineExpandAlt className='close-btn' title='Set Full-Screen'/> }</Button> }
           {
-            expand && <HomeLink to='/dashboard/home'><SiYourtraveldottv className='close-btn' title='Back Home'/></HomeLink>
+            expand && <HomeLink to='/dashboard/home' onClick={handleClick}><SiYourtraveldottv className='close-btn' title='Back Home'/></HomeLink>
           }
           {
-            !expand && <SmHomeLink to='/dashboard/home'><SiYourtraveldottv className='close-btn' title='Back Home'/></SmHomeLink>
+            !expand && <SmHomeLink to='/dashboard/home' onClick={handleClick}><SiYourtraveldottv className='close-btn' title='Back Home'/></SmHomeLink>
           }
         </BtnGroup>
         

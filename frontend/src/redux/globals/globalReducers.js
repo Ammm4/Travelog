@@ -9,7 +9,11 @@ import {
   SET_HOME_POST_MARKER_ID,
   SET_HOME_FORUM_MARKER_ID,
   PROFILE_SHOW_POST,
+  SET_PROFILE_POST_MARKER_ID,
+  SET_PROFILE_FORUM_MARKER_ID,
   USER_SHOW_POST,
+  SET_USER_POST_MARKER_ID,
+  SET_USER_FORUM_MARKER_ID,
   ACTIVE_PAGE,
   RESET_GLOBALS,
   RESET_HOME_PAGE_DATA,
@@ -118,10 +122,30 @@ export const globalReducers = ( state = initialState, action) => {
         ...state,
         profilePageData: { ...state.profilePageData, showPost: action.payload }
       }
+    case SET_PROFILE_POST_MARKER_ID:
+      return {
+        ...state,
+        profilePageData: { ...state.profilePageData, post: { ...state.profilePageData.post, postMarkerId: action.payload}}
+      }
+    case SET_PROFILE_FORUM_MARKER_ID:
+      return {
+        ...state,
+        profilePageData: { ...state.profilePageData, forum: { ...state.profilePageData.forum, forumMarkerId: action.payload}}
+      }
     case USER_SHOW_POST:
       return {
         ...state,
         userPageData: { ...state.userPageData, showPost: action.payload }
+      }
+    case SET_USER_POST_MARKER_ID:
+      return {
+        ...state,
+        userPageData: { ...state.userPageData, post: { ...state.userPageData.post, postMarkerId: action.payload}}
+      }
+    case SET_USER_FORUM_MARKER_ID:
+      return {
+        ...state,
+        userPageData: { ...state.userPageData, forum: { ...state.userPageData.forum, forumMarkerId: action.payload}}
       }
     case RESET_HOME_PAGE_DATA: {
       return {

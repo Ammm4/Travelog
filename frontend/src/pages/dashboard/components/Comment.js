@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { Link, useRouteMatch } from 'react-router-dom';
-import styled,{ css } from 'styled-components';
+import styled from 'styled-components';
 import { useSelector } from 'react-redux';
 import { usePostAPI } from './SinglePost';
 import useComment from './useComment';

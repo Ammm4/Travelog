@@ -48,7 +48,7 @@ export const Button = styled(BtnAdd)`
   `
 export default function DeleteBox() {
   const { showModal: { action } } = useSelector(state => state.Globals);
-  const { singlepost: { _id: postId, images } } = useSelector(state => state.SinglePost);
+  const { singlepost: { _id: postId } } = useSelector(state => state.SinglePost);
   const { forum } = useSelector(state => state.Forum);
   const [ password, setPassword ] = useState('')
   const [ showConfirm, setShowConfirm ] = useState(false);

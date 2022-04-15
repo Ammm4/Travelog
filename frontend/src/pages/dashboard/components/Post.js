@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import styled,{ css } from 'styled-components';
-import { useDispatch } from 'react-redux';
-import { Rating } from 'react-simple-star-rating';
+import { useSelector, useDispatch } from 'react-redux';
+import Ratings from './Ratings';
 import CommonPostHeader from './CommonPostHeader';
 import { ForumNumbers } from './ForumBody';
-import { FaRegComment, FaRegHeart, FaHeart, FaReply } from "react-icons/fa";
-import { setHomePostMarkerId } from '../../../redux/globals/globalActions';
+import { FaRegComment, FaRegHeart, FaHeart } from "react-icons/fa";
+import { setHomePostMarkerId, setProfilePostMarkerId, setUserPostMarkerId } from '../../../redux/globals/globalActions';
 
 // Components
 import PostDetails from './PostDetails';
@@ -237,8 +237,11 @@ export const Button = styled.button`
 `
 export default function Post({ post, singlePost, postMarkerRef }) {
   const [showMore, setShowMore] = useState(false);
+  const { user } = useSelector(state => state.User);
   let summary = showMore ? post.destinationInfo.summary : post.destinationInfo.summary.slice(0, 150);
+  const isLiked = post.likes.find(like => like.user._id === user.userId);
   const dispatch = useDispatch();
+  const location = useLocation();
 
   useEffect(() => {
     if(!postMarkerRef) return;
@@ -246,11 +249,20 @@ export default function Post({ post, singlePost, postMarkerRef }) {
   },[postMarkerRef])
   
   const handleClick = (postId) => {
-    dispatch(setHomePostMarkerId(postId))
+    if( location.pathname.match(/\/dashboard\/home/)) {
+      return dispatch(setHomePostMarkerId(postId))
+    }
+    if( location.pathname.match(/\/dashboard\/profile/)) {
+      return dispatch(setProfilePostMarkerId(postId))
+    }
+    if( location.pathname.match(/\/dashboard\/user_profile/)) {
+      return dispatch(setUserPostMarkerId(postId))
+    }
   }
+  
   return (
-        <PostWrapper singlePost={ singlePost } ref={ postMarkerRef }>
-          <LinkToPostDetails to={`/dashboard/posts/${post._id}`} onClick={() => handleClick(post._id)}>
+    <LinkToPostDetails to={`/dashboard/posts/${post._id}`} onClick={() => handleClick(post._id)}>
+        <PostWrapper singlePost={ singlePost } ref={ postMarkerRef }>   
           <CommonPostHeader post={ post } />
           <PostBody>
             <div style={{ paddingRight: '20px' }}>
@@ -262,17 +274,7 @@ export default function Post({ post, singlePost, postMarkerRef }) {
           </PostTitle>
           <PostTitle>
             <h4>Summary </h4> 
-            { post.destinationInfo.ratings 
-                &&
-                <Rating
-                  ratingValue={ post.destinationInfo.ratings }
-                  iconsCount={5}
-                  allowHalfIcon={true}
-                  size={15}
-                  readonly={true}
-                  style={{marginTop: '-0.5rem'}}
-                />
-              }    
+                <Ratings ratings={ post.destinationInfo.ratings }/>            
             <p> { summary }
                 {post.destinationInfo.summary.length > 150 && <Button onClick= { () => setShowMore(!showMore)}> { showMore ? 'less...' :'more...'}</Button>}</p>   
           </PostTitle>
@@ -288,7 +290,7 @@ export default function Post({ post, singlePost, postMarkerRef }) {
           { <PostDetails data={ post }/> }  
             </div>
               <Box>
-                <InteractionButton disabled={true}><FaRegHeart /></InteractionButton>
+                <InteractionButton disabled={true}>{ isLiked ? <FaHeart/> : <FaRegHeart />}</InteractionButton>
                 <InteractionButton disabled={true}><FaRegComment /></InteractionButton>
               </Box>
           </PostBody>
@@ -305,9 +307,9 @@ export default function Post({ post, singlePost, postMarkerRef }) {
                <span className='number'>{ post.views }</span>
                <span>views</span> 
              </ForumNumbers>   
-          </CommentsAndLikes>      
-        </LinkToPostDetails>
-    </PostWrapper>
+          </CommentsAndLikes>         
+      </PostWrapper>
+    </LinkToPostDetails>
   )
 }
 

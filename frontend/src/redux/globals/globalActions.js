@@ -9,12 +9,16 @@ import {
   SET_HOME_POST_MARKER_ID,
   SET_HOME_FORUM_MARKER_ID,
   PROFILE_SHOW_POST,
+  SET_PROFILE_POST_MARKER_ID,
+  SET_PROFILE_FORUM_MARKER_ID,
   USER_SHOW_POST,
+  SET_USER_POST_MARKER_ID,
+  SET_USER_FORUM_MARKER_ID,
   ACTIVE_PAGE,
   RESET_HOME_PAGE_DATA,
   RESET_PROFILE_PAGE_DATA,
   RESET_USER_PAGE_DATA, 
-  RESET_GLOBALS} from "./globalTypes";
+  RESET_GLOBALS } from "./globalTypes";
 
 const resetValue = {
    showPost: true,
@@ -148,6 +152,18 @@ export const setShowPostProfile = (bool) => {
   }
 }
 
+export const setProfilePostMarkerId = (id) => {
+  return (dispatch) => {
+    dispatch( { type: SET_PROFILE_POST_MARKER_ID, payload: id })
+  }
+}
+
+export const setProfileForumMarkerId = (id) => {
+  return (dispatch) => {
+    dispatch( { type: SET_PROFILE_FORUM_MARKER_ID, payload: id })
+  }
+}
+
 export const resetProfilePageData = () => {
   return (dispatch) => {
     dispatch({ type: RESET_PROFILE_PAGE_DATA, payload: resetValue})
@@ -157,6 +173,18 @@ export const resetProfilePageData = () => {
 export const setShowPostUser = (bool) => {
   return (dispatch) => {
     dispatch( { type: USER_SHOW_POST, payload: bool })
+  }
+}
+
+export const setUserPostMarkerId = (id) => {
+  return (dispatch) => {
+    dispatch( { type: SET_USER_POST_MARKER_ID, payload: id })
+  }
+}
+
+export const setUserForumMarkerId = (id) => {
+  return (dispatch) => {
+    dispatch( { type: SET_USER_FORUM_MARKER_ID, payload: id })
   }
 }
 

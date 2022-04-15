@@ -188,6 +188,10 @@ export default function Navbar() {
     dispatch(resetGlobals());
     setMenubar(false);
   }
+  const handleLogOut = () => {
+    dispatch(resetGlobals());
+    dispatch(logout())
+  }
   return (
     <NavContainer>
       <Nav> 
@@ -214,7 +218,7 @@ export default function Navbar() {
               <span className="username">{ user.name }</span>    
             </AvatarLink>  
           </div>
-          <Button onClick={ () => dispatch(logout()) }>
+          <Button onClick={ handleLogOut }>
             <span>
               <AiOutlineLogout style={{fontSize:'1.75rem'}}/>
             </span>

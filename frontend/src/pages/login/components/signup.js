@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 
-import { FormContainer, Form, InputContainer } from './form';
+import { FormContainer, Form } from './form';
 
 const AuthLink = styled(Link)`
    display: inline-block;

@@ -11,7 +11,7 @@ const HomeContainer = styled.section`
  color:#1e1e1e;
 `
 export default function Home() {
-  const { homePageData: { showPost, post: { postMarkerId } }} = useSelector(state => state.Globals)
+  const { homePageData: { showPost }} = useSelector(state => state.Globals)
   const dispatch = useDispatch();
   const setShowPost = () =>{
     dispatch(setShowPostHome(!showPost))

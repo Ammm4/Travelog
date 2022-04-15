@@ -268,7 +268,6 @@ export default function Profile() {
      {
        showPost ? <Posts /> : <Forums />
      }
-     
     </ProfileContainer>
   )
 }

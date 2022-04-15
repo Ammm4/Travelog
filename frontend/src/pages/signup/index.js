@@ -8,7 +8,6 @@ import { SIGN_UP_USER_RESET } from '../../redux/users/userTypes';
 
 // Components 
 import Header from '../Header';
-import Welcome from './components/welcome';
 import SignupForm from './components/form';
 import Loading from '../dashboard/components/Loading';
 
@@ -53,4 +52,3 @@ export default function Signup() {
     </>
   )
 }
-//<Welcome />

@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import { Redirect } from 'react-router-dom';
 import LoginForm from './components/form';
 import Header from '../Header';
-import Welcome from './components/welcome';
 import styled from 'styled-components';
 import { useSelector, useDispatch } from 'react-redux';
 import { clearError } from '../../redux/users/userActions';

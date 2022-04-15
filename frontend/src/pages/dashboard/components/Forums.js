@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { useLocation } from 'react-router-dom';
 import { getForums } from '../../../redux/forums/forumActions';
 import Loading1 from './Loading1';
 import Forum from './Forum';
@@ -8,10 +9,17 @@ import Zeropost from './zeropost';
 
 export default function Forums() {
   const { loading, forums } = useSelector(state => state.Forums);
-  const { forumsUserType, homePageData } = useSelector(state => state.Globals)
+  const { forumsUserType, homePageData, profilePageData, userPageData } = useSelector(state => state.Globals);
+  const location = useLocation();
   const [forumMarkerId] = useState(() => {
-    if(forumsUserType === 'allUsers') {
+    if( location.pathname.match(/\/dashboard\/home/)) {
       return homePageData.forum.forumMarkerId
+    }
+    if( location.pathname.match(/\/dashboard\/profile/)) {
+      return profilePageData.forum.forumMarkerId
+    }
+    if( location.pathname.match(/\/dashboard\/user_profile/)) {
+      return userPageData.forum.forumMarkerId
     }
   })
   const forumMarkerRef = useRef();
