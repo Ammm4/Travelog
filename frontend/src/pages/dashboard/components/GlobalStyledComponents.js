@@ -25,3 +25,21 @@ export const AvatarImage = styled.img`
 export const AuthorName = styled.span`
  font-weight: 600;
 `
+export const PostInteractions = styled.div`
+margin: 0.55rem 0;
+text-align: right;
+cursor: pointer;
+`
+export const InteractionButton = styled.button`
+  font-size: 1.4rem;
+  height: 2.2rem;
+  width: 2.2rem;
+  line-height: 1rem;
+  display: inline-block;
+  
+  margin-right: 18px;
+  &:hover {
+    background-color: #aaa;
+    color:#fff;
+  }
+`

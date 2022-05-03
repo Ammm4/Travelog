@@ -1,36 +1,36 @@
 import { useState } from 'react';
-import { likePost, addComment } from '../../../redux/posts/postActions';
+import { likeThePost, addComment } from '../../../redux/posts/postActions';
 import { useSelector, useDispatch } from 'react-redux';
 
 export default function usePost() {
-  const { singlepost: { _id: postId} } = useSelector(state => state.SinglePost);
+  const { post: { _id: postId} } = useSelector(state => state.Post);
   const [showComment, setShowComment] = useState(false);
   const [showLikes, setShowLikes] = useState(false);
-  const [commentText, setCommentText] = useState('');
+  const [commentBody, setCommentBody] = useState('');
   const dispatch = useDispatch();
   
   const handlePostLike = async (e) => {
      e.preventDefault();
-     dispatch(likePost(postId));
+     dispatch(likeThePost(postId));
   } 
 
-  const handlePostComment = async (e, postId) => {
+  const handleAddComment = async (e, postId) => {
     e.preventDefault();
-    dispatch(addComment( postId, { text: commentText }));
+    dispatch(addComment( postId, { text: commentBody }));
      if(!showComment) setShowComment(true);
-     setCommentText('')
+     setCommentBody('')
   } 
 
   return (
     {
-      commentText,
+      commentBody,
       showLikes,
       setShowLikes,
       showComment,
       setShowComment,
-      setCommentText,
+      setCommentBody,
       handlePostLike,
-      handlePostComment
+      handleAddComment
     }
   )
 }

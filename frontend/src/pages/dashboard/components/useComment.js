@@ -1,10 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 
 import { 
-  deleteComment, 
-  likeComment, 
-  editComment,
   addReply
 } from "../../../redux/posts/postActions";
 
@@ -16,9 +13,12 @@ export default function useComment ( comment ) {
   const [editText, setEditText] = useState('');
   const [text, setText] = useState('');
   const [replyInfo, setReplyInfo] = useState({ replyTo: null, commentId: null });
-  
   const dispatch = useDispatch();
- 
+  
+  useEffect(() => {
+    setEditText(comment.body)
+  },[comment])
+
   const handlePost = async (e, postId, commentId) => {
     e.preventDefault();
     dispatch(addReply( postId, commentId, { text } ))
@@ -33,17 +33,17 @@ export default function useComment ( comment ) {
     setText(`@${commentAuthor}`)
   }
   const handleKeyUp = (e) => {
-    e.target.style.height = '30px';
+    e.target.style.height = '40px';
     e.target.style.height = `${e.target.scrollHeight}px`;
   }
 
   const handleEdit = (e) => {
     e.preventDefault();
     if (!isEdit) {
-      setEditText(comment.text);
+      setEditText(comment.body);
       return setIsEdit(true)
     }
-    setText(comment.text);
+    setText(comment.body);
     setIsEdit(false);
   }
 
@@ -52,22 +52,7 @@ export default function useComment ( comment ) {
     setShowReply(!showReply);
   }
 
-  const handleLike = async (e, postId, commentId) => {
-    e.preventDefault();
-    dispatch(likeComment(postId,commentId))
-  }
-
-  const handleDelete = async (e, postId, commentId) => {
-    e.preventDefault();
-    dispatch(deleteComment(postId, commentId))
-  }
   
-  const handleDone = async (e, postId, commentId) => {
-    e.preventDefault();
-    dispatch(editComment(postId, commentId, { text: editText }));
-    setIsEdit(false);
-    setEditText('');
-  }
 
   return {
     isEdit,
@@ -76,11 +61,8 @@ export default function useComment ( comment ) {
     text, setText,
     showReply,
     setEditText,
-    handleDelete,
-    handleDone,
     handleEdit,
     handleKeyUp,
-    handleLike,
     handleReply,
     toggleHideShow,
     handlePost

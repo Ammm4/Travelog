@@ -2,7 +2,7 @@ import React from 'react';
 import Like from './Like';
 import { useSelector } from 'react-redux';
 
-import { PostComments } from './Comments';
+import { PostComments } from './GlobalComponents/StyledComponents/Containers';
 
 export default function Comments() {
   const { singlepost: post } = useSelector(state => state.SinglePost);

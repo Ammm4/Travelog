@@ -3,8 +3,7 @@ import {
   SHOW_MODAL, 
   POST_DETAILS, 
   LOADING_MESSAGE, 
-  POSTS_USER_TYPE,
-  FORUMS_USER_TYPE,
+  SET_PAGE_INITIAL_STATE,
   HOME_SHOW_POST,
   SET_HOME_POST_MARKER_ID,
   SET_HOME_FORUM_MARKER_ID,
@@ -23,12 +22,12 @@ import {
 
 let initialState = {
   showCreateComment: false,
-  activePage: 'home',
+  activePage: null,
   showModal: null,
   postDetails: null,
   loadingMsg:'',
-  postsUserType:'allUsers',
-  forumsUserType:'allUsers',
+  postsUserType: null,
+  forumsUserType:null,
   homePageData : {
     showPost: true,
     post: {
@@ -92,15 +91,12 @@ export const globalReducers = ( state = initialState, action) => {
         ...state,
         loadingMsg: action.payload
       }
-    case POSTS_USER_TYPE: 
+    case SET_PAGE_INITIAL_STATE: 
       return {
         ...state,
-        postsUserType: action.payload
-      }
-    case FORUMS_USER_TYPE: 
-      return {
-        ...state,
-        forumsUserType: action.payload
+        activePage: action.payload.page,
+        postsUserType: action.payload.userType,
+        forumsUserType: action.payload.userType
       }
     case HOME_SHOW_POST:
       return {

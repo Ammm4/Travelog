@@ -12,7 +12,11 @@
 body {
   font-family: 'Roboto', sans-serif;
   color:#021b41;
-  /* background-color: #E1E1E1; */
+  background-color: #f4f4f5;
+  /* background-color: #E1E1E1; AAC9FF*/
+  @media only screen and (max-width: 600px){
+   background-color: #AAC9FF;
+  } 
 }
 
 textarea {

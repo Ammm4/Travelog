@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { commonLabel, commonInput } from './PostForm';
-import { InfoHeader } from '../pages/profile';
+import { InfoHeader } from './GlobalComponents/StyledComponents/Headings';
 
 const Container = styled.div`
  padding: 25px 10px;
@@ -41,7 +41,7 @@ export default function EditForm(props) {
       <Form>
         <div className="form-group">
           <label htmlFor="username">Username</label>
-            <input 
+          <input 
               id="username" 
               name="username" 
               type="text"

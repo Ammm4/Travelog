@@ -3,9 +3,8 @@ import {  useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import PostDelete from '../components/PostDelete';
-import { getSinglePost } from '../../../redux/posts/postActions';
+import { getPost } from '../../../redux/posts/postActions';
 
-//import Post from '../components/Post';
 import SinglePost from '../components/SinglePost';
 import SinglePostImages from '../components/SinglePostImages';
 import Loading from '../components/Loading';
@@ -34,16 +33,15 @@ const ImageGridWrapper = styled.div`
 export default function Singlepost() {
   const [ expand, setExpand ] = useState(false);
   const { post_id } = useParams();
-  const { loading, singlepost: post } = useSelector(state => state.SinglePost);
+  const { Post: { loading, post }, User: { user : { userId }}} = useSelector(state => state);
   const dispatch = useDispatch();
-  
   useEffect(() => {
-    dispatch(getSinglePost(post_id));
-  }, [post_id, dispatch])
+    dispatch(getPost(post_id, userId));
+  }, [post_id, dispatch, userId])
   
-  useEffect(() => {
+ /*  useEffect(() => {
     dispatch(setLoadingMessage('Post Loading'));
-  }, [loading, dispatch])
+  }, [loading, dispatch]) */
 
   if(loading || Object.keys(post).length < 1) {
     return <Loading />
@@ -51,12 +49,13 @@ export default function Singlepost() {
   if(post.deleted) {
     return <PostDelete />
   }
+  
   return (
-    <SinglePostContainer expand={expand}>
+    <SinglePostContainer expand={ expand }>
       <ImageGridWrapper>
-        <SinglePostImages expand={expand} setExpand={setExpand}/>
+        <SinglePostImages expand={ expand } setExpand={ setExpand }/>
       </ImageGridWrapper>
-      <SinglePost  singlePost={ true } />
+      <SinglePost/>
     </SinglePostContainer>
   )
 }

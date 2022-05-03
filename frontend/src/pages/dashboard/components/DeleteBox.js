@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useSelector, useDispatch } from 'react-redux';
 import { setLoadingMessage } from '../../../redux/globals/globalActions';
-import { deletePost } from '../../../redux/posts/postActions';
+import { deletePost, deleteThePost } from '../../../redux/posts/postActions';
 import { deleteForum } from '../../../redux/forums/forumActions';
 import { deleteUser } from '../../../redux/users/userActions';
 import { setShowModal } from '../../../redux/globals/globalActions';
@@ -47,8 +47,8 @@ export const Button = styled(BtnAdd)`
    width: 99%;
   `
 export default function DeleteBox() {
-  const { showModal: { action } } = useSelector(state => state.Globals);
-  const { singlepost: { _id: postId } } = useSelector(state => state.SinglePost);
+  const { showModal: { action, post, singlePost } } = useSelector(state => state.Globals);
+  //const { singlepost: { _id: postId } } = useSelector(state => state.SinglePost);
   const { forum } = useSelector(state => state.Forum);
   const [ password, setPassword ] = useState('')
   const [ showConfirm, setShowConfirm ] = useState(false);
@@ -57,7 +57,11 @@ export default function DeleteBox() {
   const handleDelete = () => {
     if(itemToDelete === 'post') {
       dispatch(setLoadingMessage('Deleting Post'))
-      dispatch(deletePost(postId))
+      if(singlePost){
+        dispatch(deleteThePost(post._id))
+      } else {
+        dispatch(deletePost(post._id))
+      } 
       return dispatch(setShowModal(null))
     }
     if(itemToDelete === 'forum') {

@@ -3,8 +3,7 @@ import {
   SHOW_MODAL, 
   POST_DETAILS, 
   LOADING_MESSAGE, 
-  POSTS_USER_TYPE,
-  FORUMS_USER_TYPE,
+  SET_PAGE_INITIAL_STATE,
   HOME_SHOW_POST,
   SET_HOME_POST_MARKER_ID,
   SET_HOME_FORUM_MARKER_ID,
@@ -33,12 +32,12 @@ const resetValue = {
 }
 const resetGlobalValues = {
   showCreateComment: false,
-  activePage: 'home',
+  activePage: null,
   showModal: null,
   postDetails: null,
   loadingMsg:'',
-  postsUserType:'allUsers',
-  forumsUserType:'allUsers',
+  postsUserType:null,
+  forumsUserType:null,
   homePageData : {
     showPost: true,
     post: {
@@ -92,18 +91,13 @@ export const setLoadingMessage = ( message ) => {
     dispatch( { type: LOADING_MESSAGE, payload: message })
   }
 }
-
-export const setPostsUserType = ( user ) => {
-  return (dispatch) => {
-    dispatch( { type: POSTS_USER_TYPE, payload: user })
-  }
+export const setPageInitialState = (pageType, userType) => {
+   let initialState = { page: pageType, userType}
+   return (dispatch) => {
+     dispatch({ type: SET_PAGE_INITIAL_STATE, payload: initialState})
+   }
 }
 
-export const setForumsUserType = ( user ) => {
-  return (dispatch) => {
-    dispatch( { type: FORUMS_USER_TYPE, payload: user })
-  }
-}
 export const resetGlobals = () => {
    return (dispatch) => {
     dispatch( { type: RESET_GLOBALS, payload: resetGlobalValues })

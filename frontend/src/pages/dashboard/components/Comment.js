@@ -1,15 +1,23 @@
-import React, { useContext } from 'react';
-import { Link, useRouteMatch } from 'react-router-dom';
+import React, { useState, useContext } from 'react';
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { useSelector } from 'react-redux';
-import { usePostAPI } from './SinglePost';
+import { useSelector, useDispatch } from 'react-redux';
+import { StyledParagraph } from './GlobalComponents/StyledComponents/Containers';
 import useComment from './useComment';
-import Replies from './Replies';
+//import Replies from './Replies';
 import { AiOutlineHeart } from "react-icons/ai";
 import { AiFillHeart } from "react-icons/ai";
-import { MdClear } from "react-icons/md";
 import Loading1 from './Loading1';
-
+import { MdDone, MdClose } from "react-icons/md";
+import { resetGlobals } from '../../../redux/globals/globalActions';
+import { 
+  deleteComment,
+  deleteTheComment, 
+  likeComment,
+  likeTheComment,
+  editComment,
+  editTheComment
+} from "../../../redux/posts/postActions";
 
 const ContextCommentAPI = React.createContext();
 
@@ -36,40 +44,42 @@ export const AuthorName = styled.span`
 `
 
 const CommentLike = styled.div`
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   padding: 8px;
-  button {
-    padding: 1rem 1rem 0 0 ;
-  }
+  display: flex;
+  align-items: center;
 `
 export const CommentContainer = styled.div`
  margin-bottom: 0.5rem;
  display: grid;
  grid-row-gap:0.08rem;
- grid-template-columns: 45px 1fr 45px;
+ grid-template-columns: 45px 1fr;
  font-size: 0.9rem;
  padding: 6px 0 0px 6px;
  line-height: 20px;
 `
 
 const Button = styled.button`
-  display: inline-block;
+  display: ${props => props.isEdit || props.isDelete ? 'none' : 'inline-block'};
   margin-left: 0.35rem;
-  color: #888;
+  color: #021b41;
   letter-spacing: 1px;
   cursor:pointer;
   font-size: 0.8rem;
   &:hover {
-    color:#ccc
+    color:#2a78cd
   }
 `
+const CommentBody = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 30px;
+`
+
 
 const Count = styled.div`
-   grid-column-start: 2;
-   grid-column-end: 3; 
    display: flex;
    justify-content: space-between;
-   color: #888;
+   color: #021b41;
    div {
      display: inline-block;
      padding: 4px 6px;
@@ -93,7 +103,7 @@ const Line = styled.span`
   vertical-align: middle;
   background-color: #f1f1f1;
 `
-export const CommentText = styled.p`
+export const CommentText = styled.div`
   display: ${ props => props.isEdit ? 'none' : 'block' };
   background-color: #f1f1f1;
   font-size: 0.825rem;
@@ -102,11 +112,11 @@ export const CommentText = styled.p`
   letter-spacing: 1px;
 `
 export const EditBox = styled.textarea`
-  display: ${ props => props.isEdit? 'block' : 'none' };
+  display: ${ props => props.isEdit ? 'block' : 'none' };
   font-family: inherit;
   width: 100%;
   padding: 8px;
-  border-radius: 10px;
+  border-radius: 4px;
   resize: none;
 `
 //======== Reply =============//
@@ -154,6 +164,11 @@ const CommentPost = styled.div`
      }
   }
 `
+const DeleteConfirm = styled.p`
+  grid-column-start: 1;
+  grid-column-end: 2;
+  text-align: right;
+`
 const ReplyContainer = styled.div`
   grid-column-start: 2;
   grid-column-end: 4;
@@ -164,33 +179,112 @@ const SpinnerContainer = styled.div`
 `
 
 export default function Comment({ comment }) {
-  const { postId } = usePostAPI();
+  const { isLiked, numLikes, post: postId, singlePost } = comment;
   const { user } = useSelector(state => state.User);
-  const { replyLoading } = useSelector(state => state.SinglePost)
-  let { url } = useRouteMatch();
-  const {
-    isEdit,
-    showReplyInput, setShowReplyInput,
-    editText, setEditText,
-    text, setText,
-    showReply,
-    handleDelete,
-    handleDone,
-    handleEdit,
-    handleKeyUp,
-    handleLike,
-    handleReply,
-    toggleHideShow,
-    handlePost
-  } = useComment(comment)
+  const [isDelete, setIsDelete] = useState(false);
+  const [isEdit, setIsEdit] = useState(false);
   
+
+  const dispatch = useDispatch();
+  const {
+    editText, setEditText, handleKeyUp,
+  } = useComment(comment)
+  const handleEdit = () => {
+    setIsEdit(true);
+    setIsDelete(false)
+  }
+  const handleDeleteBtn = () => {
+    setIsEdit(false);
+    setIsDelete(true)
+  }
+  const handleCancel = () => {
+    setIsEdit(false);
+    setIsDelete(false)
+  }
+  const handleLike = async (e, postId, commentId) => {
+    e.preventDefault();
+    if(singlePost) return dispatch(likeTheComment(postId,commentId))
+    dispatch(likeComment(postId,commentId))
+  }
+
+  const handleDelete = async (e, postId, commentId) => {
+    e.preventDefault();
+    if(singlePost) return dispatch(deleteTheComment(postId, commentId))
+    dispatch(deleteComment(postId, commentId))
+  }
+  
+  const handleDone = async (e, postId, commentId) => {
+    e.preventDefault();
+    if(singlePost) {
+       dispatch(editTheComment(commentId, { body: editText }));
+    } else {
+      dispatch(editComment(commentId, { body: editText }));
+    }
+    setIsEdit(false);
+    setEditText('');
+  }
   return (
-    <ContextCommentAPI.Provider value={{
+      <CommentContainer>
+        <Link to={ `/dashboard/user_profile/users/${ comment.user._id }` } onClick={() => dispatch(resetGlobals())}>
+          <AvatarImage src={ comment.user.avatar.avatar_url } alt="avatar"/>
+        </Link>
+        <CommentBody>
+          <CommentText isEdit={ isEdit }>
+            <AuthorName>{ comment.user.username }</AuthorName> 
+              <StyledParagraph style={{ whiteSpace: 'pre-wrap'}}>{ comment.body }</StyledParagraph>            
+          </CommentText>
+          { 
+            <EditBox 
+              isEdit={ isEdit } 
+              value={ editText }
+              onChange={ (e) => setEditText(e.target.value) }
+              onKeyUp={ (e) => handleKeyUp(e) }
+            />
+          }
+        <CommentLike>
+           <Button onClick= { (e) => handleLike(e, postId, comment._id)} >
+             { isLiked ? <AiFillHeart /> : <AiOutlineHeart /> } 
+           </Button>
+        </CommentLike>
+        { isDelete       
+           && 
+          <>
+            <DeleteConfirm>Confirm Delete ?
+              <Button onClick={ (e) => handleDelete(e, comment._id)}> <MdDone /> </Button> 
+              <Button onClick={handleCancel}> <MdClose /> </Button>
+            </DeleteConfirm>
+            <span></span>
+          </>
+        }
+        <Count>
+          <span> { numLikes } Likes </span>
+          {
+            comment.user._id === user.userId &&
+            <div>
+              <Button isEdit={isEdit} isDelete={isDelete} onClick={ (e) => handleEdit(e) }> Edit </Button>
+              <Button isEdit={isEdit} isDelete={isDelete} onClick={ (e) => handleDeleteBtn(e, postId, comment._id) }> Delete </Button>
+              { isEdit       
+                && <>
+                   <Button onClick={ (e) => handleDone(e, postId, comment._id)}> <MdDone /> </Button> 
+                   <Button onClick={ handleCancel }> <MdClose /> </Button>  
+                </>
+               } 
+            </div>
+          }
+        </Count>
+        </CommentBody>
+      </CommentContainer>
+  )
+}
+
+/*
+  {!isEdit && <Button onClick={ (e) => handleDelete(e, postId, comment._id) }> Delete </Button>}
+<ContextCommentAPI.Provider value={{
       commentId: comment.comment_id,
       handleReply
     }}>
       <CommentContainer>
-        <Link to={ `${url}/users/${ comment.user_id }` }>
+        <Link to={ `${url}/users/${ comment.user }` }>
           <AvatarImage src={ comment.userAvatar } alt="avatar"/>
         </Link>
         <div>
@@ -199,7 +293,7 @@ export default function Comment({ comment }) {
               { comment.text }            
           </CommentText>
           { 
-            comment.user_id === user.userId 
+            comment.user === user.userId 
               &&
             <EditBox 
               isEdit={ isEdit } 
@@ -304,8 +398,5 @@ export default function Comment({ comment }) {
             </ReplyContainer>
             }
       </CommentContainer>
-    </ContextCommentAPI.Provider>
-  )
-}
-
+    </ContextCommentAPI.Provider>*/
 

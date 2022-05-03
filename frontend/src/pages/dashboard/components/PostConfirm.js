@@ -1,9 +1,10 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useSelector, useDispatch } from 'react-redux';
-import { addPost, editPost } from '../../../redux/posts/postActions';
+import { StyledParagraph } from './GlobalComponents/StyledComponents/Containers';
+import { addPost, editPost, editThePost } from '../../../redux/posts/postActions';
 import { setShowModal ,setLoadingMessage } from '../../../redux/globals/globalActions';
-import { Rating } from 'react-simple-star-rating';
+import Ratings from './Ratings';
 import { 
   commonWrapper, 
   PostTitle, 
@@ -29,7 +30,6 @@ const InfoLabel = styled.h5`
 `
 
 //============== Images =============== //
-
 const BtnGroup = styled.div`
   width: 100%;
   max-width: 700px; 
@@ -50,7 +50,7 @@ const List = styled.ul`
 `
 export default function PostConfirm({ toggleForm }) {
   const { 
-    showModal: { action },
+    showModal: { action, post, singlePost },
     postDetails: { images, 
       imgPreview, 
       travellerInfo, 
@@ -59,12 +59,12 @@ export default function PostConfirm({ toggleForm }) {
       deletedImageIDs }
    } = useSelector(state => state.Globals);
 
-  const { singlepost: { _id } } = useSelector(state => state.SinglePost)
   const submitType = action.split(' ')[0];
   const dispatch = useDispatch();
   const { displayRecommendations, displayTravelDetails, requiredInfo } = infoRequiredToDisplay(travellerInfo,recommendations);
   
   const handleSubmit = (e) => {
+    e.preventDefault();
     const newRecommendations  = { ...recommendations } ;
     let items = ['heritages','places','todos']
     //filtering Out Empty Array elements
@@ -78,17 +78,19 @@ export default function PostConfirm({ toggleForm }) {
       destinationInfo,
       images
       }
-     if(submitType === 'create') {
-      e.preventDefault();
+    if(submitType === 'create') {
       dispatch(setLoadingMessage('Creating Post'))
       dispatch(addPost(postData))
     }
-   
-    if(submitType === 'edit') {  
-      e.preventDefault();
-      dispatch(setLoadingMessage('Editing Post'))
-      postData.deletedImageIDs = deletedImageIDs
-      dispatch(editPost(_id, postData));
+    if(submitType === 'edit') { 
+      dispatch(setLoadingMessage('Editing Post'));
+      postData.deletedImageIDs = deletedImageIDs;
+      if(singlePost) {
+         dispatch(editThePost(post._id, postData));
+      } else {
+        dispatch(editPost(post._id, postData))
+      }
+        
     }
     dispatch(setShowModal(null))
   }
@@ -107,17 +109,11 @@ export default function PostConfirm({ toggleForm }) {
         </Infos>
         <Infos>
           <InfoLabel>Summary</InfoLabel>
-          <Answer>{ destinationInfo.summary }</Answer>
+          <StyledParagraph style={{ fontSize: '1rem'}} >{ destinationInfo.summary }</StyledParagraph>
         </Infos>
         <Infos>
-          <InfoLabel>Ratings</InfoLabel>      
-            <Rating
-              ratingValue={ destinationInfo.ratings }
-              iconsCount={5}
-              allowHalfIcon={true}
-              size={15}
-              readonly={true}
-            />
+          <InfoLabel>Ratings</InfoLabel> 
+            <Ratings ratings={destinationInfo.ratings} />   
         </Infos>
         <InfoLabel>Images({ imgPreview.length })</InfoLabel>
         <ImagePreview>

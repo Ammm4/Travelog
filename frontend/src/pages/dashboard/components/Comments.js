@@ -1,28 +1,41 @@
-import React from 'react';
+import React, { useRef, useState, useEffect} from 'react';
+import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import Comment from './Comment';
 import { useSelector } from 'react-redux';
+import { getComments, addComment } from '../../../redux/posts/postActions';
+import { PostComments } from './GlobalComponents/StyledComponents/Containers';
+import Loading1 from './Loading1';
+import AddComment from './AddComment';
 
 
-export const PostComments = styled.div`
-  padding: 8px;
-  margin-right: 5px;
-  min-height: 250px;
-  flex: 1 1 auto;
-  overflow: auto;
-`
+export default function Comments({ post }) {
+  const { User: { user: { userId } } } = useSelector(state => state);
+  const { _id: id, comments, numOfComments } = post
+  const dispatch = useDispatch();
+  const commentInputRef = useRef();
+  /* commentInputRef.current.scrollIntoView({behavior: "smooth", block: "end", inline: "nearest"});
+    commentInputRef.current.focus(); */
+  useEffect(() => {
+    if(comments.length > 0 || numOfComments === 0) return;
+    dispatch(getComments(id, userId))
+  }, [dispatch, id, userId, comments, numOfComments])
 
-export default function Comments() {
-  const { singlepost: post } = useSelector(state => state.SinglePost);
-  let comments = [...post.comments]
-  const reversedComments = comments.reverse();
+
+  /* if(commentLoading) {
+    <Loading1 />
+  } */
   return (
     <PostComments>
+       <AddComment
+         post={post}
+         commentInputRef={commentInputRef} 
+       />
         { 
-          reversedComments.map(comment => {
+          comments.map(comment => {
             return (
                 <Comment
-                  key={ comment.comment_id }       
+                  key={ comment._id }       
                   comment={ comment }                           
                 />
               )

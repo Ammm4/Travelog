@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
-
+import { useDispatch, useSelector } from 'react-redux';
+import { resetGlobals } from '../../../redux/globals/globalActions';
 import { MdOutlineForum } from "react-icons/md";
 import { MdGridView } from "react-icons/md";
 
@@ -11,14 +12,14 @@ const Container = styled.div`
   border-radius: 8px;
   font-size: 1rem;
   margin: 1rem auto 1.5rem auto;
-  background-color: #fff; 
+  background-color: #f4f4f5; 
   grid-template-columns: 1fr 1fr;
 `
 const Button = styled.button`
   display: block;
   position: relative;
   outline: none;
-  background-color:#fff;
+  background-color:#f4f4f5;
   cursor: pointer;
   width: 100%;
   margin: 1rem auto 1.5rem auto;
@@ -51,14 +52,31 @@ const Button = styled.button`
 `
 
 export default function PostBar({ showPost, setShowPost }) {
+  const { homePageData, profilePageData, userPageData } = useSelector(state => state.Globals);
+  const dispatch = useDispatch();
+  const handleClickPosts = () => {
+    //dispatch(resetGlobals())
+    setShowPost(true)
+  }
+   const handleClickForums = () => {
+    //dispatch(resetGlobals())
+    setShowPost(false)
+  }
   return (
     <Container className='sticky'>
-      <Button btnStyle={showPost} onClick={() => setShowPost(true)}>
+      <Button btnStyle={showPost} onClick={handleClickPosts}>
         <MdGridView /><span className='tooltip'>Posts</span>
       </Button>
-      <Button btnStyle={!showPost} onClick={() => setShowPost(false)}>
+      <Button btnStyle={!showPost} onClick={handleClickForums}>
         <MdOutlineForum /><span className='tooltip'>Forums</span>
       </Button>
     </Container>
   )
 }
+/* <Button btnStyle={showPost} onClick={() => setShowPost(true)}>
+        <MdGridView /><span className='tooltip'>Posts</span>
+      </Button>
+      <Button btnStyle={!showPost} onClick={() => setShowPost(false)}>
+        <MdOutlineForum /><span className='tooltip'>Forums</span>
+      </Button>
+     */

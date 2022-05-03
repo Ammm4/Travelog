@@ -1,24 +1,19 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
+import { useHistory } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { 
-  ProfileContainer, 
-  UserProfile, 
-  UserImageContainer, 
-  UserAvatar, 
-  UserCover, 
-  UserTitle } from '../pages/profile';
+// =================== Imported Components ============================//
+import { ProfileImages } from './GlobalComponents/StyledComponents/Images';
+import { UserAvatar, UserCover, UserImageContainer, ProfileContainer, UserProfile } from './GlobalComponents/StyledComponents/Containers';
+import { UserTitle, ProfileHeading } from './GlobalComponents/StyledComponents/Headings';
 import { Button } from './DeleteBox';
 import GoBackBtn from './GoBackBtn';
-import { useHistory } from 'react-router-dom';
-
+//==================== Redux Actions ==============================//
 import { updateUser } from '../../../redux/users/userActions';
-//Icons 
+//===================== Icons ====================================//
 import { FaCamera } from "react-icons/fa";
 import EditForm from './EditForm';
 import Loading from './Loading';
-
-
 
 export const Container = styled.div`
   width: 99%;
@@ -99,11 +94,11 @@ export default function ProfileEdit() {
       {userUpdating && <Loading msg="Profile Updating"/>}
      <GoBackBtn />
      <ProfileContainer style={{ marginTop: '0px' }}>
-       <h2>Edit Profile</h2>
+       <ProfileHeading>Edit Profile</ProfileHeading>
        <UserProfile>
         <UserImageContainer>
           <UserCover>
-            <img src={ coverImg || user.coverURL } alt="cover"/>
+            <ProfileImages src={ coverImg || user.coverURL } alt="cover"/>
             <button onClick={(e) => handleClick(e, 'cover')}> <FaCamera/></button>
             <input 
                 name="coverImg" 
@@ -115,7 +110,7 @@ export default function ProfileEdit() {
               />
           </UserCover>
           <UserAvatar>
-            <img src={ avatarImg || user.avatarURL } alt="cover"/>
+            <ProfileImages src={ avatarImg || user.avatarURL } alt="cover"/>
             <button onClick={(e) => handleClick(e, 'avatar')}> <FaCamera/></button>
             <input 
                 name="avatarImg" 

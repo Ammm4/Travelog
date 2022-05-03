@@ -7,7 +7,7 @@ import { Container as ForumContainer, BtnGroup, Button } from './DeleteBox';
 import DeleteBox from './DeleteBox';
 import { PostTitle } from './PostForm';
 import { MdClear } from "react-icons/md";
-//
+
 export default function ForumModal() {
   const { showModal: { action }} = useSelector(state => state.Globals);
   const { forum } = useSelector(state => state.Forum)
@@ -35,11 +35,7 @@ export default function ForumModal() {
       <CloseModalBtn onClick={ () => dispatch(setShowModal(null)) } > <MdClear /> </CloseModalBtn>
       <ForumContainer>
          <PostTitle>{ action }</PostTitle>
-         {
-           itemToDelete === 'delete'
-             &&
-           <DeleteBox />
-         }
+         { itemToDelete === 'delete' && <DeleteBox /> }
          <BtnGroup>
          <label htmlFor='body'>Ask Something ...</label>
          <input 
@@ -54,7 +50,6 @@ export default function ForumModal() {
            <Button onClick={ () => dispatch(setShowModal(null)) }> Cancel</Button>
          </BtnGroup>
       </ForumContainer>
-      
     </Container>
   )
 }

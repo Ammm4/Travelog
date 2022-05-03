@@ -21,7 +21,9 @@ import {
   
   LIKE_FORUM_SUCCESS,
   LIKE_FORUM_ERROR,
-
+  GET_COMMENTS_REQUEST,
+  GET_COMMENTS_SUCCESS,
+  GET_COMMENTS_ERROR,
   CREATE_COMMENT_REQUEST,
   CREATE_COMMENT_SUCCESS,
   CREATE_COMMENT_ERROR,
@@ -30,7 +32,6 @@ import {
   DELETE_COMMENT_SUCCESS,
   DELETE_COMMENT_ERROR,
 
-  LIKE_COMMENT_REQUEST,
   LIKE_COMMENT_SUCCESS,
   LIKE_COMMENT_ERROR,
   
@@ -56,7 +57,7 @@ import {
 
   CLEAR_FORUM_ERRORS,
   NEW_FORUM_RESET,
-  SINGLE_FORUM_RESET
+  FORUM_RESET
   
 } from "./forumTypes";
 
@@ -121,11 +122,8 @@ export const forumReducer = (state = { forum: {} }, action) => {
          ...state,
          loading: true,    
        }
-
+     case GET_COMMENTS_REQUEST:
      case CREATE_COMMENT_REQUEST:
-     case DELETE_COMMENT_REQUEST:
-     case LIKE_COMMENT_REQUEST:
-     case UPDATE_COMMENT_REQUEST:
        return {
          ...state,
          commentLoading: true
@@ -138,12 +136,67 @@ export const forumReducer = (state = { forum: {} }, action) => {
          ...state,
          replyLoading: true
        }
-     case GET_SINGLE_FORUM_SUCCESS:
+     case GET_COMMENTS_SUCCESS:
+       return {
+         ...state,
+         commentLoading: false,
+         forum: { ...state.forum, comments: [ ...state.forum.comments, ...action.payload ] }
+       }
      case LIKE_FORUM_SUCCESS:
-     case CREATE_COMMENT_SUCCESS:
-     case DELETE_COMMENT_SUCCESS:
+       state.forum.isLiked = action.payload.Liked;
+       if(action.payload.Liked) {
+         state.forum.numLikes++;
+         state.forum.likes = [ action.payload.Like, ...state.forum.likes]
+      } else {
+        state.forum.numLikes--;
+        state.forum.likes = state.forum.likes.filter(like => like._id !== action.payload.Like._id)
+      }
+      return {
+        ...state
+      } 
      case LIKE_COMMENT_SUCCESS:
+       if(action.payload.Liked) {
+         state.forum.comments = state.forum.comments.map(comment => {
+           if(comment._id === action.payload.Like.comment){
+             return { ...comment, isLiked: true, numLikes: comment.numLikes + 1 }
+           }
+           return comment
+         })
+      } else {
+        state.forum.comments = state.forum.comments.map(comment => {
+           if(comment._id === action.payload.Like.comment){
+             return { ...comment, isLiked: false, numLikes: comment.numLikes - 1 }
+           }
+           return comment
+         })
+      }
+      return {
+        ...state
+      }
+     case CREATE_COMMENT_SUCCESS:
+       state.forum.numComments++;
+       state.forum.comments = [ action.payload, ...state.forum.comments ]
+       return {
+        ...state,
+        commentLoading: false
+      }
      case UPDATE_COMMENT_SUCCESS:
+       state.forum.comments = state.forum.comments.map(comment => {
+         if(comment._id === action.payload.comment._id) {
+           return { ...comment, body: action.payload.comment.body }
+         }
+         return comment
+       })
+       return {
+         ...state,
+       }
+      case DELETE_COMMENT_SUCCESS:
+        state.forum.numComments--;
+        state.forum.comments = state.forum.comments.filter(comment => comment._id !== action.payload.comment._id)
+        return {
+          ...state
+        }
+     case GET_SINGLE_FORUM_SUCCESS:
      case CREATE_REPLY_SUCCESS:
      case LIKE_REPLY_SUCCESS:
      case UPDATE_REPLY_SUCCESS:
@@ -155,8 +208,9 @@ export const forumReducer = (state = { forum: {} }, action) => {
          replyLoading: false,
          forum: action.payload.forum
        }
-
+     
      case GET_SINGLE_FORUM_ERROR:
+     case GET_COMMENTS_ERROR:
      case LIKE_FORUM_ERROR:
      case CREATE_COMMENT_ERROR:
      case DELETE_COMMENT_ERROR:
@@ -178,9 +232,9 @@ export const forumReducer = (state = { forum: {} }, action) => {
          ...state,
          error: null
        }
-     case SINGLE_FORUM_RESET: 
+     case FORUM_RESET: 
      return {
-       singlepost: {}
+       forum: {}
      }
      default:
        return state;

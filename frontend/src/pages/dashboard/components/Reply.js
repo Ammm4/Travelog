@@ -100,7 +100,7 @@ const EditBox = styled.textarea`
   resize: none;
 `
 
-export default function Reply({ reply }) {
+/* export default function Reply({ reply }) {
   const { postId } = usePostAPI();
   const { commentId, handleReply } = useCommentAPI(); 
   const [isEdit, setIsEdit] = useState(false);
@@ -204,3 +204,4 @@ export default function Reply({ reply }) {
     </Container>
   )
 }
+ */

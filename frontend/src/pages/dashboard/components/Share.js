@@ -3,9 +3,9 @@ import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { useSelector } from 'react-redux';
 import { setShowModal } from '../../../redux/globals/globalActions';
-//Icons 
+import { CommonButtonTheme } from './GlobalComponents/StyledComponents/Buttons';
+// ===================== Icons ================================= //
 import { IoAddCircle } from "react-icons/io5";
-
 
 const ShareContainer = styled.article`
   width: 98%;
@@ -28,16 +28,6 @@ const ShareTitle = styled.div`
     height:38px;
     margin-right: 5px;
   }
-  input {
-    flex: 1;
-    outline: none;
-    height: 35px;
-    border: 2px solid #ccc;
-    font-size: 0.95rem;
-    padding: 7px 13px;
-    border-radius: 18px;
-    letter-spacing: 1px;
-  }
   p {
     flex: 1;
     font-family: 'Montserrat Alternates', sans-serif;
@@ -53,19 +43,15 @@ const BtnGroup = styled.div`
   display: grid;
   grid-template-columns: 1fr 2px 1fr;
   button {
+  ${CommonButtonTheme }
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  outline: none;
-  border: none;
   background-color:#fff;
-  cursor: pointer;
   width: 98%;
   margin:0.25rem auto;
-  text-align: center;
   font-size: 19px;
-  color:#021b41;
   padding: 16px 40px;
   &:hover * {
     color: #2a78cd;
@@ -96,18 +82,7 @@ export default function Share({ homepage }) {
           <IoAddCircle style={{fontSize:'2.2rem', color: '#021b41'}}/>
           <span>Forum</span>
         </button>
-      </BtnGroup>
-      
+      </BtnGroup>  
     </ShareContainer>
   )
 }
-//<input disabled placeholder="Got Something to Share??"/>
-/* 
-   <IconHolders>
-        <ImImages />
-        <ImSpoonKnife />
-        <BsCashCoin />
-        <ImLocation2 />
-        <FaSkiing />
-      </IconHolders>
-*/

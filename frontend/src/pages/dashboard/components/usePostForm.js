@@ -3,8 +3,8 @@ import { useSelector } from 'react-redux';
 
 
 export default function usePostForm() {
-  const {showModal : { action }} = useSelector(state => state.Globals); 
-  const {loading: postLoading, singlepost: post, error: singlePostError} = useSelector(state => state.SinglePost);
+  const {showModal : { action, post }} = useSelector(state => state.Globals); 
+  //const {loading: postLoading, singlepost: post, error: singlePostError} = useSelector(state => state.SinglePost);
   const { postLoading: postEditing, success } = useSelector(state => state.Post);
   const [errors, setErrors ] = useState(null)
   const [showPostForm, setShowPostForm] = useState(true);
@@ -18,7 +18,7 @@ export default function usePostForm() {
 
   
   useEffect(() => {
-   if(!Object.keys(post).length > 0 || action === 'create post') return;
+   if(!post || action === 'create post') return;
    const { images, destinationInfo, travellerInfo, recommendations} = post;
    setImages([...images.map(image => ({ public_id: image.img_id, imgFile: image.imgURL, imgTitle : image.imgName}))])
    setImgPreview([...images.map(image => ({ public_id: image.img_id, imgFile: image.imgURL, imgTitle : image.imgName}))]);
@@ -161,7 +161,6 @@ export default function usePostForm() {
 
   const toggleForm = (e, btnName) => { 
     e.preventDefault();
-    window.scrollTo(0,0);
     if(btnName === 'create') {
       let postData = {
         travellerInfo,
@@ -177,7 +176,6 @@ export default function usePostForm() {
       setShowPostForm(false);
       return
     }
-
     if(btnName === 'review') {
       setShowPostForm(true);
       return
@@ -199,8 +197,6 @@ export default function usePostForm() {
   
   return (
     { 
-      postLoading,
-      singlePostError,
       postEditing,
       success,
       imageInputRef,
@@ -254,24 +250,3 @@ const error = {};
 }
 
 
-/* if(images.length < 1) {
-   error.images="Please add an image"
- }
- if(!travellerInfo.cost) {
-   error.costs ="Please add costs"
- }
-
- if(!recommendations.budget) {
-   error.budget="Please add a budget"
- }
- if(recommendations.places.some(place => place.trim() === "")) {
-   error.places="Please add a place"
- }
-
- if(recommendations.heritages.some(heritage => heritage.trim() === "")) {
-   error.heritages="Please add a heritage"
- }
-
- if(recommendations.todos.some(todo => todo.trim() === "")) {
-   error.todos="Please add a todo"
- } */

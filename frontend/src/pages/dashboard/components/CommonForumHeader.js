@@ -6,7 +6,7 @@ import { PostAuthor,
   DeleteButton, 
   Submenu 
  } from './CommonPostHeader';
-import { InfoHeader } from '../pages/profile';
+import { InfoHeader } from './GlobalComponents/StyledComponents/Headings'
 import { LinkAuthor, NoLinkAuthor } from './GlobalComponent';
 // ====================== Icons ============================== //
 import { AiFillEdit } from "react-icons/ai";
@@ -37,9 +37,7 @@ export default function CommonForumHeader({ forum, singleForum }) {
                 </ActionContainer>
                }
       </div>
-      {
-        singleForum ? <LinkAuthor blog={forum}/> : <NoLinkAuthor blog={forum}/>
-      }
+      { singleForum ? <LinkAuthor blog={ forum }/> : <NoLinkAuthor blog={ forum }/> }
     </PostAuthor>
   )
 }

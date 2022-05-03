@@ -10,7 +10,7 @@ function Ratings({ ratings }) {
         allowHalfIcon={true}
         size={15}
         readonly={true}
-        style={{marginTop: '-0.5rem'}}
+        style={{ marginTop: '-0.5rem' }}
         />
     </>)
 }

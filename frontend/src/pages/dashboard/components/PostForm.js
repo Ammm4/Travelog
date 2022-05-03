@@ -212,7 +212,6 @@ export const BtnAdd = styled.button`
 `
 
 export default function PostForm(props) {
-  const { loading } = useSelector(state => state.SinglePost);
   const {
          errors,
          destinationInfo,
@@ -236,7 +235,6 @@ export default function PostForm(props) {
          handleTitle
   } = props;
   const dispatch = useDispatch();
-
   const handleKeyUp = (e) => {
     e.target.style.height = '48px';
     e.target.style.height = `${e.target.scrollHeight}px`;
@@ -254,9 +252,7 @@ export default function PostForm(props) {
     }))
     toggleForm(e,'create')
   }
-  if(loading) {
-    return <Loading msg="Post Loading" />
-  }
+  
   return (
     <Container>
         <PostTitle>

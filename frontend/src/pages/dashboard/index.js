@@ -23,8 +23,8 @@ import ChangePassword from './components/ChangePassword';
 
 export default function Dashboard() {
   const { user, success: userSuccess, error: userError } = useSelector(state => state.User);
-  const { success, error } = useSelector(state => state.Post);
-  const { error: singlePostError } = useSelector(state => state.SinglePost);
+  const { success, error } = useSelector(state => state.Posts);
+  const { error: singlePostError } = useSelector(state => state.Post);
   const { error: singleUserError } = useSelector(state => state.SingleUser);
   const { showModal } = useSelector(state => state.Globals);
   const alert = useAlert();

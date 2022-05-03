@@ -1,15 +1,15 @@
 import { combineReducers } from "redux";
-import { postReducer, singlePostReducer } from "./posts/postReducers";
+import { postsReducer, postReducer } from "./posts/postReducers";
 import { forumsReducer, forumReducer } from "./forums/forumReducers";
 import userReducer, { singleUserReducer } from "./users/userReducers";
 import { globalReducers } from "./globals/globalReducers";
 
 
 const rootReducer = combineReducers({
-  Post: postReducer,
+  Posts: postsReducer,
   User: userReducer,
   Forums: forumsReducer,
-  SinglePost: singlePostReducer,
+  Post: postReducer,
   SingleUser: singleUserReducer,
   Forum: forumReducer,
   Globals: globalReducers

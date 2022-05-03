@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
-import { InfoHeader } from '../pages/profile';
+import { InfoHeader} from './GlobalComponents/StyledComponents/Headings';
 import { AiFillEdit } from "react-icons/ai";
 import { MdDelete } from "react-icons/md";
 import { IoClose} from "react-icons/io5";
 import { BiDotsHorizontalRounded } from "react-icons/bi";
 import { setShowModal } from '../../../redux/globals/globalActions';
-import { LinkAuthor, NoLinkAuthor } from './GlobalComponent';
+import { LinkAuthor } from './GlobalComponent';
 
 export const PostAuthor = styled.div`
   margin-bottom: 0.75rem;
@@ -58,17 +58,16 @@ export const DeleteButton = styled.button`
     background-color: ${ props => props.showSubmenu ? 'transparent' : '#f0f0f0'};
   }
 `
-export default function CommonPostHeader({ post, singlePost }) {
+export default function CommonPostHeader({ post }) {
   const [showSubmenu, setShowSubmenu] = useState(false);
+  const { singlePost } = post;
   const { user } = useSelector(state => state.User);
   const dispatch = useDispatch();
-  const handleEdit = () => {
+
+  const handleClick = ( btnType) => {
     setShowSubmenu(false);
-    return dispatch(setShowModal({ modalType: 'post', action: 'edit post' }))
-  }
-  const handleDelete = () => {
-    setShowSubmenu(false);
-    return dispatch(setShowModal({ modalType: 'post', action: 'delete post' }))
+    if(btnType === 'edit') return dispatch(setShowModal({ modalType: 'post', action: 'edit post', post, singlePost }))
+    if(btnType === 'delete') return dispatch(setShowModal({ modalType: 'post', action: 'delete post', post, singlePost }))
   }
   return (
     <PostAuthor>
@@ -82,16 +81,16 @@ export default function CommonPostHeader({ post, singlePost }) {
                     { showSubmenu ? <IoClose /> : <BiDotsHorizontalRounded /> }
                   </DeleteButton>
                   <Submenu showSubmenu={ showSubmenu }>
-                    <button onClick={ handleEdit }><AiFillEdit /> Edit </button>
+                    <button onClick={ () => handleClick('edit') }><AiFillEdit /> Edit </button>
                     <span></span>
-                    <button onClick={ handleDelete }><MdDelete /> Delete </button>
+                    <button onClick={ () => handleClick('delete') }><MdDelete /> Delete </button>
                   </Submenu>
                 </ActionContainer>
                }
             </div>
-            { singlePost ? <LinkAuthor blog={post}/>  : <NoLinkAuthor blog={post}/>  } 
+            <LinkAuthor blog={ post }/>   
           </PostAuthor>
-  )
+      )
 }
 
 

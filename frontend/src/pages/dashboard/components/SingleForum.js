@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { getForum } from '../../../redux/forums/forumActions';
-import { PostContainer } from './SinglePost';
+import { PostContainer } from './GlobalComponents/StyledComponents/Containers';
 import ForumBody from './ForumBody';
 import ForumComments from './ForumComments';
 import Loading from './Loading';
@@ -18,23 +18,22 @@ export const ForumContainer = styled.div`
 `
 export default function SingleForum() {
   const { forumId } = useParams();
-  const { loading, forum } = useSelector(state => state.Forum);
-  const { showCreateComment } = useSelector(state => state.Globals);
+  const { Forum : { loading, forum } , User : { user: { userId } }, Globals: { showCreateComment }} = useSelector(state => state);
   const dispatch = useDispatch();
   
   useEffect(() => {
-    dispatch(getForum(forumId));
-  }, [forumId, dispatch])
+    dispatch(getForum(forumId, userId));
+  }, [forumId, dispatch, userId])
   
   if(loading || Object.keys(forum).length < 1) {
     return <Loading msg="Forum Loading"/>
   }
   
   return (
-    <PostContainer style={{ paddingTop:'0', marginBottom: '80px'}}>
+    <PostContainer style={{ paddingTop:'0', marginBottom: '80px' }}>
       <GoBackBtn />
       <ForumContainer>
-        <ForumBody forum={ forum } singleForum={true}/>
+        <ForumBody forum={ forum } singleForum={ true }/>
       </ForumContainer>
       <ForumComments />
       { showCreateComment && <CreateComment forum = { forum }/> }    

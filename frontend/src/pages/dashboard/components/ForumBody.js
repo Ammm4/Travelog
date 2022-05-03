@@ -1,15 +1,11 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import CommonForumHeader from './CommonForumHeader';
 import { likeForum } from '../../../redux/forums/forumActions';
 import { showCreateCommentForm } from '../../../redux/globals/globalActions';
-import { FaRegHeart, FaHeart, FaReply } from "react-icons/fa";
-import { 
-  CommentsAndLikes,
-  PostInteractions,
-  InteractionButton
-} from './Post';
+import ForumInteractions from './ForumInteractions';
+import CommentsAndLikes from './CommentsAndLikes';
 export const ForumNumbers = styled.span`
   display: inline-flex;
   flex-direction: column;
@@ -19,41 +15,22 @@ export const ForumNumbers = styled.span`
     font-size: 1.85rem;
   }
 `
-
 export default function ForumBody({ forum, singleForum }) {
-  const { comments, likes } = forum;
-  const { user } = useSelector(state => state.User);
+  const { isLiked } = forum;
   const { showCreateComment } = useSelector(state => state.Globals);
-  const totalComments = Array.isArray(comments) ? comments.length : comments;
-  const showCreateCommentFormParamater = Array.isArray(comments) ? !showCreateComment : true;
-  const likedForum = likes.find(like => like.user._id === user.userId)
   const dispatch = useDispatch();
-
+  const handleLikeForum = () => {
+    dispatch(likeForum(forum._id))
+  }
+  const handleCommentBtn = () => {
+    dispatch(showCreateCommentForm(!showCreateComment))
+  }
+  
   return (
     <>
-      <CommonForumHeader forum={ forum } singleForum={singleForum}/>
-      <PostInteractions>
-               <InteractionButton onClick={() => dispatch(likeForum(forum._id))}>         
-                 { likedForum ? <FaHeart /> : <FaRegHeart /> }        
-               </InteractionButton> 
-               <InteractionButton onClick={() => dispatch(showCreateCommentForm(showCreateCommentFormParamater))} >   
-                    <FaReply/>    
-               </InteractionButton> 
-        </PostInteractions>
-        <CommentsAndLikes>
-          <ForumNumbers>
-            <span className='number'> { totalComments }</span>
-            <span>replies</span>
-          </ForumNumbers>
-          <ForumNumbers>
-            <span className='number'>{ likes.length }</span>
-            <span>likes</span> 
-          </ForumNumbers>
-          <ForumNumbers>
-            <span className='number'>{ forum.views }</span>
-            <span>views</span> 
-          </ForumNumbers>         
-        </CommentsAndLikes>       
+      <CommonForumHeader forum={ forum } singleForum={ singleForum }/>
+      <ForumInteractions isLiked={isLiked} handleLike={handleLikeForum} handleCommentBtn={handleCommentBtn}/>
+      <CommentsAndLikes blog={forum} />  
     </>
   )
 }

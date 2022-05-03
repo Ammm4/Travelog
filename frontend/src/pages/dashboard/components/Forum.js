@@ -2,8 +2,10 @@ import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { useLocation } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { PostWrapper, LinkToPostDetails } from './Post';
+import { PostForumWrapper } from './GlobalComponents/StyledComponents/Containers';
+import { PostForumLink } from './GlobalComponents/StyledComponents/Link';
 import { setHomeForumMarkerId, setProfileForumMarkerId, setUserForumMarkerId } from '../../../redux/globals/globalActions';
+
 import ForumBody from './ForumBody';
 export const ForumNumbers = styled.span`
   display: inline-flex;
@@ -35,10 +37,10 @@ export default function Forum({ forum, forumMarkerRef }) {
   }
   
   return (
-    <LinkToPostDetails to={`/dashboard/forums/${forum._id}`} onClick={handleClick}>
-      <PostWrapper ref={forumMarkerRef}>
+    <PostForumLink to={`/dashboard/forums/${forum._id}`} onClick={handleClick}>
+      <PostForumWrapper ref={forumMarkerRef}>
           <ForumBody forum={forum}/>
-      </PostWrapper>
-    </LinkToPostDetails>
+      </PostForumWrapper>
+    </PostForumLink>
   )
 }

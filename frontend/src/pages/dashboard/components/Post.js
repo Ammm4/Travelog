@@ -1,14 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import styled,{ css } from 'styled-components';
 import { useSelector, useDispatch } from 'react-redux';
 import Ratings from './Ratings';
+import Comments from './Comments';
+import { PostForumWrapper, StyledParagraph } from './GlobalComponents/StyledComponents/Containers';
 import CommonPostHeader from './CommonPostHeader';
-import { ForumNumbers } from './ForumBody';
+import { PostForumLink } from './GlobalComponents/StyledComponents/Link';
+import PostSkeleton from './PostSkeleton'
+import CommentsAndLikes from './CommentsAndLikes';
 import { FaRegComment, FaRegHeart, FaHeart } from "react-icons/fa";
+import { likePost, setShowComments, setShowTheComments } from '../../../redux/posts/postActions';
 import { setHomePostMarkerId, setProfilePostMarkerId, setUserPostMarkerId } from '../../../redux/globals/globalActions';
 
-// Components
+// ================== Components ======================//
 import PostDetails from './PostDetails';
 
 export const sharedBtnCss = css`
@@ -19,30 +24,10 @@ export const sharedBtnCss = css`
   cursor: pointer;
   color: #021b41;
 `
-export const PostWrapper = styled.article`
-  width: 100%;
-  height: 100%;
-  border-radius: 8px;
-  margin: ${props => props.singlePost ? '0' : '0 0 2rem 0' };
-  padding: ${props => props.singlePost ? '4rem 0 0 0' : '12px' };
-  background-color: #fff;
-  box-shadow:${props => props.singlePost ? 'none' : '2px 2px 4px rgba(0,0,0,0.5)' };
-  cursor:pointer;
-  overflow: auto;
-  @media only screen and (max-width: 600px) {
-     padding: ${props => props.singlePost ? '0 0 2.75rem 0' : '12px' };
-     box-shadow: none;
-     border-radius: 0;
-     border-top: 1px solid #e0e0e0;
-     border-bottom: 1px solid #e0e0e0;
-  }
-`
 export const AvatarImage = styled.img`
-  src: ${props => props.src};
   display: inline-block;
   width: 35px;
   height: 35px;
- 
   margin: 0 0.3rem 0 0.35rem;
 `
 export const AuthorName = styled.span`
@@ -76,32 +61,20 @@ export const PostTitle = styled.div`
  p {
    font-size: 0.9375rem;
    line-height: 1.3333;
+   margin-bottom: 0.5rem;
  }
-`
-export const CommentsAndLikes = styled.div`
-  margin-bottom: 0.75rem;
-  button {
-    padding-right: 0.75rem;
-    font-size: 0.95rem;
-    font-weight: bold;
-    &:hover {
-      text-decoration: underline;
-      color: #2a78cd;
-    }
-  }
 `
 export const TotalComments = styled(Link)`
   display: inline-block;
   color: inherit;
   text-decoration: none;
-  `
+`
 export const TotalLikes = styled(Link)`
   display: inline-block;
   color: inherit;
   margin-right: 1rem;
   text-decoration: none; 
 `
-
 export const PostInteractions = styled.div`
 margin: 0.55rem 0;
 text-align: right;
@@ -115,13 +88,12 @@ const Box = styled.div`
   align-items: start;
 `
 export const InteractionButton = styled.button`
-  font-size: 1.4rem;
+  font-size: 1.3rem;
   height: 2.2rem;
   width: 2.2rem;
   line-height: 1rem;
   display: inline-block;
-  
-  margin-right: 18px;
+  margin-right: 16px;
   &:hover {
     background-color: #aaa;
     color:#fff;
@@ -206,10 +178,6 @@ export const Line = styled.span`
   vertical-align: middle;
   background-color: #f1f1f1;
 `
-export const LinkToPostDetails = styled(Link)`
-  text-decoration: none;
-  color: #021b41;
-`
 const PostBody = styled.main`
   display: grid;
   grid-template-columns: 1fr 30px;
@@ -235,14 +203,12 @@ export const Button = styled.button`
     color:#2e5c99;
   }
 `
-export default function Post({ post, singlePost, postMarkerRef }) {
+export default function Post({ post, postMarkerRef }) {
+  const { _id, isLiked, travellerInfo, destinationInfo, images, showComments, singlePost } = post;
   const [showMore, setShowMore] = useState(false);
-  const { user } = useSelector(state => state.User);
-  let summary = showMore ? post.destinationInfo.summary : post.destinationInfo.summary.slice(0, 150);
-  const isLiked = post.likes.find(like => like.user._id === user.userId);
+  let summary = showMore ? destinationInfo.summary : destinationInfo.summary.slice(0, 150);
   const dispatch = useDispatch();
   const location = useLocation();
-
   useEffect(() => {
     if(!postMarkerRef) return;
     postMarkerRef.current.scrollIntoView({ behavior: 'auto', block: 'center' });
@@ -259,57 +225,57 @@ export default function Post({ post, singlePost, postMarkerRef }) {
       return dispatch(setUserPostMarkerId(postId))
     }
   }
+  const handleLikes = () => {
+
+  }
   
+  const handleCommentBtn = () => {
+    if(singlePost) return dispatch(setShowTheComments(_id, true))
+    dispatch(setShowComments(_id,true))
+  }
+  if(post.deleted) {
+    return <PostSkeleton postMarkerRef={postMarkerRef}/>
+  }
   return (
-    <LinkToPostDetails to={`/dashboard/posts/${post._id}`} onClick={() => handleClick(post._id)}>
-        <PostWrapper singlePost={ singlePost } ref={ postMarkerRef }>   
+        <PostForumWrapper singlePost={ singlePost } ref={ postMarkerRef }>   
           <CommonPostHeader post={ post } />
           <PostBody>
             <div style={{ paddingRight: '20px' }}>
-              <PostTitle>
-                <h4>Type of Travel: <span>{ post.travellerInfo.travelType }</span></h4>  
-              </PostTitle>
-          <PostTitle>
-            <h4>Time Spent: <span>{ post.travellerInfo.time }</span> </h4>   
-          </PostTitle>
-          <PostTitle>
-            <h4>Summary </h4> 
-                <Ratings ratings={ post.destinationInfo.ratings }/>            
-            <p> { summary }
-                {post.destinationInfo.summary.length > 150 && <Button onClick= { () => setShowMore(!showMore)}> { showMore ? 'less...' :'more...'}</Button>}</p>   
-          </PostTitle>
-           <PostTitle>
-             <h4>Images ({ post.images.length })</h4>
-             { post.images.length < 1 && <PostImg src='https://res.cloudinary.com/ddocnijls/image/upload/v1649796037/postImages/no-image-available-icon-6_necjkv.png'/> }
-             { 
-               post.images.map((img) => {
-               return <PostImg key={img.imgURL} src={img.imgURL} alt="pic" />
-              })
-             }
+            <PostTitle>
+              <h4>Type of Travel: <span>{ travellerInfo.travelType }</span></h4>  
+            </PostTitle>
+            <PostTitle>
+              <h4>Time Spent: <span>{ travellerInfo.time }</span> </h4>   
+            </PostTitle>
+            <PostTitle>
+              <h4>Summary </h4> 
+              <Ratings ratings={ destinationInfo.ratings }/>            
+              <StyledParagraph style={{ whiteSpace: 'pre-wrap'}}> { summary }
+                {destinationInfo.summary.length > 150 && <Button onClick= { () => setShowMore(!showMore)}> { showMore ? 'less...' :'more...'}</Button>}
+              </StyledParagraph>   
+            </PostTitle>
+            <PostTitle>
+             <h4>Images ({ images.length })</h4>
+             <PostForumLink to={`/dashboard/posts/${_id}`} onClick={() => handleClick(_id)}>
+               { images.length < 1 && <PostImg src='https://res.cloudinary.com/ddocnijls/image/upload/v1649796037/postImages/no-image-available-icon-6_necjkv.png'/> }
+               { 
+                 images.map((img) => {
+                   return <PostImg key={img.imgURL} src={img.imgURL} alt="pic" />
+                })
+               }
+             </PostForumLink>
            </PostTitle>  
           { <PostDetails data={ post }/> }  
             </div>
+             {/* disabled={true} for audiences */}
               <Box>
-                <InteractionButton disabled={true}>{ isLiked ? <FaHeart/> : <FaRegHeart />}</InteractionButton>
-                <InteractionButton disabled={true}><FaRegComment /></InteractionButton>
+                <InteractionButton onClick={() => dispatch(likePost(_id))}> { isLiked ? <FaHeart/> : <FaRegHeart /> }</InteractionButton>
+                <InteractionButton onClick={ handleCommentBtn } ><FaRegComment /></InteractionButton>
               </Box>
           </PostBody>
-        <CommentsAndLikes>
-             <ForumNumbers>
-               <span className='number'> { post.comments.length }</span>
-               <span>comments</span>
-             </ForumNumbers>
-             <ForumNumbers>
-               <span className='number'>{ post.likes.length }</span>
-               <span>likes</span> 
-             </ForumNumbers>
-             <ForumNumbers>
-               <span className='number'>{ post.views }</span>
-               <span>views</span> 
-             </ForumNumbers>   
-          </CommentsAndLikes>         
-      </PostWrapper>
-    </LinkToPostDetails>
+          <CommentsAndLikes blog={ post } />
+          { showComments && <Comments post={post}/> }
+      </PostForumWrapper>
   )
 }
 

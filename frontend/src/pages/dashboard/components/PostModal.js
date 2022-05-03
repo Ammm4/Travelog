@@ -13,7 +13,7 @@ import DeleteBox from './DeleteBox';
 export const Container = styled.div`
  position: fixed;
  top:0; left:0;
- z-index: 2222;
+ z-index: 5555;
  width: 100%;
  height: 100%;
  overflow: auto;
@@ -62,8 +62,7 @@ export default function PostModal() {
     }
      if(success) {
       dispatch(setShowModal(null));
-    } 
-    
+    }  
   }, [ singlePostError, success, dispatch]); 
 
   useEffect(() => {

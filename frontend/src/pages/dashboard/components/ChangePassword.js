@@ -6,6 +6,7 @@ import { Container } from './profileEdit';
 import { commonLabel, commonInput } from './PostForm';
 import { ErrorDisplay } from '../../signup/components/form';
 import GoBackBtn from './GoBackBtn';
+import { ProfileHeading } from './GlobalComponents/StyledComponents/Headings';
 import { changePassword } from '../../../redux/users/userActions';
 import Loading from './Loading';
 import { UPDATE_USER_RESET } from '../../../redux/users/userTypes';
@@ -14,14 +15,6 @@ const Form = styled.form`
   width: 100%;
   max-width: 600px;
   margin: 2rem auto;
-  h2 {
-    font-family: 'Montserrat Alternates', sans-serif;
-    font-size: 40px;
-    font-weight: 400;
-    text-align: center;
-    letter-spacing: 0.8px;
-    color: #021b41;
-  }
   .form-group {
   margin: 1.5rem auto 0.5rem auto;
   padding: 10px;
@@ -107,7 +100,7 @@ export default function ChangePassword() {
     <Container>
       <GoBackBtn />
       <Form>
-        <h2>Change Password</h2>
+        <ProfileHeading>Change Password</ProfileHeading>
         <div className="form-group">
           <label htmlFor="oldPassword"><b>Old Password</b></label>
             <input 
