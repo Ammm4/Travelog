@@ -1,33 +1,45 @@
 const { PostModel }  = require("../../database/models/postModel.js");
 const ErrorHandler = require("../../utils/errorHandler.js");
+const LikeModel = require('../../database/models/likeModel');
 const cloudinary = require('cloudinary');
-
+const createDetails = require('../../utils/createDetails');
+const createPostObject = require('../../utils/createPostObj')
+const createMongoId = require('../../utils/createMongoId');
 const asyncFunctionWrapper =  require('../../utils/asyncFunctionWrapper');
-
-const getAllPosts = asyncFunctionWrapper(async (req, res, next) => {
-     const { params: { userId } } = req;
-     var posts;
-     if(userId === 'allUsers') {
-       posts = await PostModel.find().sort({ createdAt: -1 });  
-     } else {
-       posts = await PostModel.find({ user: userId }).sort({ createdAt: -1 });
-     }
-     return res.status(200).json({
-       success: true,
-       posts
-     })
-  
+const getPosts = asyncFunctionWrapper(async (req, res, next) => {
+  const { query: { user_type, user } } = req;
+  var posts;
+   if(user_type === 'allUsers') {
+       posts = await PostModel.find().sort({ createdAt: -1 });
+      } else {
+       const user_id = createMongoId(user_type);
+       posts = await PostModel.find({ user: user_id }).sort({ createdAt: -1 });
+   } 
+   if(user) {
+    let Posts = [];
+    for (const post of posts) {
+      const details = createDetails({ user, post: post._id })
+      const isLiked = await LikeModel.findOne(details) ? true : false ;
+      let Post = createPostObject(isLiked,post)
+      Posts = [...Posts, Post]
+    } 
+    posts = Posts;
+   }
+  res.status(200).json({ success: true, posts })
 });
 
-const getSinglePost = asyncFunctionWrapper(async (req, res, next) => {
-   const post = await PostModel.findById( req.params.id );
-   if(!post) return next(new ErrorHandler("Post not found", 404))
-   post.views++;
-   await post.save();
-   res.status(200).json({
-      success: true,
-      post
-   })   
+const getPost = asyncFunctionWrapper(async (req, res, next) => {
+  const { params: { id }, query: { user } } = req;
+  var post = await PostModel.findById(id);
+  if(!post) return next(new ErrorHandler("Post not found", 404))
+  post.views++;
+  await post.save();
+  if(user) {
+      const details = createDetails({ user, post: id })
+      const isLiked = await LikeModel.findOne(details) ? true : false ;
+      post = createPostObject(isLiked, post)
+    } 
+   res.status(200).json({ success: true, post })   
 })
 
 const addPost = asyncFunctionWrapper( async ( req, res, next ) => {
@@ -37,16 +49,17 @@ const addPost = asyncFunctionWrapper( async ( req, res, next ) => {
     req.body.images = uploadedImages;
   }
   let newPost = {
-     user: userId,
+     user: createMongoId(userId),
      ...req.body,
   }
   const post = await PostModel.create(newPost);
-  const newlyAddedPost = await PostModel.findById(post._id)
-  res.status(201).send({ success: true, message: "Post Created successfully!!", post: newlyAddedPost});
+  await post.populate({ path: 'user', select: 'username avatar' })
+  const Post = createPostObject(false, post);
+  res.status(201).send({ success: true, message: "Post Created successfully!!", post: Post});
 })
 
 const updatePost = asyncFunctionWrapper(async (req, res, next) => {
-  const { params: { id }} = req;
+  const { params: { id } } = req;
   const post = await PostModel.findById(id);
   if(!post) return next(new ErrorHandler("Post not found", 404))
   const { images, deletedImageIDs } = req.body;
@@ -73,7 +86,6 @@ const updatePost = asyncFunctionWrapper(async (req, res, next) => {
   })
   )
   req.body.images = uploadedImages;
-  
   for( let key in req.body) {
     post[key] = req.body[key];
   }
@@ -126,8 +138,8 @@ const deleteAllImages = async(images) => {
   })
 }
 module.exports = {
-  getAllPosts,
-  getSinglePost,
+  getPosts,
+  getPost,
   addPost,
   updatePost,
   deletePost

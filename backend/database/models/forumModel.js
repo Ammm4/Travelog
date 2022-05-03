@@ -19,6 +19,37 @@ const ForumSchema = new mongoose.Schema({
 
 }, { timestamps: true,  toJSON: { virtuals: true }, toObject: { virtuals: true }});
 
+ForumSchema.virtual('numComments', {
+  ref: 'Comment',
+  localField: '_id',
+  foreignField: 'forum',
+  count: true
+})
+
+ForumSchema.virtual('numLikes', {
+  ref: 'Like',
+  localField: '_id',
+  foreignField: 'forum',
+  count: true
+})
+
+ForumSchema.pre(/^find/, function() {
+  this.populate({ path:'user', select:'username avatar' })
+  .populate('numLikes')
+  .populate('numComments') 
+})
+
+ForumSchema.pre('deleteOne', { document: true, query: false }, async function(next) {
+    const comments = await CommentModel.find({ forum: this._id });
+    for (const comment of comments) {
+      await comment.deleteOne()
+    } 
+    this.model('Like').deleteMany({ forum: this._id }, next);
+})
+
+module.exports = mongoose.model('Forum', ForumSchema);
+
+/* 
 ForumSchema.virtual('comments', {
   ref: 'Comment',
   localField: '_id',
@@ -49,12 +80,22 @@ ForumSchema.pre(/^find/, function() {
     });
 })
 
-ForumSchema.pre('deleteOne', { document: true, query: false}, async function(next) {
-    const comments = await CommentModel.find({ forum: this._id });
-    for (const comment of comments) {
-      await comment.deleteOne()
-    } 
-    this.model('Like').deleteMany({ forum: this._id }, next);
-})
 
-module.exports = mongoose.model('Forum', ForumSchema);
+ForumSchema.pre(/^find/, function() {
+  this.populate({ path:'user', select:'username avatar' })
+  .populate({ path:'likes', populate: { path: 'user', select: 'username avatar'}})
+  .populate(
+    { path:'comments', 
+      populate: [{ path: 'user', select: 'username avatar'}, 
+                 { path: 'likes', populate: { path:'user', select:'username avatar' } }, 
+                 { path: 'replies', 
+                  populate:([ { path: 'user', select:'username avatar'}, 
+                              { path: 'likes', 
+                              populate:({ path:'user', select: 'username avatar' })
+                              }
+                            ])
+                 }
+                ]
+    });
+})
+*/

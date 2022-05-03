@@ -5,45 +5,43 @@ const CommentModel = require('../../database/models/commentModel');
 const ReplyModel = require('../../database/models/replyModel');
 const ErrorHandler = require("../../utils/errorHandler.js");
 const asyncFunctionWrapper =  require('../../utils/asyncFunctionWrapper');
+const createDetails = require('../../utils/createDetails');
 
 
 const likeForum = asyncFunctionWrapper(async (req,res, next) => {
   const { params: { id }, user: { userId } } = req;
   const Forum = await ForumModel.findById(id);
-  if(!Forum) return next(new ErrorHandler('Forum Not Found', 404))  
-  let details = {
-    user: mongoose.Types.ObjectId(userId),
-    forum: mongoose.Types.ObjectId(id)
-  }
+  if(!Forum) return next(new ErrorHandler('Forum Not Found', 404));
+  let details = createDetails({ user: userId, forum: id });
   const like = await LikeModel.findOne(details);
+  let Like = like, Liked = false;
   if(like) {
     await like.remove();
   } else {
-    await LikeModel.create(details);
+    Like = await LikeModel.create(details);
+    Liked = true;
   }
-  const forum = await ForumModel.findById(id);
-  res.status(200).json({ msg: 'success', forum })
+  res.status(200).json({ msg: 'success', Like, Liked })
  }
 )
 
 const likeComment = asyncFunctionWrapper(async (req,res, next) => {
   const { params: { id }, user: { userId } } = req;
   const Comment = await CommentModel.findById(id);
+  let details = createDetails({ user: userId, comment: id})
   if(!Comment) return next(new ErrorHandler('Comment Not Found', 404))
-  let details = {
-    user: mongoose.Types.ObjectId(userId),
-    comment: mongoose.Types.ObjectId(id)
-  }
   const like = await LikeModel.findOne(details);
+  let Like, Liked = false;
   if(like) {
-    await like.remove();
+    Like = await like.remove();
   } else {
-    await LikeModel.create(details);
+    Like = await LikeModel.create(details);
+    Liked = true;
   }
-  const forum = await ForumModel.findById(Comment.forum._id);
-  res.status(200).json({ msg: 'success' , forum})
+  res.status(200).json({ msg: 'success' , Like, Liked })
  }
 )
+
 
 const likeReply = asyncFunctionWrapper(async (req,res, next) => {
   const { params: { id }, user: { userId } } = req;

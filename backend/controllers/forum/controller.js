@@ -1,45 +1,55 @@
-const mongoose = require('mongoose');
 const ForumModel = require('../../database/models/forumModel');
+const LikeModel = require('../../database/models/likeModel')
 const ErrorHandler = require("../../utils/errorHandler.js");
 const asyncFunctionWrapper =  require('../../utils/asyncFunctionWrapper');
+const createDetails = require('../../utils/createDetails');
+const createForumObject = require('../../utils/createForumObj');
+const createMongoId = require('../../utils/createMongoId');
 
-const getAllForums = async (req,res) => {
-  const { params: { id } } = req;
-  var forums; 
-  if(id === 'allUsers') {
+const getForums = asyncFunctionWrapper(async (req,res, next) => {
+  const { query: { user_type, user } } = req;
+  var forums;
+  if(user_type === 'allUsers') {
     forums = await ForumModel.find().sort({ createdAt: -1 });
   } else {
-    forums = await ForumModel.find({ user: id }).sort({ createdAt: -1 });
+     const user_id = createMongoId(user_type)
+    forums = await ForumModel.find({ user: user_id }).sort({ createdAt: -1 });
   }
-  const trimmedForums = forums.map(forum => {
-    return {
-      _id: forum._id,
-      user: forum.user,
-      views: forum.views,
-      likes: forum.likes,
-      comments: forum.comments.length,
-      body: forum.body
-    }
-  })
-  res.status(200).json({ msg: 'success', forums: trimmedForums })
-}
+  if(user) {
+    let Forums = [];
+    for (const forum of forums) { 
+      const details = createDetails({ user, forum: forum._id })
+      const isLiked = await LikeModel.findOne(details) ? true : false ;
+      const Forum = createForumObject(isLiked, forum);
+      Forums = [...Forums, Forum]
+    } 
+    forums = Forums;
+  }
+  res.status(200).json({ msg: 'success', forums })
+})
 
-const getSingleForum = asyncFunctionWrapper(async (req,res, next) => {
-  const { id } = req.params;
+const getForum = asyncFunctionWrapper(async (req,res, next) => {
+  const { params: { id }, query: { user } } = req;
   const forum = await ForumModel.findById(id);
   if(!forum) {
      return next(new ErrorHandler('Forum Not Found', 404))
   }
   forum.views++;
   await forum.save();
-  res.status(200).json({ msg: 'success', forum })
+  let isLiked = false;
+  if(user) {
+      const details = createDetails({ user: user, forum: forum._id })
+      isLiked = await LikeModel.findOne(details) ? true : false ;
+  }
+  let Forum = createForumObject(isLiked, forum)
+  res.status(200).json({ msg: 'success', forum: Forum })
 })
 
 const createForum = asyncFunctionWrapper(async (req,res) => {
   const { userId } = req.user;
-  req.body.user = mongoose.Types.ObjectId(userId);
+  req.body.user = createMongoId(userId);
   const forum = await ForumModel.create(req.body)
-  res.status(201).json({msg: 'success', forum})
+  res.status(201).json({ msg: 'success', forum })
 })
 
 const updateForum = asyncFunctionWrapper(async (req,res, next) => {
@@ -67,8 +77,8 @@ const deleteForum = asyncFunctionWrapper(async (req,res, next) => {
 })
 
 module.exports = {
-  getAllForums,
-  getSingleForum,
+  getForums,
+  getForum,
   createForum,
   updateForum,
   deleteForum

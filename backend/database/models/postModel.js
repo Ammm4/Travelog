@@ -45,7 +45,31 @@ const Post = new mongoose.Schema({
   views: { type: Number, default: 0}
 },{ timestamps: true ,toJSON: { virtuals: true }, toObject: { virtuals: true } });
 
-Post.virtual('comments', {
+Post.virtual('numComments', {
+  ref: 'Comment',
+  localField: '_id',
+  foreignField: 'post',
+  count: true
+})
+
+Post.virtual('numLikes', {
+  ref: 'Like',
+  localField: '_id',
+  foreignField: 'post',
+  count: true
+})
+
+Post.pre([/^find/], function() {
+  this.populate({ path:'user', select:'username avatar' })
+  .populate('numComments')
+  .populate('numLikes')
+})
+
+const PostModel = mongoose.models.Post || mongoose.model('Post', Post);
+
+module.exports = { PostModel }
+
+/* Post.virtual('comments', {
   ref: 'Comment',
   localField: '_id',
   foreignField: 'post'
@@ -55,7 +79,7 @@ Post.virtual('likes', {
   ref: 'Like',
   localField: '_id',
   foreignField: 'post'
-})
+}) 
 
 Post.pre([/^find/], function() {
   this.populate({ path:'user', select:'username avatar' })
@@ -74,10 +98,6 @@ Post.pre([/^find/], function() {
                 ]
     });
 })
+ */
 
 
-const PostModel = mongoose.models.Post || mongoose.model('Post', Post);
-
-module.exports = {
-  PostModel,
-}
