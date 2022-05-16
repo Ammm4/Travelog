@@ -6,7 +6,10 @@ import { deletePost, deleteThePost } from '../../../redux/posts/postActions';
 import { deleteForum } from '../../../redux/forums/forumActions';
 import { deleteUser } from '../../../redux/users/userActions';
 import { setShowModal } from '../../../redux/globals/globalActions';
-import { PostTitle, commonLabel, commonInput, BtnAdd } from './PostForm';
+import { commonLabel, commonInput,  } from './PostForm';
+import { PostTitle } from './GlobalComponents/StyledComponents/Headings';
+import { InputElement, InputLabel } from './GlobalComponents/StyledComponents/Inputs';
+import { BtnAdd } from './GlobalComponents/StyledComponents/Buttons';
 
 export const Container = styled.div`
   position: absolute;
@@ -32,14 +35,6 @@ export const BtnGroup = styled.div`
     width: 100%;
     max-width: 400px;
     margin: 2rem auto;
-
-    label {
-     ${commonLabel}
-    }
-
-    input {
-     ${commonInput}
-    }
 `
 export const Button = styled(BtnAdd)`
    display: block;
@@ -79,8 +74,8 @@ export default function DeleteBox() {
       { showConfirm 
          &&  
         <BtnGroup>
-          <label htmlFor='password'>Enter Password</label>
-          <input 
+          <InputLabel htmlFor='password'>Enter Password</InputLabel>
+          <InputElement 
           type="password"
           value={ password }
           name="password" 

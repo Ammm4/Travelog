@@ -58,7 +58,7 @@ import {
   DELETE_THE_COMMENT_SUCCESS,
   DELETE_THE_COMMENT_ERROR,
   SHOW_THE_COMMENTS,
-
+  EXPAND_THE_POST,
 
   ADD_REPLY_REQUEST,
   ADD_REPLY_SUCCESS,
@@ -328,7 +328,10 @@ export const postReducer = (state = { post: {} }, action) => {
        return {
          ...state, post:{ ...state.post, showComments: action.payload }
        }
-
+     case EXPAND_THE_POST:
+       return {
+         ...state, post:{ ...state.post, expand: action.payload }
+       }
      case SINGLE_POST_RESET: 
      return {
        post: {}

@@ -2,19 +2,18 @@ const router = require('express').Router();
 const { check } = require('express-validator');
 const is_User_Authenticated = require('../middleware/checkAuthentication');
 
-
 const { 
   loginUser, 
   signUpUser, 
   logOutUser, 
-  showMe,  
+  showMe,
+  demoLogin,
   getSingleUser,
   updateUser,
   changePassword,
   deleteUser,
   resetPassword
 } = require('../controllers/user/controller');
-
 
 router.post('/signup',
   [ check("email", "Please Provide a valid Email").isEmail(),
@@ -25,6 +24,7 @@ signUpUser);
 router.get('/users/:id', is_User_Authenticated, getSingleUser);
 
 router.post('/login', loginUser);
+router.post('/demo', demoLogin);
 
 router.post('/logout', logOutUser);
 

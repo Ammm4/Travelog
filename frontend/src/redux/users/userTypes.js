@@ -19,6 +19,7 @@ export const CHANGE_PASSWORD_ERROR = "CHANGE_PASSWORD_ERROR";
 
 
 export const SHOW_ME = "SHOW_ME";
+export const DEMO_LOGIN = 'DEMO_LOGIN';
 
 export const SIGN_UP_USER_REQUEST = "SIGN_UP_USER_REQUEST";
 export const SIGN_UP_USER_SUCCESS = "SIGN_UP_USER_SUCCESS";

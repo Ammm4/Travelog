@@ -147,6 +147,13 @@ const showMe = asyncFunctionWrapper(async(req, res, next) => {
   })
 })
 
+const demoLogin = asyncFunctionWrapper(async(req, res, next) => {
+  const user = await UserModel.findOne({ email: process.env.DEMO_USER_EMAIL });
+  const payload = tokenPayload(user);
+  //========== Create AccessToken ========= //
+  const AccessToken = createAccessToken(payload);
+  res.status(200).cookie('Token', AccessToken, cookie_Options ).send({ success: true, message:'Logged In Successfully', user: payload }) 
+})
 
 const changePassword = asyncFunctionWrapper(
   async(req ,res, next) => {
@@ -301,7 +308,6 @@ const deletePost = async(post) => {
     await postModel.remove();
  }
 
-
 module.exports = {
   signUpUser,
   loginUser,
@@ -310,6 +316,7 @@ module.exports = {
   changePassword,
   deleteUser,
   showMe,
+  demoLogin,
   getSingleUser,
   resetPassword
 }

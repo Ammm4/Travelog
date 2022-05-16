@@ -8,6 +8,7 @@ import {
 } from 'react-router-dom';
 
 import { showMe } from './redux/users/userActions';
+import { setShowScrollUpBtn } from './redux/globals/globalActions';
 
 // ============ Components ================ //
 import Homepage from './pages/homepage';
@@ -16,15 +17,27 @@ import Login from './pages/login';
 import Signup from './pages/signup';
 import ForgotPassword from './pages/forgotPass';
 import Pagenotfound from './pages/nopage.js';
-
+import ScrollUp from './pages/dashboard/components/GlobalComponents/Components/ScrollUp';
 
 function App() {
- const { user } = useSelector(state => state.User);
+ const { User: { user }, Globals: { showScrollUpBtn } } = useSelector(state => state);
  const dispatch = useDispatch();
 
  useEffect(() => {
-    dispatch(showMe())
-  },[dispatch]);
+   dispatch(showMe())
+   function handleScroll() {
+      let pos = document.documentElement.scrollTop;
+      if(pos > 100) {
+        dispatch(setShowScrollUpBtn(true))
+      } else {
+        dispatch(setShowScrollUpBtn(false))
+      }
+   }
+  window.addEventListener('scroll',handleScroll);
+  return () => {
+  window.removeEventListener('scroll', handleScroll)
+  }
+  },[ dispatch ]);
 
   return (
     <>
@@ -49,7 +62,8 @@ function App() {
             <Pagenotfound />
           </Route>
         </Switch>
-      </Router>  
+      </Router> 
+      { showScrollUpBtn && <ScrollUp /> } 
     </>
   );
 }

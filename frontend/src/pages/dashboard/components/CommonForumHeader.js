@@ -35,7 +35,7 @@ export default function CommonForumHeader({ forum, singleForum }) {
                     <button onClick={ (e) => dispatch(setShowModal({ modalType: 'forum', action: 'delete forum' }))}><MdDelete /> Delete </button>
                   </Submenu>
                 </ActionContainer>
-               }
+          }
       </div>
       { singleForum ? <LinkAuthor blog={ forum }/> : <NoLinkAuthor blog={ forum }/> }
     </PostAuthor>

@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import { useHistory, useParams } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
+import { useReduxSelector, useReduxDispatch } from '../../../utils';
 import Posts from '../components/Posts';
 import Forums from '../components/Forums';
 import PostBar from '../components/PostBar';
@@ -11,13 +11,13 @@ import GoBackBtn from '../components/GoBackBtn';
 import Loading from '../components/Loading';
 //================== Redux Actions =======================//
 import { getSingleUser } from '../../../redux/users/userActions';
-import { setPageInitialState, setShowPostUser } from '../../../redux/globals/globalActions';
+import { resetGlobals, setPageInitialState } from '../../../redux/globals/globalActions';
 
 export default function Userprofile() {
   const history = useHistory();
-  const { Globals : { userPageData: { showPost } }, SingleUser: { loading, singleUser: user, error } } = useSelector(state => state)
+  const { Globals : { userPageData: { showPost } }, SingleUser: { loading, singleUser: user, error } } = useReduxSelector();
   const { user_id } = useParams();
-  const dispatch = useDispatch();
+  const dispatch = useReduxDispatch();
 
   useEffect(() => {
     if(error) {
@@ -26,13 +26,17 @@ export default function Userprofile() {
   },[error, history])
 
   useEffect(() => {
-    dispatch(setPageInitialState(null,user_id))
-    dispatch(getSingleUser(user_id))
+    function handlePopState() {
+      console.log('Hi');
+      return dispatch(resetGlobals())
+    }
+    dispatch(setPageInitialState(null,user_id));
+    dispatch(getSingleUser(user_id));
+    window.addEventListener('popstate',handlePopState);
+    return () => {
+      window.removeEventListener('popstate',handlePopState)
+    }
   },[dispatch, user_id])
-
-  const setShowPost = () => {
-    dispatch(setShowPostUser(!showPost))
-  }
 
   if(loading || Object.keys(user).length < 1) {
     return <Loading msg="Profile Loading"/>
@@ -42,9 +46,9 @@ export default function Userprofile() {
      <GoBackBtn reset={true}/>
      <ProfileHeading>{user.username}'s Profile</ProfileHeading>
      <UserProfile>
-       <UserProfileInfos user={ user }/>
+       <UserProfileInfos />
      </UserProfile>
-     <PostBar showPost={showPost} setShowPost={setShowPost}/>
+     <PostBar />
      { showPost ? <Posts /> : <Forums /> }
     </ProfileContainer>
   )

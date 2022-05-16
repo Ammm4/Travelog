@@ -1,29 +1,32 @@
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
-import { useSelector, useDispatch } from 'react-redux';
-import { setPageInitialState, setShowPostHome } from '../../../redux/globals/globalActions';
-import Share from '../components/Share';
+import { useReduxSelector, useReduxDispatch } from '../../../utils';
+import { setPageInitialState } from '../../../redux/globals/globalActions';
 import PostBar from '../components/PostBar';
 import Posts from '../components/Posts';
 import Forums from '../components/Forums';
-
 const HomeContainer = styled.section`
- margin-top: 1rem;
  color:#1e1e1e;
-`
-export default function Home() {
-  const { homePageData: { showPost }} = useSelector(state => state.Globals)
-  const dispatch = useDispatch();
-  const setShowPost = () =>{
-    dispatch(setShowPostHome(!showPost))
+ margin-top: 5.65rem;
+ padding: 0 1.4rem;
+ display: grid;
+ grid-template-columns: 0.2fr 0.8fr;
+ grid-gap: 0.5rem;
+ @media only screen and (max-width: 800px) {
+    grid-template-columns: 1fr;
+    padding: 0 0.75rem;
   }
+`
+
+export default function Home() {
+  const { Globals : { homePageData: { showPost }}} = useReduxSelector();
+  const dispatch = useReduxDispatch();
   useEffect(() => {
-    dispatch(setPageInitialState('home', 'allUsers'))
+    dispatch(setPageInitialState('home', 'allUsers', true))
   },[dispatch])
   return (
     <HomeContainer>
-      <Share homepage={ true }/>
-      <PostBar showPost={ showPost } setShowPost={ setShowPost } />
+      <PostBar />
       { showPost ? <Posts/> : <Forums /> }
     </HomeContainer>
   )

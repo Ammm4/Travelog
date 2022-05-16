@@ -28,6 +28,7 @@ import {
     GET_SINGLE_USER_ERROR,
     
     SHOW_ME,
+    DEMO_LOGIN,
     CLEAR_USER_ERRORS,
     
   } from './userTypes';
@@ -120,6 +121,13 @@ export const showMe = () => {
 }
 
 // ======================== SET USER ACTION END ======================= //
+export const demoLogin = () => {
+  return async (dispatch) => {
+    let { data } = await axios.post('/api/v1/demo');
+    dispatch({ type: DEMO_LOGIN, payload: data.user})
+  }
+}
+
 
 
 // ======================== GET SINGLE USER ACTION START ======================= //

@@ -23,6 +23,7 @@ import {
     CHANGE_PASSWORD_ERROR,
 
     SHOW_ME,
+    DEMO_LOGIN,
     SIGN_UP_USER_REQUEST,
     SIGN_UP_USER_SUCCESS ,
     SIGN_UP_USER_RESET,
@@ -99,7 +100,13 @@ const userReducer = (state = { user: null }, action) => {
         user: action.payload,
         error: null
       }
-
+    case DEMO_LOGIN:
+      return {
+        ...state,
+        loading: false,
+        user: action.payload,
+        error: null
+      }
     case LOG_IN_SUCCESS_RESET:
     case LOG_OUT_USER_RESET:
     case SIGN_UP_USER_RESET:

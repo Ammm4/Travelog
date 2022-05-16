@@ -1,76 +1,71 @@
-import React from 'react';
-import { useDispatch } from 'react-redux';
+import React,{ useState, useEffect, useRef} from 'react';
+import { useReduxSelector, useReduxDispatch } from '../../../utils';
+import { useLocation } from 'react-router-dom';
 import styled from 'styled-components';
-import { useSelector } from 'react-redux';
 import { setShowModal } from '../../../redux/globals/globalActions';
 import { CommonButtonTheme } from './GlobalComponents/StyledComponents/Buttons';
 // ===================== Icons ================================= //
 import { IoAddCircle } from "react-icons/io5";
-
-const ShareContainer = styled.article`
+const ShareButton = styled.button`
+  ${CommonButtonTheme}
   width: 98%;
-  max-width: 600px;
-  padding: 8px;
-  border-radius: 3px;
-  margin: ${props => props.homepage ? '7.5rem auto 3rem auto': '3rem auto 3rem auto'};
-  background-color: #fff;
-  box-shadow: 1px 1px 4px rgba(0,0,0,0.5);
-  cursor:pointer;
-`
-const ShareTitle = styled.div`
-  padding: 20px 8px;
-  text-align: center;
+  max-width: 615px;
+  padding: 24px;
+  margin: 0 auto 1.4rem auto;
   display:flex;
   align-items: center;
-  border-bottom: 2px solid #f0f0f0;
+  justify-content: center;
+  font-family: 'Montserrat Alternates', sans-serif; 
+  background-color: #fff;
+  cursor:pointer;
+  font-size: 1.55rem;
   img {
     width: 38px;
     height:38px;
+    border-radius: 50%;
     margin-right: 5px;
   }
-  p {
-    flex: 1;
-    font-family: 'Montserrat Alternates', sans-serif;
-    font-size: 27px;
-    font-weight: 400;
-    text-align: center;
-    letter-spacing: 0.8px;
-    color: #021b41;
+  &:hover {
+    color: #2a78cd;
   }
 `
 
-const BtnGroup = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 2px 1fr;
-  button {
-  ${CommonButtonTheme }
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  background-color:#fff;
-  width: 98%;
-  margin:0.25rem auto;
-  font-size: 19px;
-  padding: 16px 40px;
-  &:hover * {
-    color: #2a78cd;
-   }
+export default function Share() {
+  const { User: { user } } = useReduxSelector();
+  const {Globals: { homePageData: { showPost }, profilePageData: { showPost: profileShowPost} }} = useReduxSelector();
+  const location = useLocation();
+  const dispatch = useReduxDispatch();
+  const[shareType] = useState(() => {
+    if(location.pathname.match(/\/dashboard\/home/)) {
+      return showPost
+    }
+    if(location.pathname.match(/\/dashboard\/profile/)) {
+      return profileShowPost
+    }
+  })
+  
+  const handleClick = () => {
+    if(shareType) return dispatch(setShowModal({ modalType: 'post', action: 'create post', showPostForm: true }));
+    return dispatch(setShowModal({ modalType: 'forum', action: 'create forum' }));
   }
-`
-const Divider = styled.div`
-  height: 80%;
-  margin: auto 0;
-  border-left: 2px solid #f0f0f0;
-`
-export default function Share({ homepage }) {
-  const { user } = useSelector(state => state.User);
-  const dispatch = useDispatch();
   return (
-    <ShareContainer homepage={ homepage } >
+     <ShareButton onClick={handleClick}>
+       <img src={user.avatarURL} alt="avatar"/>
+       <IoAddCircle style={{ fontSize:'2.2rem' }} /> { shareType ? 'Create Post' : 'Create Forum'} 
+     </ShareButton> 
+  )
+}
+/*
+   <ShareContainer ref={btnRef}>
+       <ShareTitle >
+         <img src={user.avatarURL} alt="avatar"/>
+         <button><IoAddCircle style={{ fontSize:'2.2rem' }} /> { shareType ? 'Create Post' : 'Create Forum'} </button>
+       </ShareTitle>
+     </ShareContainer> 
+    <ShareContainer homepage={ homepage } ref={btnRef}>
       <ShareTitle>
         <img src={user.avatarURL} alt="avatar"/>
-         <p>Create Post, Start a Forum ...</p>
+         <p>Create Post </p>
       </ShareTitle>
       <BtnGroup>
         <button title="Create a Post" onClick={() => dispatch(setShowModal({ modalType: 'post', action: 'create post' }))}>
@@ -83,6 +78,12 @@ export default function Share({ homepage }) {
           <span>Forum</span>
         </button>
       </BtnGroup>  
+    </ShareContainer> 
+
+    <ShareContainer homepage={ homepage } ref={btnRef}>
+      <ShareTitle>
+        <img src={user.avatarURL} alt="avatar"/>
+         <p><IoAddCircle style={{ fontSize:'2.2rem', color: '#fff' }} /> Create Post</p>
+      </ShareTitle>
     </ShareContainer>
-  )
-}
+    */

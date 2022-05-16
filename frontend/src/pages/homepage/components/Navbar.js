@@ -1,5 +1,7 @@
 import React, {useState} from 'react';
 import styled from 'styled-components';
+import { useReduxDispatch } from '../../../utils';
+import { demoLogin } from '../../../redux/users/userActions';
 import { SiYourtraveldottv } from "react-icons/si";
 import { BiMenuAltLeft } from "react-icons/bi";
 import { MdClear } from "react-icons/md";
@@ -126,7 +128,7 @@ const Button = styled.button`
 `
 export default function Navbar() {
   const [menuBar, setMenubar] = useState(false)
-  
+  const dispatch = useReduxDispatch();
   return (
     <NavContainer>
       <Nav>
@@ -140,7 +142,7 @@ export default function Navbar() {
         <NavMenu menuBar={ menuBar }>
           <ul className="nav-list">
             <li className="nav-item">
-                <Button>DEMO</Button>
+                <Button onClick={() => dispatch(demoLogin())}>DEMO</Button>
             </li>
             <li className="nav-item">
               <NavLink to="/login">

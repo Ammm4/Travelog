@@ -2,10 +2,11 @@ import React, { useEffect, useState} from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { setShowModal } from '../../../redux/globals/globalActions';
 import { createForum, updateForum } from '../../../redux/forums/forumActions';
-import { Container, CloseModalBtn } from './PostModal';
+import { ModalContainer } from './GlobalComponents/StyledComponents/Containers';
+import { CloseModalBtn } from './GlobalComponents/StyledComponents/Buttons';
 import { Container as ForumContainer, BtnGroup, Button } from './DeleteBox';
 import DeleteBox from './DeleteBox';
-import { PostTitle } from './PostForm';
+import { PostTitle } from './GlobalComponents/StyledComponents/Headings';
 import { MdClear } from "react-icons/md";
 
 export default function ForumModal() {
@@ -31,7 +32,7 @@ export default function ForumModal() {
   }
 
   return (
-    <Container>
+    <ModalContainer>
       <CloseModalBtn onClick={ () => dispatch(setShowModal(null)) } > <MdClear /> </CloseModalBtn>
       <ForumContainer>
          <PostTitle>{ action }</PostTitle>
@@ -50,6 +51,6 @@ export default function ForumModal() {
            <Button onClick={ () => dispatch(setShowModal(null)) }> Cancel</Button>
          </BtnGroup>
       </ForumContainer>
-    </Container>
+    </ModalContainer>
   )
 }

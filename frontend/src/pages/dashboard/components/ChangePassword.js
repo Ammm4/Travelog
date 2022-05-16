@@ -7,6 +7,7 @@ import { commonLabel, commonInput } from './PostForm';
 import { ErrorDisplay } from '../../signup/components/form';
 import GoBackBtn from './GoBackBtn';
 import { ProfileHeading } from './GlobalComponents/StyledComponents/Headings';
+import { InputElement, InputLabel } from './GlobalComponents/StyledComponents/Inputs';
 import { changePassword } from '../../../redux/users/userActions';
 import Loading from './Loading';
 import { UPDATE_USER_RESET } from '../../../redux/users/userTypes';
@@ -20,12 +21,7 @@ const Form = styled.form`
   padding: 10px;
   width: 100%;
   }
-  label {
-  ${commonLabel}
- }
-  input {
-  ${ commonInput }
-  }
+ 
  input[type="submit"] {
    color: #fff;
    background-color: #021b41;
@@ -102,8 +98,8 @@ export default function ChangePassword() {
       <Form>
         <ProfileHeading>Change Password</ProfileHeading>
         <div className="form-group">
-          <label htmlFor="oldPassword"><b>Old Password</b></label>
-            <input 
+          <InputLabel htmlFor="oldPassword"><b>Old Password</b></InputLabel>
+          <InputElement 
               id="oldPassword" 
               name="oldPassword" 
               type="password"
@@ -113,8 +109,8 @@ export default function ChangePassword() {
 
         </div>
         <div className="form-group">
-          <label htmlFor="newPassword"><b>New Password</b></label>
-            <input 
+          <InputLabel htmlFor="newPassword"><b>New Password</b></InputLabel>
+            <InputElement 
               id="newPassword" 
               name="newPassword" 
               type="password"
@@ -124,8 +120,8 @@ export default function ChangePassword() {
           { errors.newPasswordErrors && <ErrorDisplay>{ errors.newPasswordErrors }</ErrorDisplay> }
         </div>
         <div className="form-group">
-          <label htmlFor="confirmPassword"><b>Confirm New Password</b></label>
-            <input 
+          <InputLabel htmlFor="confirmPassword"><b>Confirm New Password</b></InputLabel>
+            <InputElement 
               id="confirmPassword" 
               name="confirmPassword" 
               type="password"
@@ -135,7 +131,7 @@ export default function ChangePassword() {
             { errors.confirmPasswordErrors && <ErrorDisplay>{ errors.confirmPasswordErrors }</ErrorDisplay> }
         </div>
         <div className="form-group">
-          <input 
+          <InputElement 
             type="submit" 
             value="Change Password" 
             disabled={btnAble}

@@ -3,6 +3,7 @@ import styled, {css} from 'styled-components';
 import { Link, useHistory } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { Button } from './GlobalComponents/StyledComponents/Buttons';
+import { setExpandThePost } from '../../../redux/posts/postActions';
 import { StyledLink } from './GlobalComponents/StyledComponents/Link'
 import { resetGlobals } from '../../../redux/globals/globalActions';
 import { SINGLE_POST_RESET } from '../../../redux/posts/postTypes';
@@ -130,8 +131,8 @@ const SmHomeLink = styled(Link)`
     display: inline;
   }
 `
-export default function SinglePostImages({ expand, setExpand}) {
-  const { post: { images } } = useSelector(state => state.Post);
+export default function SinglePostImages() {
+  const { post: { images, expand } } = useSelector(state => state.Post);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showPrevBtn, setShowPrevBtn] = useState(false);
   const [showNextBtn, setShowNextBtn] = useState(true);
@@ -183,7 +184,7 @@ export default function SinglePostImages({ expand, setExpand}) {
         }
         <BtnGroup>
           <Button><GrClose className='close-btn' onClick={ handleClose }/></Button>
-          { images.length > 0 && <Button onClick={() => setExpand(!expand)}> { expand ? <AiOutlineShrink className='close-btn' title='Exit Full-Screen'/> : <AiOutlineExpandAlt className='close-btn' title='Set Full-Screen'/> }</Button> }
+          { images.length > 0 && <Button onClick={() => dispatch(setExpandThePost(!expand))}> { expand ? <AiOutlineShrink className='close-btn' title='Exit Full-Screen'/> : <AiOutlineExpandAlt className='close-btn' title='Set Full-Screen'/> }</Button> }
           {
             expand && <StyledLink to='/dashboard/home' onClick={handleClick}><SiYourtraveldottv className='close-btn' title='Back Home'/></StyledLink>
           }

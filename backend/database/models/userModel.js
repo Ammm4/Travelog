@@ -44,10 +44,10 @@ const userSchema = new mongoose.Schema({
       required: true
     }
   },
-  city: { type:  String, default: "Add the City you Live" },
-  about: { type:  String, default: "Add Something about Yourself" },
-  hobbies: { type:  String, default: "Add Your Hobbies" },
-  country: { type:  String, default: "Add the Country You Live" },
+  city: { type:  String, default: '' },
+  about: { type:  String, default: '' },
+  hobbies: { type:  String, default: '' },
+  country: { type:  String, default: '' },
   resetPasswordToken: String,
   resetPasswordExpire: Date
 }, { timestamps: true });

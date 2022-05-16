@@ -1,7 +1,10 @@
 import React from 'react';
 import styled from 'styled-components';
-import { commonLabel, commonInput } from './PostForm';
-import { InfoHeader } from './GlobalComponents/StyledComponents/Headings';
+import { useSelector, useDispatch } from 'react-redux';
+import { commonLabel, commonInput } from '../PostForm';
+import { InfoHeader } from '../GlobalComponents/StyledComponents/Headings';
+import { TextArea, InputLabel, InputElement} from '../GlobalComponents/StyledComponents/Inputs';
+import { editUserInfo } from '../../../../redux/globals/globalActions';
 
 const Container = styled.div`
  padding: 25px 10px;
@@ -12,91 +15,78 @@ export const Form = styled.form`
   padding: 10px;
   width: 100%;
 }
-input {
-  ${ commonInput }
-}
-label {
-  ${ commonLabel }
-}
-textarea {
-  resize: none;
-  font-family: 'Roboto', sans-serif;
-  height: 150px;
-  ${ commonInput }
-}
-textarea:focus {
-  border: 1px solid #021b41;
-  border-left: 5px solid #021b41;
-}
 `
-export default function EditForm(props) {
-  const { infos, setInfos, saveButton, setSave } = props;
+
+export default function EditForm() {
+  const { Globals: { userInfo: { username, email, about, hobbies, city, country }} } = useSelector(state => state)
+  const dispatch = useDispatch();
   const handleChange = (e) => {
-    if(!saveButton) setSave(true);
-    setInfos({...infos, [e.target.name] : e.target.value})
+    dispatch(editUserInfo(e.target.name, e.target.value ))
   }
   return (
     <Container>
       <InfoHeader>Infos</InfoHeader>
       <Form>
         <div className="form-group">
-          <label htmlFor="username">Username</label>
+          <InputLabel htmlFor="username">Username</InputLabel>
           <input 
               id="username" 
               name="username" 
               type="text"
-              value={ infos.username }
+              value={ username }
               onChange = {(e) => handleChange(e) }
-              placeholder="Enter Username Please"/>
+              placeholder="Add Username Please"/>
 
         </div>
         <div className="form-group">
           <label htmlFor="email">Email</label>
-            <input 
+            <InputElement 
               id="email" 
               name="email" 
               type="email"
-              value={ infos.email }
+              value={ email }
               onChange = {(e) => handleChange(e) }
-              placeholder="Enter Email Please!"/>
+              placeholder="Add Email Please!"/>
         </div>
         <div className="form-group">
-          <label htmlFor="about">About</label>
-            <textarea 
+          <InputLabel htmlFor="about">About</InputLabel>
+            <TextArea 
               id="about"
               name="about"
-              value={ infos.about }
+              value={ about }
               onChange = {(e) => handleChange(e) }
+              placeholder = { !about && 'Add Something About You'}
             />
         </div>
         <div className="form-group">
-          <label htmlFor="hobbies">Hobbies</label>
-            <textarea 
+          <InputLabel htmlFor="hobbies">Hobbies</InputLabel>
+            <TextArea 
               id="hobbies"
               name="hobbies"
-              value={ infos.hobbies }
+              value={ hobbies }
               onChange = {(e) => handleChange(e) }
+              placeholder={ !hobbies && 'Add Your Hobbies'}
             />
         </div>
          <div className="form-group">
           <label htmlFor="city">City</label>
-            <input 
+            <InputElement 
               id="city" 
               name="city" 
               type="city"
-              value={ infos.city }
+              value={ city }
               onChange = {(e) => handleChange(e) }
-              placeholder="Enter City Please!"/>
+              placeholder={ !city && 'Add the city where you live'}/>
         </div>
          <div className="form-group">
-          <label htmlFor="email">Country</label>
-            <input 
+          <InputLabel htmlFor="country">Country</InputLabel>
+            <InputElement 
               id="country" 
               name="country" 
               type="country"
-              value={ infos.country }
+              value={ country }
               onChange = {(e) => handleChange(e) }
-              placeholder="Enter Country Please!"/>
+              placeholder={ !country && 'Add the country where you live'}/>
         </div>
       </Form>
     </Container>

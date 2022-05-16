@@ -1,8 +1,11 @@
 import React from 'react';
 import styled,{ css } from 'styled-components';
+import { useSelector, useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { FaUserCog } from "react-icons/fa";
-import { CommonButtonTheme } from './GlobalComponents/StyledComponents/Buttons'
+import { CommonButtonTheme } from './GlobalComponents/StyledComponents/Buttons';
+import { setShowModal, setShowSettings } from '../../../redux/globals/globalActions';
+
 
 export const sharedBtnCss = css `
   ${ CommonButtonTheme }
@@ -46,18 +49,23 @@ const SettingBtnGroup = styled.div`
     ${sharedBtnCss}
   }
 `
-export default function ProfileSettings({ setShowSettings, showSettings, match, handleClick}) {
+export default function ProfileSettings() {
+  const { Globals: { profilePageData: { showSettings} } } = useSelector(state => state);
+  const dispatch = useDispatch();
+  const handleClick = () => {
+    dispatch(setShowModal({ modalType: 'forum', action: 'delete profile'}))
+  }
   return (
     <>
        <CogButton 
-         onClick={() => setShowSettings(!showSettings)}
+         onClick={() => dispatch(setShowSettings(!showSettings))}
          showSettings={showSettings}
          >
          <FaUserCog />
         </CogButton>
        <SettingBtnGroup showSettings={ showSettings }>
-         <EditLink to={`${ match.url }/edit`}> Edit Profile</EditLink>
-         <EditLink to={`${ match.url }/change_password`}> Reset Password</EditLink>
+         <EditLink to={`/dashboard/profile/edit`}> Edit Profile</EditLink>
+         <EditLink to={`/dashboard/profile/change_password`}> Reset Password</EditLink>
          <button onClick={ handleClick }> Delete Profile</button>
        </SettingBtnGroup>
     </>

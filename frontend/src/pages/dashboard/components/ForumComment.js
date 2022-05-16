@@ -89,7 +89,7 @@ export default function ForumComment({ comment }) {
           { 
            isEdit &&
            <PostInteractions>
-              <InteractionButton onClick={ () => dispatch(handleUpdate) }>
+              <InteractionButton onClick={ handleUpdate }>
                 <MdDone />
               </InteractionButton>
               <InteractionButton onClick={ handleCancel }>
@@ -100,7 +100,7 @@ export default function ForumComment({ comment }) {
           { isDelete &&
            <PostInteractions>
              <p>Confirm Delete ?</p>
-            <InteractionButton onClick={ () => dispatch(handleDelete) }>
+            <InteractionButton onClick={ handleDelete }>
               <MdDone />
             </InteractionButton>
             <InteractionButton onClick={ handleCancel }>

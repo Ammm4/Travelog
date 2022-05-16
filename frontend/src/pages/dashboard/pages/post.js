@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import {  useParams } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
+import { useReduxSelector, useReduxDispatch } from '../../../utils';
 import styled from 'styled-components';
 import PostDelete from '../components/PostDelete';
 import { getPost } from '../../../redux/posts/postActions';
@@ -8,7 +8,7 @@ import { getPost } from '../../../redux/posts/postActions';
 import SinglePost from '../components/SinglePost';
 import SinglePostImages from '../components/SinglePostImages';
 import Loading from '../components/Loading';
-import { setLoadingMessage } from '../../../redux/globals/globalActions';
+import { setPageInitialState, setLoadingMessage } from '../../../redux/globals/globalActions';
 
 const SinglePostContainer = styled.div`
   width: 100%;
@@ -31,11 +31,11 @@ const ImageGridWrapper = styled.div`
 `
 
 export default function Singlepost() {
-  const [ expand, setExpand ] = useState(false);
   const { post_id } = useParams();
-  const { Post: { loading, post }, User: { user : { userId }}} = useSelector(state => state);
-  const dispatch = useDispatch();
+  const { Post: { loading, post }, User: { user : { userId }}} = useReduxSelector();
+  const dispatch = useReduxDispatch();
   useEffect(() => {
+    dispatch(setPageInitialState(null,null))
     dispatch(getPost(post_id, userId));
   }, [post_id, dispatch, userId])
   
@@ -51,9 +51,9 @@ export default function Singlepost() {
   }
   
   return (
-    <SinglePostContainer expand={ expand }>
+    <SinglePostContainer expand={ post.expand }>
       <ImageGridWrapper>
-        <SinglePostImages expand={ expand } setExpand={ setExpand }/>
+        <SinglePostImages />
       </ImageGridWrapper>
       <SinglePost/>
     </SinglePostContainer>

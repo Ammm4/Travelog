@@ -71,8 +71,8 @@ import {
   DELETE_REPLY_ERROR,
   CLEAR_POST_ERRORS,
   
-  SHOW_THE_COMMENTS
-
+  SHOW_THE_COMMENTS,
+  EXPAND_THE_POST
 } from "./postTypes";
 
 import axios from 'axios';
@@ -414,7 +414,7 @@ export const getPost = ( postId, userId ) => {
      try{
        const { data } = await axios.get(`/api/v1/posts/${ postId }?user=${ userId }`);
 
-       data.post = { ...data.post, showComments: true, singlePost: true };
+       data.post = { ...data.post, showComments: true, singlePost: true, expand: false };
        dispatch(getPostSuccess(data))
      } catch(error){
        dispatch(getPostError(error.response.data.error || error.message))
@@ -531,7 +531,11 @@ export const setShowTheComments = (show) => {
     }
   }
 
-
+export const setExpandThePost = (value) => {
+    return (dispatch) => {
+      dispatch({ type: EXPAND_THE_POST, payload: value })
+    }
+  }
 
 
 //########################################### REPLY ##################################### 

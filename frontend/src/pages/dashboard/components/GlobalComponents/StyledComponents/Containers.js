@@ -23,6 +23,14 @@ export const sharedDivCss = css`
   background-color: #fff;
   box-shadow: 2px 2px 4px rgba(0,0,0,0.5);
 `
+export const commonWrapperCss = css`
+  margin: 5rem auto 2rem auto;
+  border-radius: 6px;
+  padding: 20px;
+  width: 100%;
+  max-width: 800px;
+  background-color: #fff; 
+`
 export const UserAvatar = styled.div`
    position: absolute;
    top: 55%; left:50%;
@@ -88,18 +96,20 @@ export const UserInfo = styled.div`
   }
 `
 export const ProfileContainer = styled.main`
-  padding-top: 80px;
+  margin-top: 5.65rem;
+  padding: 0 1.4rem;
+ @media only screen and (max-width: 800px) {
+    padding: 0 0.75rem;
+  }
 `
 export const Wrapper = styled.div`
-  margin: 1rem auto;
   width: 100%;
-  max-width: 600px;
 `
 export const PostForumWrapper = styled.div`
   width: 100%;
-  height: 100%;
+  max-width: 615px;
   border-radius: 8px;
-  margin: ${props => props.singlePost ? '0' : '0 0 2rem 0' };
+  margin: ${props => props.singlePost ? '0' : '0 auto 2rem auto' };
   padding: ${props => props.singlePost ? '4rem 0 0 0' : '12px' };
   background-color: #fff;
   box-shadow:${props => props.singlePost ? 'none' : '2px 2px 4px rgba(0,0,0,0.5)' };
@@ -119,6 +129,7 @@ export const StyledParagraph = styled.p`
   line-height: 1.3333;
   margin-bottom: 0.5rem;
 `
+
 export const PostComments = styled.div`
   padding: 8px;
   margin-right: 5px;
@@ -146,4 +157,57 @@ export const PostContainer = styled.article`
      box-shadow: none;
   } 
   
+`
+export const FormGroup = styled.div`
+   margin: 1.5rem auto 2rem auto;
+   width: 100%;
+`
+export const FormGroupInput = styled.div`
+  margin: 2.25rem 0;
+  p {
+      font-size: 0.95rem;
+      margin: 0.85rem auto;
+      font-style: italic; 
+    }
+`
+export const InfoGroup = styled.div`
+`
+export const Infos = styled.div`
+ margin-bottom: 1.5rem;
+`
+export const ImagePreview = styled.div`
+  margin-top: 1rem;
+  display: grid;
+  grid-template-columns:1fr 1fr;
+  grid-column-gap: 2px;
+`
+export const ImagePreviewImg = styled.div`
+  position: relative; 
+  .remove-img {
+      position: absolute;
+      top: 5px; right: 5px;
+      font-size: 1.5rem;
+      color: #1e1e1e;
+      cursor: pointer;
+  }
+`
+export const InputWrapper = styled.div`
+  margin-bottom: 0.95rem;
+`
+export const PostFormWrapper = styled.form`
+  ${commonWrapperCss}
+`
+export const PostConfirmWrapper = styled.article`
+  ${commonWrapperCss}
+`
+
+export const ModalContainer = styled.div`
+ position: fixed;
+ top:0; left:0;
+ z-index: 5555;
+ width: 100%;
+ height: 100%;
+ overflow: auto;
+ background-color: rgba(0,0,0, 0.85);
+ 
 `

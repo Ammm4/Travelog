@@ -17,8 +17,8 @@ import ForumModal from './components/ForumModal';
 import Userprofile from './pages/userprofile';
 import { clearError } from '../../redux/posts/postActions';
 import { clearError as clearUserError } from '../../redux/users/userActions';
-import { setActivePage } from '../../redux/globals/globalActions';
 import ChangePassword from './components/ChangePassword';
+import ScrollToTop from './components/ScrollToTop';
 
 
 export default function Dashboard() {
@@ -30,16 +30,7 @@ export default function Dashboard() {
   const alert = useAlert();
   const dispatch = useDispatch();
   const match = useRouteMatch();
-  const location = useLocation();
   
-  useEffect( () => {
-    if( location.pathname.match(/\/dashboard\/home/) ) {
-      dispatch(setActivePage('home'))
-    } else if( location.pathname.match(/\/dashboard\/profile/) ) { 
-      dispatch(setActivePage('profile'));  
-    }
-  }, [location, dispatch]);
-
   useEffect(() => {
     if(showModal) {
       return document.body.style.overflow = 'hidden';
@@ -80,6 +71,7 @@ export default function Dashboard() {
   
   return (
     <>
+      <ScrollToTop />
       <Navbar />
       <Switch>   
         <Route exact path={`${match.path}/home`}>

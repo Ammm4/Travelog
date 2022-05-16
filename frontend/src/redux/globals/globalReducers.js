@@ -4,23 +4,41 @@ import {
   POST_DETAILS, 
   LOADING_MESSAGE, 
   SET_PAGE_INITIAL_STATE,
+  SET_MENU_BAR,
+  SET_CREATE_MENU,
   HOME_SHOW_POST,
   SET_HOME_POST_MARKER_ID,
   SET_HOME_FORUM_MARKER_ID,
   PROFILE_SHOW_POST,
+  SET_SHOW_SETTINGS,
   SET_PROFILE_POST_MARKER_ID,
   SET_PROFILE_FORUM_MARKER_ID,
   USER_SHOW_POST,
   SET_USER_POST_MARKER_ID,
   SET_USER_FORUM_MARKER_ID,
-  ACTIVE_PAGE,
+  
+  SET_SHOW_SCROLL_UP_BUTTON,
   RESET_GLOBALS,
   RESET_HOME_PAGE_DATA,
   RESET_PROFILE_PAGE_DATA,
-  RESET_USER_PAGE_DATA
+  RESET_USER_PAGE_DATA,
+  INITIALISE_POST_EDIT_INFO,
+  INITIALISE_USER_EDIT_INFO,
+  SET_SHOW_POST_FORM,
+  EDIT_USER_INFO,
+  EDIT_POST_INFO,
+  RESET_POST_INFO,
+  SET_CREATE_POST_ERRORS
 } from "./globalTypes";
 
 let initialState = {
+  navBar: {
+    activePage: null,
+    menuBar: false,
+    showAddBtn: false,
+    showCreateMenu: false,
+  },
+  showScrollUpBtn: false,
   showCreateComment: false,
   activePage: null,
   showModal: null,
@@ -32,49 +50,114 @@ let initialState = {
     showPost: true,
     post: {
       postMarkerId: null,
-      pageNumber: 1,
     },
     forum: {
      forumMarkerId: null,
-     pageNumber: 1
     }
   },
   profilePageData : {
     showPost: true,
+    showSettings: false,
     post: {
       postMarkerId: null,
-      pageNumber: 1,
     },
     forum: {
      forumMarkerId: null,
-     pageNumber: 1
     }
   },
   userPageData : {
     showPost: true,
     post: {
       postMarkerId: null,
-      pageNumber: 1,
     },
     forum: {
      forumMarkerId: null,
-     pageNumber: 1
     }
+  },
+  postInfo: {
+    images: [],
+    deletedImageIDs:[],
+    imgPreview: [],
+    destinationInfo: {
+      destination: '', 
+      country: '', 
+      summary: '',
+      ratings: 0
+    },
+    travellerInfo: {
+      travelType: '', 
+      time: ''
+    },
+    recommendations: {
+      numOfDays: '', 
+      daysSummary:'', 
+      budget: 0, 
+      budgetSummary:'', 
+      heritages:[''], 
+      places:[''], 
+      todos:[''], 
+      others:''
+    },
+    errors: null
+  },
+  userInfo: {
+    username: '',
+    email:'',
+    about:'',
+    hobbies: '',
+    city:'',
+    country: '',
+    avatarImg:'',
+    coverImg:''
   }
 }
 
 export const globalReducers = ( state = initialState, action) => {
   switch (action.type) {
-
-    case ACTIVE_PAGE: 
-      return {
-        ...state,
-        activePage: action.payload,
-      }
     case SHOW_CREATE_COMMENT:
       return {
         ...state,
         showCreateComment: action.payload
+      }
+    case SET_SHOW_SCROLL_UP_BUTTON:
+      return {
+        ...state,
+        showScrollUpBtn: action.payload
+      }
+    case INITIALISE_USER_EDIT_INFO:
+      return {
+        ...state,
+        userInfo: action.payload
+      }
+    case INITIALISE_POST_EDIT_INFO:
+      return {
+        ...state,
+        postInfo: action.payload
+      }
+    case SET_SHOW_POST_FORM:
+      return {
+        ...state,
+        showModal: {...state.showModal, showPostForm: action.payload}
+      }
+    case EDIT_USER_INFO:
+      return {
+        ...state,
+        userInfo: { ...state.userInfo, [action.payload.name]: action.payload.value }
+      }
+    case EDIT_POST_INFO:
+      return {
+        ...state,
+        postInfo: { ...state.postInfo, [action.payload.name]: action.payload.value }
+      }
+    case RESET_POST_INFO:
+      return {
+        ...state,
+        postInfo: action.payload
+      }
+    case SET_CREATE_POST_ERRORS:
+      return {
+        ...state,
+        postInfo: { ...state.postInfo, errors: action.payload }
       }
     case SHOW_MODAL:
       return {
@@ -94,9 +177,19 @@ export const globalReducers = ( state = initialState, action) => {
     case SET_PAGE_INITIAL_STATE: 
       return {
         ...state,
-        activePage: action.payload.page,
         postsUserType: action.payload.userType,
-        forumsUserType: action.payload.userType
+        forumsUserType: action.payload.userType,
+        navBar: {...state.navBar, showAddBtn: action.payload.showBtn, activePage: action.payload.page}
+      } 
+    case SET_MENU_BAR:
+      return {
+        ...state,
+        navBar: { ...state.navBar, menuBar: action.payload }
+      }
+    case SET_CREATE_MENU: 
+      return {
+        ...state,
+        navBar: { ...state.navBar, showCreateMenu: action.payload }
       }
     case HOME_SHOW_POST:
       return {
@@ -117,6 +210,11 @@ export const globalReducers = ( state = initialState, action) => {
       return {
         ...state,
         profilePageData: { ...state.profilePageData, showPost: action.payload }
+      }
+    case SET_SHOW_SETTINGS:
+      return {
+        ...state,
+        profilePageData: { ...state.profilePageData, showSettings: action.payload }
       }
     case SET_PROFILE_POST_MARKER_ID:
       return {

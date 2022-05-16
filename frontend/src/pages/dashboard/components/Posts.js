@@ -1,58 +1,55 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useReduxSelector, useReduxDispatch } from '../../../utils';
 import { useLocation } from 'react-router-dom';
-
-import { getPosts } from '../../../redux/posts/postActions';
 import Post from './Post';
 import { Wrapper } from './GlobalComponents/StyledComponents/Containers';
+import Share from './Share';
 import Loading1 from './Loading1';
 import Zeropost from '../components/zeropost';
-
+import { getPosts } from '../../../redux/posts/postActions';
 export default function Posts() {
-  const { Posts: { loading, posts }, User: { user : { userId } }} = useSelector(state => state);
-  const { postsUserType, homePageData, profilePageData, userPageData } = useSelector(state => state.Globals);
+  const { Posts: { loading, posts }, User: { user : { userId } }} = useReduxSelector();
+  const { Globals: { postsUserType, homePageData, profilePageData, userPageData }} = useReduxSelector();
   const location = useLocation();
-  const [postMarkerId] = useState(() => {
+  const dispatch = useReduxDispatch();
+  const postMarkerRef = useRef();
+  const [{ postMarkerId, showShare }] = useState(() => {
     if(location.pathname.match(/\/dashboard\/home/)) {
-      return homePageData.post.postMarkerId
+      return { postMarkerId: homePageData.post.postMarkerId, showShare: true }
     }
     if(location.pathname.match(/\/dashboard\/profile/)) {
-      return profilePageData.post.postMarkerId
+      return { postMarkerId: profilePageData.post.postMarkerId, showShare: true }
     }
     if(location.pathname.match(/\/dashboard\/user_profile/)) {
-      return userPageData.post.postMarkerId
+      return { postMarkerId: userPageData.post.postMarkerId, showShare: false }
     }
   })
   
-  const dispatch = useDispatch();
-  const postMarkerRef = useRef();
-
   useEffect(() => {
     if(location.pathname.match(/\/dashboard\/home/)) {
-      if(homePageData.post.postMarkerId || !postsUserType) return;
+      if(postMarkerId || !postsUserType) return;
       return dispatch(getPosts(postsUserType,userId))
     }
   if( location.pathname.match(/\/dashboard\/profile/)) {
-      if(profilePageData.post.postMarkerId || !postsUserType) return;
+      if(postMarkerId || !postsUserType) return;
       return dispatch(getPosts(postsUserType,userId))
     }
    if( location.pathname.match(/\/dashboard\/user_profile/)) {
-      if(userPageData.post.postMarkerId || !postsUserType) return;
+      if(postMarkerId || !postsUserType) return;
       return dispatch(getPosts(postsUserType,userId))
     } 
-  }, [dispatch, postsUserType, userId, location, homePageData, profilePageData, userPageData])
-  ;
-
+  }, [dispatch, postsUserType, userId, location, postMarkerId]);
+  
+  
   if(loading) {
     return <Loading1 msg='Posts Loading'/>
-  }
+  } 
   return (
     <Wrapper>
+      { showShare && <Share />}
       { 
-        posts 
-         &&
-        posts.length > 0 ? (posts.map(post => <Post key={post._id} postMarkerRef={ postMarkerId === post._id ? postMarkerRef : null} post={post}  singlePost={false}/>)) :  <Zeropost text="no posts yet" blogType="post"/>  
-      }  
+        posts.length > 0 ? (posts.map(post => <Post key={post._id} postMarkerRef={ postMarkerId === post._id ? postMarkerRef : null} post={post} />)) :  <Zeropost text="no posts yet" blogType="post"/>  
+      }
     </Wrapper>
   )
 }

@@ -9,6 +9,7 @@ import ForumComments from './ForumComments';
 import Loading from './Loading';
 import CreateComment from './CreateComment';
 import GoBackBtn from './GoBackBtn';
+import { setPageInitialState } from '../../../redux/globals/globalActions';
 
 export const ForumContainer = styled.div`
    width: 100%;
@@ -22,6 +23,7 @@ export default function SingleForum() {
   const dispatch = useDispatch();
   
   useEffect(() => {
+    dispatch(setPageInitialState(null,null))
     dispatch(getForum(forumId, userId));
   }, [forumId, dispatch, userId])
   
