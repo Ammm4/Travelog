@@ -1,14 +1,15 @@
 import React, {useState, useEffect} from 'react';
 import styled from 'styled-components';
 import { useHistory } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
+import { useReduxSelector, useReduxDispatch } from '../../../utils';
 import { Container } from './profileEdit';
-import { commonLabel, commonInput } from './PostForm';
-import { ErrorDisplay } from '../../signup/components/form';
+import ErrorDisplay from '../../../GlobalComponents/Components/Error';
 import GoBackBtn from './GoBackBtn';
 import { ProfileHeading } from './GlobalComponents/StyledComponents/Headings';
 import { InputElement, InputLabel } from './GlobalComponents/StyledComponents/Inputs';
+import { setResetPassword } from '../../../redux/globals/globalActions';
 import { changePassword } from '../../../redux/users/userActions';
+import { changePasswordInputs } from '../../../constants';
 import Loading from './Loading';
 import { UPDATE_USER_RESET } from '../../../redux/users/userTypes';
 
@@ -17,9 +18,9 @@ const Form = styled.form`
   max-width: 600px;
   margin: 2rem auto;
   .form-group {
-  margin: 1.5rem auto 0.5rem auto;
-  padding: 10px;
-  width: 100%;
+    margin: 1.5rem auto 0.5rem auto;
+    padding: 10px;
+    width: 100%;
   }
  
  input[type="submit"] {
@@ -35,21 +36,12 @@ const Form = styled.form`
    
 `
 export default function ChangePassword() {
-  const { userUpdating, success, user } = useSelector(state => state.User)
-  const [passwords, setPasswords] = useState({ oldPassword: '', newPassword: '', confirmPassword:''});
-  const [btnAble, setBtnAble] = useState(true);
-  const [errors, setErrors] = useState({ newPasswordErrors: null, confirmPasswordErrors: null });
+  const { 
+    User: { userUpdating, success, user },
+    Globals: { resetPassword, resetPassword: { oldPassword, newPassword, confirmPassword, btnAbled, errors }}
+   } = useReduxSelector()
   const history = useHistory();
-  const dispatch = useDispatch();
-  
-  useEffect(() => {
-   let inputErrorCheck = checkForErrors(passwords);
-   if(inputErrorCheck) {
-     setBtnAble(false)
-   } else {
-     setBtnAble(true)
-   } 
-  }, [passwords])
+  const dispatch = useReduxDispatch();
 
   useEffect(() => {
     if(success){
@@ -58,34 +50,31 @@ export default function ChangePassword() {
     }
   },[success, history, dispatch])
 
-  const handleChange = (e) => {
-    setPasswords(prev => ({ ...prev, [e.target.name] : e.target.value }));
+  const handleChange = (e) => { 
+    let disableBtn = false;
+    dispatch(setResetPassword(e.target.name, e.target.value))
     if(e.target.name === 'newPassword') {
-      if(e.target.value.length < 8) {
-        setErrors(prev => ({ ...prev, newPasswordErrors: 'Password must be at least 8 characters' }))
+      if(e.target.value.trim().length < 8) {
+        disableBtn = true;
+        let message = 'Password must be more than 7 characters';
+        dispatch(setResetPassword('errors', {...errors, newPassword: message }))
       } else {
-        setErrors(prev => ({ ...prev, newPasswordErrors: null }))
-      }
-      if(passwords.confirmPassword.length > 0) {
-        if(passwords.confirmPassword !== e.target.value) {
-          setErrors(prev => ({ ...prev, confirmPasswordErrors: "Passwords do not match" }))
-        } else {
-          setErrors(prev => ({ ...prev, confirmPasswordErrors: null }))
-        }
-      }
+        let message = e.target.value !== confirmPassword ? 'Passwords do not match' : '';
+        disableBtn = message !== '' || !oldPassword.trim();
+        dispatch(setResetPassword('errors', {...errors, newPassword: '', confirmPassword: message})) 
+      } 
+    } else if(e.target.name === 'confirmPassword') {
+       let message = e.target.value !== newPassword ? 'Passwords do not match' : '';
+       disableBtn = message !== '' || newPassword.trim().length < 8 || !oldPassword.trim();
+       dispatch(setResetPassword('errors', {...errors, confirmPassword: message }))
+    } else if(e.target.name === 'oldPassword'){
+       disableBtn = !e.target.value.trim() || newPassword.length < 8 || confirmPassword !== newPassword;
     }
-   if(e.target.name === "confirmPassword") {
-     if(e.target.value !== passwords.newPassword) {
-          setErrors(prev => ({ ...prev, confirmPasswordErrors: "Passwords do not match" }))
-        } else {
-          setErrors(prev => ({ ...prev, confirmPasswordErrors: null }))
-        }
-   }
+    dispatch(setResetPassword('btnAbled', disableBtn ))
   }
-
   const handleSubmit = (e) => {
     e.preventDefault();
-    dispatch(changePassword(user._id,{...passwords}))
+    dispatch(changePassword(user._id,{resetPassword}))
   }
 
   if(userUpdating) {
@@ -97,44 +86,29 @@ export default function ChangePassword() {
       <GoBackBtn />
       <Form>
         <ProfileHeading>Change Password</ProfileHeading>
-        <div className="form-group">
-          <InputLabel htmlFor="oldPassword"><b>Old Password</b></InputLabel>
-          <InputElement 
-              id="oldPassword" 
-              name="oldPassword" 
-              type="password"
-              value={ passwords.oldPassword }
-              onChange = {(e) => handleChange(e) }
-              placeholder="Enter Old Password"/>
-
-        </div>
-        <div className="form-group">
-          <InputLabel htmlFor="newPassword"><b>New Password</b></InputLabel>
-            <InputElement 
-              id="newPassword" 
-              name="newPassword" 
-              type="password"
-              value={ passwords.newPassword }
-              onChange = {(e) => handleChange(e) }
-              placeholder="Enter New Password"/>
-          { errors.newPasswordErrors && <ErrorDisplay>{ errors.newPasswordErrors }</ErrorDisplay> }
-        </div>
-        <div className="form-group">
-          <InputLabel htmlFor="confirmPassword"><b>Confirm New Password</b></InputLabel>
-            <InputElement 
-              id="confirmPassword" 
-              name="confirmPassword" 
-              type="password"
-              value={ passwords.confirmPassword }
-              onChange = {(e) => handleChange(e) }
-              placeholder="Enter New Password Again"/>
-            { errors.confirmPasswordErrors && <ErrorDisplay>{ errors.confirmPasswordErrors }</ErrorDisplay> }
-        </div>
+        {
+           changePasswordInputs.map(item => {
+             const {inputName, title, description } = item;
+             return (
+               <div className="form-group">
+                 <InputLabel htmlFor={inputName}><b>{ title }</b></InputLabel>
+                 <InputElement 
+                   id={inputName} 
+                   name={inputName} 
+                   type="password"
+                   value={ resetPassword[inputName] }
+                   onChange = {(e) => handleChange(e) }
+                   placeholder={ description }/>
+                   {errors && errors[inputName] && <ErrorDisplay>{errors[inputName]}</ErrorDisplay>}
+               </div>
+             )
+           })
+        }
         <div className="form-group">
           <InputElement 
             type="submit" 
             value="Change Password" 
-            disabled={btnAble}
+            disabled={btnAbled}
             onClick={(e) => handleSubmit(e)} />
         </div>
       </Form>   
@@ -142,18 +116,5 @@ export default function ChangePassword() {
   )
 }
 
-const checkForErrors = (passwords) => {
-  let result = true;
-  const { oldPassword, newPassword, confirmPassword } = passwords;
-  if(oldPassword.trim() === "") {
-    result = false
-  }
-  if(newPassword.length < 8) {
-    result = false
-  }
-  if(confirmPassword.trim() === "" || (newPassword !== confirmPassword)) {
-    result = false
-  }
-  return result;
-}
+
   

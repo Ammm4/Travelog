@@ -1,15 +1,17 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
-import Header from '../Header';
-import { FormContainer, Form, InputContainer } from '../login/components/form';
+import { FormContainer, InputContainer } from '../../GlobalComponents/StyledComponents/Container';
+import { Input, Label, Submit } from '../../GlobalComponents/StyledComponents/Inputs';
+import { H2 } from '../../GlobalComponents/StyledComponents/Headings';
+import { Form } from '../../GlobalComponents/StyledComponents/Form';
 import Loading from '../dashboard/components/Loading';
-import { ErrorDisplay } from '../signup/components/form';
+import ErrorDisplay from '../../GlobalComponents/Components/Error';
 
 const Container = styled.div`
 width: 100%;
 max-width: 400px;
-margin: auto;
+margin: 5rem auto;
 `
 
 export default function ForgotPassword() {
@@ -33,22 +35,21 @@ export default function ForgotPassword() {
   
   return <>
     { loading && <Loading msg="Sending Email"/> }
-    <Header />
     <Container>
     {
       resetMail ?
       <FormContainer>
-        <h2>Check Your Email</h2>
-      <p>An email has been sent to your email address for resetting your password</p>
-       </FormContainer>
+        <H2>Check Your Email</H2>
+        <p>An email has been sent to your email address for resetting your password</p>
+      </FormContainer>
        :
       <FormContainer>
-      <h2>Forgot Password</h2>
+      <H2>Forgot Password</H2>
       {error && <ErrorDisplay>{ error }</ErrorDisplay>}
       <Form onSubmit={ (e) => handleSubmit(e)}>
         <InputContainer>
-          <label htmlFor='email'>Enter Your Email</label>
-          <input 
+          <Label htmlFor='email'>Enter Your Email</Label>
+          <Input 
           type="email"
           name="email"
           id="email"
@@ -57,12 +58,10 @@ export default function ForgotPassword() {
           required
           />
         </InputContainer>
-        <input type='submit' value={'Send Me Password Reset Link'} />
+        <Submit type='submit' value={'Send Me Password Reset Link'} />
       </Form>
     </FormContainer>
-     
     }
-    
     </Container>
   </>
 }

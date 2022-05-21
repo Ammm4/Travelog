@@ -19,11 +19,15 @@ export const ForumContainer = styled.div`
 `
 export default function SingleForum() {
   const { forumId } = useParams();
-  const { Forum : { loading, forum } , User : { user: { userId } }, Globals: { showCreateComment }} = useSelector(state => state);
+  const { 
+    Forum : { loading, forum } , 
+    User : { user: { userId } }, 
+    Globals: { showCreateComment }
+  } = useSelector(state => state);
   const dispatch = useDispatch();
   
   useEffect(() => {
-    dispatch(setPageInitialState(null,null))
+    dispatch(setPageInitialState(null,null,null,null))
     dispatch(getForum(forumId, userId));
   }, [forumId, dispatch, userId])
   

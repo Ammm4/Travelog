@@ -42,8 +42,6 @@ function SinglePost() {
     setReplyInfo({...replyInfo, replyTo: null, commentId: null })
   }
 
-
-  
   return (
        <PostContainer>
           <div className="post_top_part">

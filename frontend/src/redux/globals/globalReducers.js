@@ -1,34 +1,27 @@
 import { 
   SHOW_CREATE_COMMENT, 
   SHOW_MODAL, 
-  POST_DETAILS, 
   LOADING_MESSAGE, 
   SET_PAGE_INITIAL_STATE,
+  SET_PAGE_DATA_SHOW_POST,
+  SET_PAGE_DATA_SHOW_SETTINGS,
+  SET_PAGE_DATA_POST_MARKER_ID,
+  SET_PAGE_DATA_FORUM_MARKER_ID,
+  SET_SIGN_UP_DATA,
+  RESET_SIGN_UP_DATA,
+  SET_LOGIN_DATA,
+  RESET_LOGIN_DATA,
+  SET_RESET_PASSWORD,
   SET_MENU_BAR,
   SET_CREATE_MENU,
-  HOME_SHOW_POST,
-  SET_HOME_POST_MARKER_ID,
-  SET_HOME_FORUM_MARKER_ID,
-  PROFILE_SHOW_POST,
-  SET_SHOW_SETTINGS,
-  SET_PROFILE_POST_MARKER_ID,
-  SET_PROFILE_FORUM_MARKER_ID,
-  USER_SHOW_POST,
-  SET_USER_POST_MARKER_ID,
-  SET_USER_FORUM_MARKER_ID,
-  
   SET_SHOW_SCROLL_UP_BUTTON,
   RESET_GLOBALS,
-  RESET_HOME_PAGE_DATA,
-  RESET_PROFILE_PAGE_DATA,
-  RESET_USER_PAGE_DATA,
   INITIALISE_POST_EDIT_INFO,
   INITIALISE_USER_EDIT_INFO,
   SET_SHOW_POST_FORM,
   EDIT_USER_INFO,
   EDIT_POST_INFO,
   RESET_POST_INFO,
-  SET_CREATE_POST_ERRORS
 } from "./globalTypes";
 
 let initialState = {
@@ -38,41 +31,38 @@ let initialState = {
     showAddBtn: false,
     showCreateMenu: false,
   },
-  showScrollUpBtn: false,
-  showCreateComment: false,
-  activePage: null,
-  showModal: null,
-  postDetails: null,
-  loadingMsg:'',
-  postsUserType: null,
-  forumsUserType:null,
-  homePageData : {
-    showPost: true,
-    post: {
-      postMarkerId: null,
-    },
-    forum: {
-     forumMarkerId: null,
+  signUpData : {
+    username:'', 
+    email:'', 
+    password:'', 
+    confirmpassword:'',
+    errors:''
+  },
+  loginData : {
+    email: '',
+    password: '',
+    errors: ''
+  },
+  resetPassword: {
+    btnAbled: true,
+    oldPassword: '',
+    newPassword: '',
+    confirmPassword: '',
+    errors: {
+      oldPassword: '',
+      newPassword: '',
+      confirmPassword: ''
     }
   },
-  profilePageData : {
+  pageData: {
     showPost: true,
     showSettings: false,
-    post: {
-      postMarkerId: null,
-    },
-    forum: {
-     forumMarkerId: null,
-    }
-  },
-  userPageData : {
-    showPost: true,
-    post: {
-      postMarkerId: null,
-    },
-    forum: {
-     forumMarkerId: null,
-    }
+    pageType: null,
+    showCreate: null,
+    postsUserType: null,
+    forumsUserType:null,
+    postMarkerId: null,
+    forumMarkerId: null
   },
   postInfo: {
     images: [],
@@ -85,11 +75,11 @@ let initialState = {
       ratings: 0
     },
     travellerInfo: {
-      travelType: '', 
-      time: ''
+      travelType: 'Select Type', 
+      time: 'Select Time'
     },
     recommendations: {
-      numOfDays: '', 
+      numOfDays: 'Select Time to Spend', 
       daysSummary:'', 
       budget: 0, 
       budgetSummary:'', 
@@ -109,7 +99,11 @@ let initialState = {
     country: '',
     avatarImg:'',
     coverImg:''
-  }
+  },
+  showScrollUpBtn: false,
+  showCreateComment: false,
+  showModal: null,
+  loadingMsg:'',
 }
 
 export const globalReducers = ( state = initialState, action) => {
@@ -154,111 +148,77 @@ export const globalReducers = ( state = initialState, action) => {
         ...state,
         postInfo: action.payload
       }
-    case SET_CREATE_POST_ERRORS:
-      return {
-        ...state,
-        postInfo: { ...state.postInfo, errors: action.payload }
-      }
     case SHOW_MODAL:
       return {
         ...state,
         showModal: action.payload
-      }
-    case POST_DETAILS:
-      return {
-        ...state,
-        postDetails: action.payload
       }
     case LOADING_MESSAGE: 
       return {
         ...state,
         loadingMsg: action.payload
       }
-    case SET_PAGE_INITIAL_STATE: 
+     case SET_PAGE_INITIAL_STATE: 
       return {
         ...state,
-        postsUserType: action.payload.userType,
-        forumsUserType: action.payload.userType,
-        navBar: {...state.navBar, showAddBtn: action.payload.showBtn, activePage: action.payload.page}
-      } 
-    case SET_MENU_BAR:
+        pageData: {...state.pageData, pageType: action.payload.page, showCreate: action.payload.showCreate, postsUserType: action.payload.userType, forumsUserType: action.payload.userType },
+        navBar: {...state.navBar, showAddBtn: action.payload.showBtn, activePage: action.payload.page } 
+      }
+     case SET_PAGE_DATA_SHOW_POST:
+       return {
+         ...state,
+         pageData: { ...state.pageData, showPost: action.payload }
+       }
+     case SET_PAGE_DATA_POST_MARKER_ID:
+       return {
+         ...state,
+         pageData:  { ...state.pageData, postMarkerId: action.payload }
+       }
+     case SET_PAGE_DATA_FORUM_MARKER_ID:
+       return {
+         ...state,
+         pageData:  { ...state.pageData, forumMarkerId: action.payload }
+       }
+     case SET_PAGE_DATA_SHOW_SETTINGS:
+       return {
+         ...state,
+         pageData:  { ...state.pageData, showSettings: action.payload }
+       }
+     case SET_MENU_BAR:
       return {
         ...state,
         navBar: { ...state.navBar, menuBar: action.payload }
       }
-    case SET_CREATE_MENU: 
+     case SET_CREATE_MENU: 
       return {
         ...state,
         navBar: { ...state.navBar, showCreateMenu: action.payload }
       }
-    case HOME_SHOW_POST:
+     case SET_SIGN_UP_DATA:
       return {
         ...state,
-        homePageData: { ...state.homePageData, showPost: action.payload }
+        signUpData: {...state.signUpData, [action.payload.name] : action.payload.value}
       }
-    case SET_HOME_POST_MARKER_ID:
-      return{
-        ...state,
-        homePageData: { ...state.homePageData, post: { ...state.homePageData.post, postMarkerId:action.payload} }
-      }
-    case SET_HOME_FORUM_MARKER_ID:
-      return{
-        ...state,
-        homePageData: { ...state.homePageData, forum: { ...state.homePageData.forum, forumMarkerId:action.payload} }
-      }
-    case PROFILE_SHOW_POST:
+     case RESET_SIGN_UP_DATA: 
+     return {
+       ...state,
+       signUpData: action.payload
+     }
+     case SET_LOGIN_DATA:
       return {
         ...state,
-        profilePageData: { ...state.profilePageData, showPost: action.payload }
+        loginData: {...state.loginData, [action.payload.name] : action.payload.value}
       }
-    case SET_SHOW_SETTINGS:
+     case RESET_LOGIN_DATA: 
+     return {
+       ...state,
+       loginData: action.payload
+     }
+     case SET_RESET_PASSWORD:
       return {
         ...state,
-        profilePageData: { ...state.profilePageData, showSettings: action.payload }
+        resetPassword: { ...state.resetPassword, [action.payload.name] : action.payload.value }
       }
-    case SET_PROFILE_POST_MARKER_ID:
-      return {
-        ...state,
-        profilePageData: { ...state.profilePageData, post: { ...state.profilePageData.post, postMarkerId: action.payload}}
-      }
-    case SET_PROFILE_FORUM_MARKER_ID:
-      return {
-        ...state,
-        profilePageData: { ...state.profilePageData, forum: { ...state.profilePageData.forum, forumMarkerId: action.payload}}
-      }
-    case USER_SHOW_POST:
-      return {
-        ...state,
-        userPageData: { ...state.userPageData, showPost: action.payload }
-      }
-    case SET_USER_POST_MARKER_ID:
-      return {
-        ...state,
-        userPageData: { ...state.userPageData, post: { ...state.userPageData.post, postMarkerId: action.payload}}
-      }
-    case SET_USER_FORUM_MARKER_ID:
-      return {
-        ...state,
-        userPageData: { ...state.userPageData, forum: { ...state.userPageData.forum, forumMarkerId: action.payload}}
-      }
-    case RESET_HOME_PAGE_DATA: {
-      return {
-        ...state,
-        homePageData: action.payload
-      }
-    }
-    case RESET_PROFILE_PAGE_DATA: {
-      return {
-        ...state,
-        profilePageData: action.payload
-      }
-    }
-    case RESET_USER_PAGE_DATA: {
-      return {
-        ...state,
-        userPageData: action.payload
-      }
-    }
     case RESET_GLOBALS: {
       return {
         ...state, ...action.payload
@@ -268,3 +228,7 @@ export const globalReducers = ( state = initialState, action) => {
     return state
   }
 }
+
+
+    
+    

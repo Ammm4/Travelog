@@ -1,48 +1,85 @@
 import { 
-  SHOW_CREATE_COMMENT, 
-  SHOW_MODAL, 
-  POST_DETAILS, 
-  LOADING_MESSAGE, 
-  SET_PAGE_INITIAL_STATE,
+  //=== Navbar ==== //
   SET_MENU_BAR,
   SET_CREATE_MENU,
-  HOME_SHOW_POST,
-  SET_HOME_POST_MARKER_ID,
-  SET_HOME_FORUM_MARKER_ID,
-  PROFILE_SHOW_POST,
-  SET_SHOW_SETTINGS,
-  SET_PROFILE_POST_MARKER_ID,
-  SET_PROFILE_FORUM_MARKER_ID,
-  USER_SHOW_POST,
-  SET_USER_POST_MARKER_ID,
-  SET_USER_FORUM_MARKER_ID,
-  
+  // ==== Modal === //
+  SHOW_MODAL,
+  SET_SHOW_POST_FORM,
+  //==== 
+  SHOW_CREATE_COMMENT, 
+  LOADING_MESSAGE,
+  // ==== Page ==== //
+  SET_PAGE_INITIAL_STATE,
+  SET_PAGE_DATA_SHOW_POST,
+  SET_PAGE_DATA_POST_MARKER_ID,
+  SET_PAGE_DATA_FORUM_MARKER_ID,
+  SET_PAGE_DATA_SHOW_SETTINGS,
+  // ==== Sign Up ==== //
+  SET_SIGN_UP_DATA,
+  RESET_SIGN_UP_DATA,
+  // ==== Login ==== //
+  SET_LOGIN_DATA,
+  RESET_LOGIN_DATA,
+  // ===== Post Form === //
   INITIALISE_POST_EDIT_INFO,
-  INITIALISE_USER_EDIT_INFO,
-  EDIT_USER_INFO,
   EDIT_POST_INFO,
   RESET_POST_INFO,
-  SET_CREATE_POST_ERRORS,
-  SET_SHOW_POST_FORM,
-  RESET_HOME_PAGE_DATA,
-  RESET_PROFILE_PAGE_DATA,
-  RESET_USER_PAGE_DATA, 
+  // ======== User Form ==== //
+  INITIALISE_USER_EDIT_INFO,
+  EDIT_USER_INFO,
+  // ======= Change Password ======= //
+  SET_RESET_PASSWORD,
+  // ==== UTILS ==========//
   RESET_GLOBALS,
   SET_SHOW_SCROLL_UP_BUTTON,
 } from "./globalTypes";
 
-const resetValue = {
-   showPost: true,
-   post: {
-      postMarkerId: null,
-      pageNumber: 1,
-    },
-    forum: {
-     forumMarkerId: null,
-     pageNumber: 1
-    }
-}
+
 const resetPostValue = {
+    images: [],
+    deletedImageIDs:[],
+    imgPreview: [],
+    destinationInfo: {
+      destination: '', 
+      country: '', 
+      summary: '',
+      ratings: 0
+    },
+    travellerInfo: {
+      travelType: 'Select Type', 
+      time: 'Select Time'
+    },
+    recommendations: {
+      numOfDays: 'Select Time to Spend', 
+      daysSummary:'', 
+      budget: 0, 
+      budgetSummary:'', 
+      heritages:[''], 
+      places:[''], 
+      todos:[''], 
+      others:''
+    },
+    errors: null
+  }
+
+const resetGlobalValues = {
+ navBar: {
+    activePage: null,
+    menuBar: false,
+    showAddBtn: false,
+    showCreateMenu: false,
+  },
+  pageData: {
+    showPost: true,
+    showSettings: false,
+    pageType: null,
+    showCreate: null,
+    postsUserType: null,
+    forumsUserType:null,
+    postMarkerId: null,
+    forumMarkerId: null
+  },
+  postInfo: {
     images: [],
     deletedImageIDs:[],
     imgPreview: [],
@@ -67,55 +104,23 @@ const resetPostValue = {
       others:''
     },
     errors: null
-  }
-
-const resetGlobalValues = {
-  navBar: {
-    activePage: null,
-    menuBar: false,
-    showAddBtn: false,
-    showCreateMenu: false,
   },
+  userInfo: {
+    username: '',
+    email:'',
+    about:'',
+    hobbies: '',
+    city:'',
+    country: '',
+    avatarImg:'',
+    coverImg:''
+  },
+  showScrollUpBtn: false,
   showCreateComment: false,
-  activePage: null,
   showModal: null,
-  postDetails: null,
   loadingMsg:'',
-  postsUserType:null,
-  forumsUserType:null,
-  homePageData : {
-    showPost: true,
-    post: {
-      postMarkerId: null,
-      pageNumber: 1,
-    },
-    forum: {
-     forumMarkerId: null,
-     pageNumber: 1
-    }
-  },
-  profilePageData : {
-    showPost: true,
-    showSettings: false,
-    post: {
-      postMarkerId: null,
-    },
-    forum: {
-     forumMarkerId: null,
-    }
-  },
-  userPageData : {
-    showPost: true,
-    post: {
-      postMarkerId: null,
-    },
-    forum: {
-     forumMarkerId: null,
-    }
   }
-}
-
-
+  
 export const setShowModal = ( modalType ) => {
   return (dispatch) => {
     dispatch( { type: SHOW_MODAL, payload: modalType })
@@ -127,12 +132,33 @@ export const setLoadingMessage = ( message ) => {
     dispatch( { type: LOADING_MESSAGE, payload: message })
   }
 }
-export const setPageInitialState = (pageType, userType, showBtn) => {
-   let initialState = { page: pageType, userType, showBtn }
+export const setPageInitialState = (pageType, userType, showBtn, showCreate) => {
+   let initialState = { page: pageType, userType, showBtn, showCreate }
    return (dispatch) => {
      dispatch({ type: SET_PAGE_INITIAL_STATE, payload: initialState})
    }
 }
+export const setPageDataShowPost = (value) => {
+   return (dispatch) => {
+     dispatch({ type: SET_PAGE_DATA_SHOW_POST, payload: value})
+   }
+}
+export const setPageDataShowSettings = (value) => {
+   return (dispatch) => {
+     dispatch({ type: SET_PAGE_DATA_SHOW_SETTINGS, payload: value})
+   }
+}
+export const setPageDataPostMarkerId = (value) => {
+   return (dispatch) => {
+     dispatch({ type: SET_PAGE_DATA_POST_MARKER_ID, payload: value})
+   }
+}
+export const setPageDataForumMarkerId = (value) => {
+   return (dispatch) => {
+     dispatch({ type: SET_PAGE_DATA_FORUM_MARKER_ID, payload: value})
+   }
+}
+
 export const initialiseuserInfo = (data) => {
   return (dispatch) => {
      dispatch({ type: INITIALISE_USER_EDIT_INFO , payload: data})
@@ -156,7 +182,7 @@ export const editUserInfo = (name, value) => {
 }
 export const editPostInfo = (name, value) => {
   return (dispatch) => {
-     dispatch({ type: EDIT_POST_INFO , payload: { name, value}})
+     dispatch({ type: EDIT_POST_INFO , payload: { name, value }})
    }
 }
 export const resetPostInfo = () => {
@@ -164,11 +190,7 @@ export const resetPostInfo = () => {
      dispatch({ type: RESET_POST_INFO , payload: resetPostValue })
    } 
 }
-export const setCreatePostErrors = (errors) => {
-  return (dispatch) => {
-     dispatch({ type: SET_CREATE_POST_ERRORS , payload: errors})
-   }
-}
+
 
 export const setShowScrollUpBtn = (value) => {
   return (dispatch) => {
@@ -192,6 +214,47 @@ export const setCreateMenu = (value) => {
     dispatch( { type: SET_CREATE_MENU, payload: value  })
   }
 }
+// ==================== Sign Up Page ================================//
+export const setSignUpData = ( name, value) => {
+  return (dispatch) => {
+    dispatch( { type: SET_SIGN_UP_DATA, payload: { name, value }  })
+  }
+}
+export const resetSignUpData = () => {
+  let resetValue = {
+    username:'', 
+    email:'', 
+    password:'', 
+    confirmpassword:'',
+    errors:''
+  }
+  return (dispatch) => {
+    dispatch( { type: RESET_SIGN_UP_DATA, payload: resetValue  })
+  }
+}
+
+// ==================== Login Page ================================//
+export const setLoginData = ( name, value) => {
+  return (dispatch) => {
+    dispatch( { type: SET_LOGIN_DATA, payload: { name, value }  })
+  }
+}
+export const resetLoginData = () => {
+  let resetValue = { 
+    email:'', 
+    password:'', 
+    errors:''
+  }
+  return (dispatch) => {
+    dispatch( { type: RESET_LOGIN_DATA, payload: resetValue  })
+  }
+}
+// ==================== Change Password Page ================================//
+export const setResetPassword = ( name, value) => {
+  return (dispatch) => {
+    dispatch( { type: SET_RESET_PASSWORD, payload: { name, value }  })
+  }
+}
 
 
 // ==================== Forum Page ============================//
@@ -200,87 +263,4 @@ export const showCreateCommentForm = ( toggle ) => {
     dispatch({ type: SHOW_CREATE_COMMENT, payload: toggle })
   }
 }
-// =================== POST PAGE ================================== //
-export const setPostDetails = ( details ) => {
-  return (dispatch) => {
-    dispatch( { type: POST_DETAILS, payload: details })
-  }
-}
-//============================== Home Page ==============================================//
-export const setShowPostHome = (bool) => {
-  return (dispatch) => {
-    dispatch( { type: HOME_SHOW_POST, payload: bool })
-  }
-}
 
-export const setHomePostMarkerId = (id) => {
-  return (dispatch) => {
-    dispatch( { type: SET_HOME_POST_MARKER_ID, payload: id })
-  }
-}
-
-export const setHomeForumMarkerId = (id) => {
-  return (dispatch) => {
-    dispatch( { type: SET_HOME_FORUM_MARKER_ID, payload: id })
-  }
-}
-
-export const resetHomePageData = () => {
-  return (dispatch) => {
-    dispatch({ type: RESET_HOME_PAGE_DATA, payload: resetValue})
-  }
-}
-//==============================   Profile Page =========================================//
-export const setShowPostProfile = (bool) => {
-  return (dispatch) => {
-    dispatch( { type: PROFILE_SHOW_POST, payload: bool })
-  }
-}
-
-export const setShowSettings = (value) => {
-  return (dispatch) => {
-    dispatch( { type: SET_SHOW_SETTINGS, payload: value })
-  }
-}
-
-export const setProfilePostMarkerId = (id) => {
-  return (dispatch) => {
-    dispatch( { type: SET_PROFILE_POST_MARKER_ID, payload: id })
-  }
-}
-
-export const setProfileForumMarkerId = (id) => {
-  return (dispatch) => {
-    dispatch( { type: SET_PROFILE_FORUM_MARKER_ID, payload: id })
-  }
-}
-
-export const resetProfilePageData = () => {
-  return (dispatch) => {
-    dispatch({ type: RESET_PROFILE_PAGE_DATA, payload: resetValue})
-  }
-}
-//============================= User Page ======================================//
-export const setShowPostUser = (bool) => {
-  return (dispatch) => {
-    dispatch( { type: USER_SHOW_POST, payload: bool })
-  }
-}
-
-export const setUserPostMarkerId = (id) => {
-  return (dispatch) => {
-    dispatch( { type: SET_USER_POST_MARKER_ID, payload: id })
-  }
-}
-
-export const setUserForumMarkerId = (id) => {
-  return (dispatch) => {
-    dispatch( { type: SET_USER_FORUM_MARKER_ID, payload: id })
-  }
-}
-
-export const resetUserPageData = () => {
-  return (dispatch) => {
-    dispatch({ type: RESET_USER_PAGE_DATA, payload: resetValue})
-  }
-}

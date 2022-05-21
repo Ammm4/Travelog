@@ -24,9 +24,6 @@ textarea {
   outline: none;
 }
 
-textarea:is(:focus, :valid) {
-  border-color: #888;
-}
 textarea::-webkit-scrollbar {
    display: none;
  }

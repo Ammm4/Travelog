@@ -35,7 +35,7 @@ export default function Singlepost() {
   const { Post: { loading, post }, User: { user : { userId }}} = useReduxSelector();
   const dispatch = useReduxDispatch();
   useEffect(() => {
-    dispatch(setPageInitialState(null,null))
+    dispatch(setPageInitialState(null,null,null))
     dispatch(getPost(post_id, userId));
   }, [post_id, dispatch, userId])
   

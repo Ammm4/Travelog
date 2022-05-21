@@ -12,23 +12,13 @@ import DeleteBox from './DeleteBox';
 
 export default function PostModal() {
   const { Globals: { showModal: { action, showPostForm } } } = useReduxSelector();
+  const { postEditing, success } = usePostForm();
   const modalRef = useRef();
-  const {
-      singlePostError,
-      postEditing,
-      success,
-      toggleForm,
-  } = usePostForm();
   const dispatch = useReduxDispatch();
 
   useEffect(() => {
-    if(singlePostError) {
-      dispatch(setShowModal(null));
-    }
-     if(success) {
-      dispatch(setShowModal(null));
-    }  
-  }, [ singlePostError, success, dispatch]); 
+     if(success) dispatch(setShowModal(null)); 
+  }, [ success, dispatch]); 
 
   useEffect(() => {
     modalRef.current.scrollIntoView(true);
@@ -48,7 +38,7 @@ export default function PostModal() {
       <span ref={ modalRef }></span>
       <CloseModalBtn  onClick={ handleClose }><MdClear /></CloseModalBtn>
         { postEditing && <Loading />} 
-        { action === 'delete post' ? <DeleteBox /> : showPostForm ? <PostForm /> : <PostConfirm toggleForm={ toggleForm } /> }
+        { action === 'delete post' ? <DeleteBox /> : showPostForm ? <PostForm /> : <PostConfirm /> }
     </ModalContainer>
   )
 }

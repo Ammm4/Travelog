@@ -1,16 +1,14 @@
 import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import { InfoHeader} from './GlobalComponents/StyledComponents/Headings';
 import { AiFillEdit } from "react-icons/ai";
 import { MdDelete } from "react-icons/md";
 import { IoClose} from "react-icons/io5";
 import { BiDotsHorizontalRounded } from "react-icons/bi";
-import { setShowModal } from '../../../redux/globals/globalActions';
+import { setPageDataPostMarkerId, setShowModal } from '../../../redux/globals/globalActions';
 import { PostForumLink } from './GlobalComponents/StyledComponents/Link';
 import { LinkAuthor } from './GlobalComponent';
-import { setHomePostMarkerId, setProfilePostMarkerId, setUserPostMarkerId } from '../../../redux/globals/globalActions';
 
 export const PostAuthor = styled.div`
   margin-bottom: 0.75rem;
@@ -65,7 +63,6 @@ export default function CommonPostHeader({ post }) {
   const [showSubmenu, setShowSubmenu] = useState(false);
   const { singlePost } = post;
   const { user } = useSelector(state => state.User);
-  const location = useLocation();
   const dispatch = useDispatch();
 
   const handleClick = ( btnType) => {
@@ -73,16 +70,9 @@ export default function CommonPostHeader({ post }) {
     if(btnType === 'edit') return dispatch(setShowModal({ modalType: 'post', action: 'edit post', post, singlePost, showPostForm: true }))
     if(btnType === 'delete') return dispatch(setShowModal({ modalType: 'post', action: 'delete post', post, singlePost }))
   }
+  
   const handleLink = (postId) => {
-    if( location.pathname.match(/\/dashboard\/home/)) {
-      return dispatch(setHomePostMarkerId(postId))
-    }
-    if( location.pathname.match(/\/dashboard\/profile/)) {
-      return dispatch(setProfilePostMarkerId(postId))
-    }
-    if( location.pathname.match(/\/dashboard\/user_profile/)) {
-      return dispatch(setUserPostMarkerId(postId))
-    }
+    dispatch(setPageDataPostMarkerId(postId))
   }
   return (
     <PostAuthor>

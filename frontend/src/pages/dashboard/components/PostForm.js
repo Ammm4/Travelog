@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { useReduxSelector, useReduxDispatch, checkFormErrors } from '../../../utils';
-import { setPostDetails, setShowPostForm, setCreatePostErrors } from '../../../redux/globals/globalActions';
+import { editPostInfo, setShowPostForm } from '../../../redux/globals/globalActions';
 import { PostFormWrapper } from './GlobalComponents/StyledComponents/Containers';
 import { PostTitle } from './GlobalComponents/StyledComponents/Headings';
 import { BtnAdd } from './GlobalComponents/StyledComponents/Buttons';
@@ -14,32 +14,29 @@ import RecommendationsInputForm from './postForm/recommendationsForm';
 
 
 export default function PostForm() {
-  const { Globals : { showModal: { action }, postInfo, postInfo: { errors } } } = useReduxSelector();
+  const { Globals : { showModal: { action }, postInfo } }= useReduxSelector();
+  const errorRef = useRef();
   const dispatch = useReduxDispatch();
-  
-  const handleDone = (e, btnName) => {
+  const handleDone = (e) => {
     e.preventDefault();
-    if(btnName === 'create') {
-      dispatch(setCreatePostErrors(null))
-      let err = checkFormErrors(postInfo);
+    let err = checkFormErrors(postInfo);
+    new Promise((resolve) => resolve(dispatch(editPostInfo('errors', null)))).then(() => {
       if(Object.keys(err).length !== 0) {
-        return dispatch(setCreatePostErrors(err));
+      return dispatch(editPostInfo('errors', err));
       }
-      dispatch(setShowPostForm(false));
-      return
-    }
-    if(btnName === 'review') return  dispatch(setShowPostForm(true));
+      return dispatch(setShowPostForm(false)); 
+    })
   }
   
   return (
     <PostFormWrapper>
       <PostTitle> { action } </PostTitle>
-      <DestinationInputForm />
+      <DestinationInputForm errorRef={errorRef}/>
       <PostImgInput />
-      <TravellerForm />
+      <TravellerForm errorRef={errorRef}/>
       <RecommendationsInputForm />
       <div className="form-group" style={{marginTop:'0'}}>
-        <BtnAdd onClick={(e) => handleDone(e, 'create')}>Done</BtnAdd>
+        <BtnAdd onClick={(e) => handleDone(e)}>Done</BtnAdd>
       </div>
     </PostFormWrapper>
   )

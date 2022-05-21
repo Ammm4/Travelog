@@ -5,7 +5,10 @@ import { getTheComments } from '../../../redux/posts/postActions';
 import Comment from './Comment';
 
 export default function SinglePostComments() {
-  const { User: { user: { userId } }, Post: { post: { _id, comments, singlePost }} } = useSelector(state => state);
+  const { 
+    User: { user: { userId } }, 
+    Post: { post: { _id, comments, singlePost }} 
+  } = useSelector(state => state);
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(getTheComments(_id, userId))

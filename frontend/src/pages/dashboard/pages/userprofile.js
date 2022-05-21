@@ -15,7 +15,9 @@ import { resetGlobals, setPageInitialState } from '../../../redux/globals/global
 
 export default function Userprofile() {
   const history = useHistory();
-  const { Globals : { userPageData: { showPost } }, SingleUser: { loading, singleUser: user, error } } = useReduxSelector();
+  const { 
+    Globals : { pageData: { showPost } }, SingleUser: { loading, singleUser: user, error } 
+  } = useReduxSelector();
   const { user_id } = useParams();
   const dispatch = useReduxDispatch();
 
@@ -27,10 +29,9 @@ export default function Userprofile() {
 
   useEffect(() => {
     function handlePopState() {
-      console.log('Hi');
       return dispatch(resetGlobals())
     }
-    dispatch(setPageInitialState(null,user_id));
+    dispatch(setPageInitialState(null,user_id, false, false));
     dispatch(getSingleUser(user_id));
     window.addEventListener('popstate',handlePopState);
     return () => {

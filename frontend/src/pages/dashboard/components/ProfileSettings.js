@@ -4,8 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { FaUserCog } from "react-icons/fa";
 import { CommonButtonTheme } from './GlobalComponents/StyledComponents/Buttons';
-import { setShowModal, setShowSettings } from '../../../redux/globals/globalActions';
-
+import { setShowModal, setPageDataShowSettings } from '../../../redux/globals/globalActions';
 
 export const sharedBtnCss = css `
   ${ CommonButtonTheme }
@@ -50,7 +49,7 @@ const SettingBtnGroup = styled.div`
   }
 `
 export default function ProfileSettings() {
-  const { Globals: { profilePageData: { showSettings} } } = useSelector(state => state);
+  const { Globals: { pageData: { showSettings } } } = useSelector(state => state);
   const dispatch = useDispatch();
   const handleClick = () => {
     dispatch(setShowModal({ modalType: 'forum', action: 'delete profile'}))
@@ -58,7 +57,7 @@ export default function ProfileSettings() {
   return (
     <>
        <CogButton 
-         onClick={() => dispatch(setShowSettings(!showSettings))}
+         onClick={() => dispatch(setPageDataShowSettings(!showSettings))}
          showSettings={showSettings}
          >
          <FaUserCog />

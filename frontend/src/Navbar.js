@@ -1,13 +1,16 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
-import { useReduxDispatch } from '../../../utils';
-import { demoLogin } from '../../../redux/users/userActions';
+import { useReduxDispatch } from './utils';
+import { demoLogin } from './redux/users/userActions';
 import { SiYourtraveldottv } from "react-icons/si";
 import { BiMenuAltLeft } from "react-icons/bi";
 import { MdClear } from "react-icons/md";
 import { Link } from 'react-router-dom';
 import { RiUserLine } from "react-icons/ri";
 
+const LogoLink = styled(Link)`
+  text-decoration: none;
+`
 const NavContainer = styled.div`
   position: fixed;
   top:0;
@@ -30,7 +33,7 @@ const Nav = styled.nav`
   width: 100%;
   display: flex;
   justify-content: space-between;
-
+  align-items: center;
 `
 const NavLogo = styled.div`
 display: flex;
@@ -132,10 +135,12 @@ export default function Navbar() {
   return (
     <NavContainer>
       <Nav>
-        <NavLogo>
-          <span><SiYourtraveldottv /></span>
-          <Logo>TravelLog</Logo>
-        </NavLogo>
+        <LogoLink to='/'>
+          <NavLogo>
+            <span><SiYourtraveldottv /></span>
+            <Logo>TravelLog</Logo>
+          </NavLogo>
+        </LogoLink>
         <MenuBar onClick={ () => setMenubar(!menuBar) }>
           { menuBar ?  <MdClear /> : <BiMenuAltLeft /> }
         </MenuBar>

@@ -78,6 +78,10 @@ const NavAdd = styled.button`
   ${CommonButtonTheme}
   margin-top: 0.5rem;
   font-size: 1.9rem;
+  color: ${ props => props.showCreateMenu ? '#2a78cd' : '#021b41'};
+  &:hover {
+    color: ${ props => props.showCreateMenu ? '#021b41' : '#2a78cd'};
+  }
 `
 const MainMenu = styled.div`
   display: flex;
@@ -225,12 +229,19 @@ export default function Navbar() {
   const handleProfile = () => {
     dispatch(setMenubar(false));
     if(location.pathname.match(/\/dashboard\/profile/)) return 
-    dispatch(resetGlobals());
-    
+    dispatch(resetGlobals());  
   }
   const handleLogOut = () => {
     dispatch(resetGlobals());
     dispatch(logout())
+  }
+  const handleCreate = (e, btnType) => {
+    e.preventDefault();
+    dispatch(setCreateMenu(false));
+    if(btnType === 'post') {
+      return dispatch(setShowModal({ modalType: 'post', action: 'create post', showPostForm: true }))
+    }
+    dispatch(setShowModal({ modalType: 'forum', action: 'create forum' }))
   }
   return (
     <NavContainer>
@@ -243,13 +254,13 @@ export default function Navbar() {
              { showAddBtn &&
                <CreateMenuContainer>
                 <NavAdd onClick={() => dispatch(setCreateMenu(!showCreateMenu))} showCreateMenu={showCreateMenu}>
-                  <CgAddR style={{ color: showCreateMenu ? '#2a78cd' : '#021b41'}}/>
+                  <CgAddR />
                 </NavAdd>
                 { showCreateMenu && 
                 <CreateMenu>
                   <h4>Create</h4>
-                  <button onClick={() => dispatch(setShowModal({ modalType: 'post', action: 'create post', showPostForm: true }))}>Post <MdGridView /></button>
-                  <button onClick={() => dispatch(setShowModal({ modalType: 'forum', action: 'create forum' }))}>Forum <MdOutlineForum /></button>
+                  <button onClick={(e) => handleCreate(e,'post')}>Post <MdGridView /></button>
+                  <button onClick={(e) => handleCreate(e, 'forum')}>Forum <MdOutlineForum /></button>
                 </CreateMenu> }
              </CreateMenuContainer>}
              <MenuBar onClick={ () => dispatch(setMenubar(!menuBar)) }>
@@ -283,29 +294,3 @@ export default function Navbar() {
     </NavContainer>
   )
 }
-/* <MenuBar onClick={ () => setMenubar(!menuBar) }>
-            { menuBar ?  <MdClear /> : <BiMenuAltLeft /> }
-          </MenuBar>
-          <NavMenu menuBar={ menuBar } active={active}>
-          <ul className="nav-list">
-            <li className="nav-item" onClick={handleClick}>
-                <NavLink to={`${match.url}/home`} active={active}>
-                  <AiFillHome />
-                </NavLink>   
-            </li>
-          </ul>
-          <div className="avatar" active={active}>
-            <AvatarLink to={`${match.url}/profile`} onClick={handleClick}>
-              <Img>
-                  <img src={ user.avatarURL } alt="avatar"/>
-              </Img>
-              <span className="username">{ user.name }</span>    
-            </AvatarLink>  
-          </div>
-          <Button onClick={ handleLogOut }>
-            <span>
-              <AiOutlineLogout style={{fontSize:'1.75rem'}}/>
-            </span>
-            LOG OUT
-          </Button>
-        </NavMenu> */

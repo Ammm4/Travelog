@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import Navbar from './components/Navbar';
-import { Switch, Route, useRouteMatch, Redirect, useLocation } from 'react-router';
+import { Switch, Route, useRouteMatch, Redirect } from 'react-router';
 import { useSelector, useDispatch } from 'react-redux';
 import { useAlert } from 'react-alert';
 import { NEW_POST_RESET } from '../../redux/posts/postTypes';
@@ -18,8 +18,6 @@ import Userprofile from './pages/userprofile';
 import { clearError } from '../../redux/posts/postActions';
 import { clearError as clearUserError } from '../../redux/users/userActions';
 import ChangePassword from './components/ChangePassword';
-import ScrollToTop from './components/ScrollToTop';
-
 
 export default function Dashboard() {
   const { user, success: userSuccess, error: userError } = useSelector(state => state.User);
@@ -65,13 +63,8 @@ export default function Dashboard() {
     }
   }, [alert, dispatch, success, userSuccess, error, userError, singleUserError, singlePostError])
   
-  if(!user) {
-    return <Redirect to ="/login" />
-  }
-  
   return (
     <>
-      <ScrollToTop />
       <Navbar />
       <Switch>   
         <Route exact path={`${match.path}/home`}>
@@ -98,7 +91,7 @@ export default function Dashboard() {
         <Route exact path="/dashboard"> 
           <Redirect to={`${match.path}/home`} />
         </Route>
-        <Route exact path='/dashboard/*'> 
+        <Route path='/dashboard/*'> 
           <div>Page Not Found</div>
         </Route>
       </Switch>

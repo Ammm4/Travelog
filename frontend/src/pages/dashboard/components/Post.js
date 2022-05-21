@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import styled,{ css } from 'styled-components';
-import { useSelector, useDispatch } from 'react-redux';
+import { useReduxDispatch } from '../../../utils';
 import Ratings from './Ratings';
 import Comments from './Comments';
 import { PostForumWrapper, StyledParagraph } from './GlobalComponents/StyledComponents/Containers';
@@ -11,7 +11,7 @@ import PostSkeleton from './PostSkeleton'
 import CommentsAndLikes from './CommentsAndLikes';
 import { FaRegComment, FaRegHeart, FaHeart } from "react-icons/fa";
 import { likePost, setShowComments, setShowTheComments } from '../../../redux/posts/postActions';
-import { setHomePostMarkerId, setProfilePostMarkerId, setUserPostMarkerId } from '../../../redux/globals/globalActions';
+import { setPageDataPostMarkerId } from '../../../redux/globals/globalActions';
 
 // ================== Components ======================//
 import PostDetails from './PostDetails';
@@ -207,23 +207,14 @@ export default function Post({ post, postMarkerRef }) {
   const { _id, isLiked, travellerInfo, destinationInfo, images, showComments, singlePost } = post;
   const [showMore, setShowMore] = useState(false);
   let summary = showMore ? destinationInfo.summary : destinationInfo.summary.slice(0, 150);
-  const dispatch = useDispatch();
-  const location = useLocation();
+  const dispatch = useReduxDispatch();
   useEffect(() => {
     if(!postMarkerRef) return;
     postMarkerRef.current.scrollIntoView({ behavior: 'auto', block: 'center' });
   },[postMarkerRef])
   
   const handleClick = (postId) => {
-    if( location.pathname.match(/\/dashboard\/home/)) {
-      return dispatch(setHomePostMarkerId(postId))
-    }
-    if( location.pathname.match(/\/dashboard\/profile/)) {
-      return dispatch(setProfilePostMarkerId(postId))
-    }
-    if( location.pathname.match(/\/dashboard\/user_profile/)) {
-      return dispatch(setUserPostMarkerId(postId))
-    }
+    dispatch(setPageDataPostMarkerId(postId))
   }
   const handleLikes = () => {
 

@@ -11,7 +11,10 @@ const CommentsContainer = styled.div`
    margin: auto;
 `
 export default function ForumComments() {
-  const { Forum: { commentLoading, forum: { _id, comments } }, User: { user: { userId }} } = useSelector(state => state);
+  const { 
+    Forum: { commentLoading, forum: { _id, comments } }, 
+    User: { user: { userId }} 
+  } = useSelector(state => state);
   const dispatch = useDispatch();
 
   useEffect(() => {

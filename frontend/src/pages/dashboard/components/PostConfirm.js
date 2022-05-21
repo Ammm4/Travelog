@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { useReduxSelector, useReduxDispatch, infoRequiredToDisplay} from '../../../utils';
 import { addPost, editPost, editThePost } from '../../../redux/posts/postActions';
-import { setShowModal ,setLoadingMessage } from '../../../redux/globals/globalActions';
+import { setShowModal ,setLoadingMessage, setShowPostForm } from '../../../redux/globals/globalActions';
 import { PostConfirmWrapper } from './GlobalComponents/StyledComponents/Containers';
 import { BtnAdd } from './GlobalComponents/StyledComponents/Buttons';
 import { PostTitle } from './GlobalComponents/StyledComponents/Headings';
@@ -10,6 +10,7 @@ import DestinationInfo from './PostConfirm/destinationInfo';
 import TravellerInfo from './PostConfirm/travellerInfo';
 import Recommendations from './PostConfirm/recommendations';
 import Images from './PostConfirm/images';
+import { recommendationsFormArrays } from '../../../constants';
 
 
 //============== Images =============== //
@@ -24,22 +25,23 @@ const Button = styled(BtnAdd)`
     color:#ccc
   }
 `
-export default function PostConfirm({ toggleForm }) {
+export default function PostConfirm() {
   const { 
     Globals: { 
       showModal: { action, post, singlePost },
       postInfo: { 
-        images, imgPreview, deletedImageIDs, travellerInfo, destinationInfo, recommendations }} 
+        images, deletedImageIDs, travellerInfo, destinationInfo, recommendations }
+      } 
   } = useReduxSelector();
   const dispatch = useReduxDispatch();
   const submitType = action.split(' ')[0];
   const { displayRecommendations } = infoRequiredToDisplay(recommendations);
+  
   const handleSubmit = (e) => {
     e.preventDefault();
     const newRecommendations  = { ...recommendations } ;
-    let items = ['heritages','places','todos']
     //filtering Out Empty Array elements
-    items.forEach(item => {
+    recommendationsFormArrays.forEach(item => {
         let filteredData = newRecommendations[item].filter(item => (item !== '' && item.trim() !== ''));
           newRecommendations[item] = filteredData 
       })
@@ -73,7 +75,7 @@ export default function PostConfirm({ toggleForm }) {
         <TravellerInfo /> 
         { displayRecommendations && <Recommendations /> }
         <BtnGroup>
-          <Button onClick={(e) => toggleForm(e, 'review')}>Edit</Button>
+          <Button onClick={(e) => dispatch(setShowPostForm(true))}>Edit</Button>
           <Button onClick={(e) => handleSubmit(e)}>Submit</Button>
         </BtnGroup>
     </PostConfirmWrapper>

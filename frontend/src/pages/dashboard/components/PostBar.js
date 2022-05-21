@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { useLocation, Link } from 'react-router-dom';
+import React from 'react';
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
-import { resetGlobals, setShowPostHome, setShowPostProfile, setShowPostUser } from '../../../redux/globals/globalActions';
+import {  setPageDataShowPost } from '../../../redux/globals/globalActions';
 import { MdOutlineForum } from "react-icons/md";
 import { MdGridView } from "react-icons/md";
 
@@ -84,56 +84,28 @@ const Img = styled.img`
   border-radius: 50%;  
 `
 export default function PostBar() {
-  const { homePageData, profilePageData, userPageData } = useSelector(state => state.Globals);
+  const { pageData: { showPost, pageType }} = useSelector(state => state.Globals);
   const { User: { user: { avatarURL, name } }} = useSelector(state => state);
-  const location = useLocation();
   const dispatch = useDispatch();
-  const [{ barType, showPost }] = useState(() => {
-    if(location.pathname.match(/\/dashboard\/home/)) {
-      return { barType: 'home', showPost: homePageData.showPost }
-    }
-    if( location.pathname.match(/\/dashboard\/profile/)) {
-      return  { barType: 'profile', showPost: profilePageData.showPost }
-    }
-    if( location.pathname.match(/\/dashboard\/user_profile/)) {
-      return { barType: 'profile', showPost: userPageData.showPost }
-    } 
-  })
   const handleClickPosts = () => {
-    if(location.pathname.match(/\/dashboard\/home/)) {
-      return dispatch(setShowPostHome(true))
-    }
-    if( location.pathname.match(/\/dashboard\/profile/)) {
-      return dispatch(setShowPostProfile(true))
-    }
-    if( location.pathname.match(/\/dashboard\/user_profile/)) {
-      dispatch(setShowPostUser(true))
-    } 
+    dispatch(setPageDataShowPost(true))
   }
-   const handleClickForums = () => {
-    if(location.pathname.match(/\/dashboard\/home/)) {
-      return dispatch(setShowPostHome(false))
-    }
-    if( location.pathname.match(/\/dashboard\/profile/)) {
-      return dispatch(setShowPostProfile(false))
-    }
-    if( location.pathname.match(/\/dashboard\/user_profile/)) {
-      dispatch(setShowPostUser(false))
-    } 
+  const handleClickForums = () => {
+    dispatch(setPageDataShowPost(false))
   }
 
-  if(barType === 'home') {
+  if(pageType === 'home') {
     return (
     <Wrapper >
       <AvatarLink to={`/dashboard/profile`} >
         <Img src={ avatarURL } alt="avatar"/>
         <span className="username">{ name }</span>    
       </AvatarLink>  
-      <Container barType={barType}>
-        <Button  barType={barType} btnStyle={showPost} onClick={handleClickPosts} >
+      <Container barType={pageType}>
+        <Button  barType={pageType} btnStyle={showPost} onClick={handleClickPosts} >
           <MdGridView /> <span>Posts</span>
         </Button>
-        <Button  barType={barType} btnStyle={!showPost} onClick={handleClickForums} >
+        <Button  barType={pageType} btnStyle={!showPost} onClick={handleClickForums} >
           <MdOutlineForum /> <span>Forums</span>
         </Button>
       </Container>
@@ -142,11 +114,11 @@ export default function PostBar() {
   }
   return (
      <Wrapper >
-      <Container barType={barType}>
-        <Button barType={barType} btnStyle={showPost} onClick={handleClickPosts} >
+      <Container barType={pageType}>
+        <Button barType={pageType} btnStyle={showPost} onClick={handleClickPosts} >
           <MdGridView /> <span>Posts</span>
         </Button>
-        <Button barType={barType} btnStyle={!showPost} onClick={handleClickForums} >
+        <Button barType={pageType} btnStyle={!showPost} onClick={handleClickForums} >
           <MdOutlineForum /> <span>Forums</span>
         </Button>
       </Container>
@@ -154,3 +126,4 @@ export default function PostBar() {
   )
   
 }
+

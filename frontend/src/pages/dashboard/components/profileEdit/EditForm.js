@@ -1,10 +1,10 @@
 import React from 'react';
 import styled from 'styled-components';
-import { useSelector, useDispatch } from 'react-redux';
-import { commonLabel, commonInput } from '../PostForm';
+import { useReduxSelector, useReduxDispatch } from '../../../../utils'
 import { InfoHeader } from '../GlobalComponents/StyledComponents/Headings';
 import { TextArea, InputLabel, InputElement} from '../GlobalComponents/StyledComponents/Inputs';
 import { editUserInfo } from '../../../../redux/globals/globalActions';
+import { profileInputs, profileTextAreas } from '../../../../constants';
 
 const Container = styled.div`
  padding: 25px 10px;
@@ -18,8 +18,8 @@ export const Form = styled.form`
 `
 
 export default function EditForm() {
-  const { Globals: { userInfo: { username, email, about, hobbies, city, country }} } = useSelector(state => state)
-  const dispatch = useDispatch();
+  const { Globals: { userInfo } } = useReduxSelector()
+  const dispatch = useReduxDispatch();
   const handleChange = (e) => {
     dispatch(editUserInfo(e.target.name, e.target.value ))
   }
@@ -27,67 +27,36 @@ export default function EditForm() {
     <Container>
       <InfoHeader>Infos</InfoHeader>
       <Form>
-        <div className="form-group">
-          <InputLabel htmlFor="username">Username</InputLabel>
-          <input 
-              id="username" 
-              name="username" 
-              type="text"
-              value={ username }
-              onChange = {(e) => handleChange(e) }
-              placeholder="Add Username Please"/>
-
-        </div>
-        <div className="form-group">
-          <label htmlFor="email">Email</label>
-            <InputElement 
-              id="email" 
-              name="email" 
-              type="email"
-              value={ email }
-              onChange = {(e) => handleChange(e) }
-              placeholder="Add Email Please!"/>
-        </div>
-        <div className="form-group">
-          <InputLabel htmlFor="about">About</InputLabel>
-            <TextArea 
-              id="about"
-              name="about"
-              value={ about }
-              onChange = {(e) => handleChange(e) }
-              placeholder = { !about && 'Add Something About You'}
-            />
-        </div>
-        <div className="form-group">
-          <InputLabel htmlFor="hobbies">Hobbies</InputLabel>
-            <TextArea 
-              id="hobbies"
-              name="hobbies"
-              value={ hobbies }
-              onChange = {(e) => handleChange(e) }
-              placeholder={ !hobbies && 'Add Your Hobbies'}
-            />
-        </div>
-         <div className="form-group">
-          <label htmlFor="city">City</label>
-            <InputElement 
-              id="city" 
-              name="city" 
-              type="city"
-              value={ city }
-              onChange = {(e) => handleChange(e) }
-              placeholder={ !city && 'Add the city where you live'}/>
-        </div>
-         <div className="form-group">
-          <InputLabel htmlFor="country">Country</InputLabel>
-            <InputElement 
-              id="country" 
-              name="country" 
-              type="country"
-              value={ country }
-              onChange = {(e) => handleChange(e) }
-              placeholder={ !country && 'Add the country where you live'}/>
-        </div>
+        { profileInputs.map(item => {
+          const {name, inputType, description, title} = item;
+          return(
+            <div className="form-group" key ={name}>
+              <InputLabel htmlFor={name}>{title}</InputLabel>
+              <InputElement
+                id={name} 
+                name={name}  
+                type={inputType}
+                value={ userInfo[name] }
+                onChange = {(e) => handleChange(e) }
+                placeholder={description}/>
+            </div>
+          )
+        })}
+        { profileTextAreas.map(item => {
+          const {name, description, title} = item;
+          return(
+            <div className="form-group" key={name}>
+            <InputLabel htmlFor={name}>{title}</InputLabel>
+              <TextArea 
+                id={name}
+                name={name}
+                value={ userInfo[name] }
+                onChange = {(e) => handleChange(e) }
+                placeholder = { description }
+              />
+            </div>
+          )
+         })}
       </Form>
     </Container>
   )

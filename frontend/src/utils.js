@@ -1,4 +1,5 @@
 import { useSelector, useDispatch } from "react-redux";
+import validator from "validator";
 
 export const useReduxDispatch = () => useDispatch();
 
@@ -43,35 +44,90 @@ if (others.trim() !== '') {
 }
 return { requiredInfo, displayRecommendations }
 }
-  
+// ============== Post Form Errors ===================== //
 export const checkFormErrors = (data) => {
 const error = {};
- const { destinationInfo, travellerInfo } = data;
- if(destinationInfo.destination.trim() === "") {
-   error.destination = "Please enter the destination"
- } else if(destinationInfo.destination.trim().length > 20) {
-   error.destination = "Destination must be lesser than 20 characters"
- }
+ const { 
+   destinationInfo: { destination, country, summary, ratings }, 
+   travellerInfo: { travelType, time } 
+  } = data;
+ if(destination.trim() === "" || destination.trim().length > 20) {
+   error.errorMarker = 'destination';
+   let message = destination.trim() === '' ? 'Please enter the destination' : 'Destination must be lesser than 20 characters'
+   error.destination = message;
+ } 
  
- if(destinationInfo.country.trim() === "") {
-   error.country = "Please enter the country"
- } else if(destinationInfo.country.trim().length > 20) {
-   error.country = "Country must be lesser than 20 characters"
+ if(country.trim() === "" || country.trim().length > 20) {
+   if(!error.hasOwnProperty('errorMarker')) error.errorMarker = 'country';
+   let message = country.trim() === '' ? 'Please enter the country' : 'Country must be lesser than 20 characters';
+   error.country = message
  } 
 
- if(destinationInfo.summary.trim() === "") {
-   error.summary = "Please add a summary"
- } else if(destinationInfo.country.trim().length > 300) {
-   error.summary = "Summary must be lesser than 300 characters"
+ if(summary.trim() === "" || summary.trim().length > 300) {
+   if(!error.hasOwnProperty('errorMarker')) error.errorMarker = 'summary';
+   let message = summary.trim() === '' ? 'Please add a summary' : 'Summary must be lesser than 300 characters'
+   error.summary = message;
  } 
- if(destinationInfo.ratings <= 0) {
+ if(ratings <= 0) {
+   if(!error.hasOwnProperty('errorMarker')) error.errorMarker = 'ratings';
    error.ratings = "Please rate your travel"
  } 
- if(!travellerInfo.travelType) {
+ if(travelType === 'Select Type') {
+   if(!error.hasOwnProperty('errorMarker')) error.errorMarker = 'travelType';
    error.travelType ="Please add type of travel"
  }
- if(!travellerInfo.time) {
+ if(time === 'Select Time') {
+   if(!error.hasOwnProperty('errorMarker')) error.errorMarker = 'time';
    error.time ="Please add length of travel time"
  }
+ return error;
+}
+
+// ================= Login Errors =================== //
+export function checkLoginErrors(email,password) {
+   let errors = {};
+   if(!email && !password) {
+     errors.email = true;
+     errors.password = true;
+     errors.message = 'Enter your e-mail address and password';
+     return errors
+   }
+   if(!email) {
+     errors.email = true;
+     errors.message = 'Enter your e-mail address';
+     return errors
+   }
+    if(!password) {
+     errors.password = true;
+     errors.message = 'Enter your password';
+     return errors
+   }
+   return errors
+ }
+
+ // ==================== Sign Up Errors ==================== //
+ export const checkSignUpErrors = (data) => {
+ const error = {};
+ const { username, email, password, confirmpassword } = data;
+ if(username.trim() === '' || username.trim().length < 4 || username.trim().length > 30) {
+   error.errorMarker = 'username';
+   let message = username.trim() === "" ? 'Username must be provided!' : username.trim().length < 4 ? 'Username must be greater than 4 characters' : 'Username must be lesser than 12 characters';
+   error.username = message
+ } 
+ if(email === '' || !validator.isEmail(email)) {
+   if(!error.hasOwnProperty('errorMarker')) error.errorMarker = 'email';
+   let message = email === '' ? 'Please provide an email!' : 'Please provide a valid email!'
+   error.email = message
+ } 
+ if(password.trim() === '' || password.trim().length < 8 || password.trim().length > 30 ) {
+   if(!error.hasOwnProperty('errorMarker')) error.errorMarker = 'password';
+   let message = password.trim() === '' ? 'Password must be provided!' : password.trim().length < 8 ? 'Username must be greater than 8 characters!' : 'Username must be lesser than 30 characters!';
+   error.password = message
+ } 
+ if(confirmpassword === "" || confirmpassword !== password) {
+   if(!error.hasOwnProperty('errorMarker')) error.errorMarker = 'confirmPassword';
+   let message = confirmpassword === '' ? 'Please confirm your password!' : 'Passwords do not match!';
+   error.confirmpassword = message
+ } 
  return error;
 }

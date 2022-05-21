@@ -1,7 +1,8 @@
 import React, { useEffect, useRef } from 'react';
 import styled from 'styled-components';
+import { useReduxSelector, useReduxDispatch } from '../../../utils';
+import useProfile from './useProfile';
 import { useHistory } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
 // =================== Imported Components ============================//
 import { ProfileContainer, UserProfile } from './GlobalComponents/StyledComponents/Containers';
 import { ProfileHeading } from './GlobalComponents/StyledComponents/Headings';
@@ -24,11 +25,13 @@ const initialUserEditData = (user) => {
    return { username, email, about, city, country, hobbies, avatarImg, coverImg }
 }
 export default function ProfileEdit() {
-  const { SingleUser: { singleUser: user, userUpdating, success }, Globals: { userInfo } } = useSelector(state => state);
+  const { User: { user: { userId }}, SingleUser: { userUpdating, success }, Globals: { userInfo } } = useReduxSelector();
+  const { user } = useProfile(userId);
   const containerRef = useRef();
-  const dispatch = useDispatch();
+  const dispatch = useReduxDispatch();
   const history = useHistory();
   useEffect(() => {
+    if(Object.keys(user).length === 0) return
     dispatch(initialiseuserInfo(initialUserEditData(user)))
   },[dispatch, user])
 

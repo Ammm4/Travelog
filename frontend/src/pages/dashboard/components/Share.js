@@ -31,59 +31,17 @@ const ShareButton = styled.button`
 `
 
 export default function Share() {
-  const { User: { user } } = useReduxSelector();
-  const {Globals: { homePageData: { showPost }, profilePageData: { showPost: profileShowPost} }} = useReduxSelector();
-  const location = useLocation();
+  const { User: { user }, Globals: {  pageData: { showPost } } } = useReduxSelector();
   const dispatch = useReduxDispatch();
-  const[shareType] = useState(() => {
-    if(location.pathname.match(/\/dashboard\/home/)) {
-      return showPost
-    }
-    if(location.pathname.match(/\/dashboard\/profile/)) {
-      return profileShowPost
-    }
-  })
   
   const handleClick = () => {
-    if(shareType) return dispatch(setShowModal({ modalType: 'post', action: 'create post', showPostForm: true }));
+    if(showPost) return dispatch(setShowModal({ modalType: 'post', action: 'create post', showPostForm: true }));
     return dispatch(setShowModal({ modalType: 'forum', action: 'create forum' }));
   }
   return (
      <ShareButton onClick={handleClick}>
        <img src={user.avatarURL} alt="avatar"/>
-       <IoAddCircle style={{ fontSize:'2.2rem' }} /> { shareType ? 'Create Post' : 'Create Forum'} 
+       <IoAddCircle style={{ fontSize:'2.2rem' }} /> { showPost ? 'Create Post' : 'Create Forum'} 
      </ShareButton> 
   )
 }
-/*
-   <ShareContainer ref={btnRef}>
-       <ShareTitle >
-         <img src={user.avatarURL} alt="avatar"/>
-         <button><IoAddCircle style={{ fontSize:'2.2rem' }} /> { shareType ? 'Create Post' : 'Create Forum'} </button>
-       </ShareTitle>
-     </ShareContainer> 
-    <ShareContainer homepage={ homepage } ref={btnRef}>
-      <ShareTitle>
-        <img src={user.avatarURL} alt="avatar"/>
-         <p>Create Post </p>
-      </ShareTitle>
-      <BtnGroup>
-        <button title="Create a Post" onClick={() => dispatch(setShowModal({ modalType: 'post', action: 'create post' }))}>
-          <IoAddCircle style={{ fontSize:'2.2rem', color: '#021b41' }} />
-          <span>Post</span>
-        </button>
-        <Divider />
-        <button title="Start a Forum" onClick={() => dispatch(setShowModal({ modalType: 'forum', action: 'create forum' }))}>
-          <IoAddCircle style={{fontSize:'2.2rem', color: '#021b41'}}/>
-          <span>Forum</span>
-        </button>
-      </BtnGroup>  
-    </ShareContainer> 
-
-    <ShareContainer homepage={ homepage } ref={btnRef}>
-      <ShareTitle>
-        <img src={user.avatarURL} alt="avatar"/>
-         <p><IoAddCircle style={{ fontSize:'2.2rem', color: '#fff' }} /> Create Post</p>
-      </ShareTitle>
-    </ShareContainer>
-    */

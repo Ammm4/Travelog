@@ -19,10 +19,10 @@ const HomeContainer = styled.section`
 `
 
 export default function Home() {
-  const { Globals : { homePageData: { showPost }}} = useReduxSelector();
+  const { Globals : { pageData: { showPost }}} = useReduxSelector();
   const dispatch = useReduxDispatch();
   useEffect(() => {
-    dispatch(setPageInitialState('home', 'allUsers', true))
+    dispatch(setPageInitialState('home', 'allUsers', true, true))
   },[dispatch])
   return (
     <HomeContainer>

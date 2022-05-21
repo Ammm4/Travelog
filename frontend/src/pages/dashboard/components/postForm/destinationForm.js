@@ -1,15 +1,15 @@
 import React from 'react';
 import { useReduxSelector, useReduxDispatch } from '../../../../utils';
+import Asterisk from '../../../../GlobalComponents/Components/Asterisk';
 import { FormGroup, FormGroupInput } from '../GlobalComponents/StyledComponents/Containers';
 import { InputsGroupHeading } from '../GlobalComponents/StyledComponents/Headings';
-import ErrorDisplay from '../../../../globalComponents.js/components/error';
+import ErrorDisplay from '../../../../GlobalComponents/Components/Error';
 import { TextArea, InputLabel, InputElement } from '../GlobalComponents/StyledComponents/Inputs';
 import { editPostInfo } from '../../../../redux/globals/globalActions';
-import { CgAsterisk } from "react-icons/cg";
+import { destinationInputs } from '../../../../constants';
 import { Rating } from 'react-simple-star-rating';
 
-
-export default function DestinationInputForm() {
+export default function DestinationInputForm({ errorRef }) {
    const { Globals: { postInfo: { destinationInfo, errors }} } = useReduxSelector();
    const dispatch = useReduxDispatch();
    const handleDestinationInfo = (e) => {
@@ -19,43 +19,36 @@ export default function DestinationInputForm() {
   return (
     <FormGroup>
           <InputsGroupHeading>Destination Info: </InputsGroupHeading>
+          {destinationInputs.map(input => {
+            return (
+              <FormGroupInput key={input}>
+                <InputLabel htmlFor={input}>{input === 'destination' ? 'Name of Place' : input}<Asterisk/></InputLabel>
+                <InputElement 
+                  id={input}
+                  name={input}
+                  type="text"
+                  value = { destinationInfo[input] }
+                  onChange = {(e) => handleDestinationInfo(e) }
+                  placeholder={ input === 'destination' ? 'Barcelona, Venice, Porto...' : 'Italy, Greece, France...' }
+                  errors = { errors && errors[input]}
+                 />
+                { errors && errors[input] && <ErrorDisplay errorRef={ errors.errorMarker === input ? errorRef : null}>{ errors.destination }</ErrorDisplay> }
+              </FormGroupInput>
+            )
+          })}
           <FormGroupInput>
-            <InputLabel htmlFor="destination">Name of Place<CgAsterisk style={{color:'#007bff'}}/></InputLabel>
-            <InputElement 
-              id="destination" 
-              name="destination" 
-              type="text"
-              value = { destinationInfo.destination }
-              onChange = {(e) => handleDestinationInfo(e) }
-              placeholder="Barcelona, Venice, Porto..."
-              />
-            { errors && errors.destination && <ErrorDisplay>{ errors.destination }</ErrorDisplay> }
-          </FormGroupInput>
-          <FormGroupInput>
-            <InputLabel htmlFor="country">Country<CgAsterisk style={{color:'#007bff'}}/></InputLabel>
-            <InputElement 
-              id="country" 
-              name="country" 
-              type="text"
-              value = { destinationInfo.country }
-              onChange = {(e) => handleDestinationInfo(e) }
-              placeholder="Italy, Greece, France..."
-              required
-              />
-             { errors && errors.country && <ErrorDisplay>{ errors.country }</ErrorDisplay> }
-          </FormGroupInput>
-          <FormGroupInput>
-            <InputLabel htmlFor="summary">Summary<CgAsterisk style={{color:'#007bff'}}/></InputLabel>
+            <InputLabel htmlFor="summary">Summary<Asterisk/></InputLabel>
             <TextArea 
               id="summary"
               name="summary"
               value = { destinationInfo.summary }
               onChange = {(e) => handleDestinationInfo(e) }
+              errors = { errors && errors.summary }
             />
-            { errors && errors.summary && <ErrorDisplay>{ errors.summary }</ErrorDisplay> }
+            { errors && errors.summary && <ErrorDisplay errorRef={ errors.errorMarker === 'summary' ? errorRef : null}>{ errors.summary }</ErrorDisplay> }
           </FormGroupInput>
           <FormGroupInput>
-            <InputLabel htmlFor="ratings">Ratings<CgAsterisk style={{color:'#007bff'}}/> </InputLabel>
+            <InputLabel htmlFor="ratings">Ratings<Asterisk/> </InputLabel>
             <Rating
              ratingValue={ destinationInfo.ratings }
              iconsCount={5}
@@ -63,7 +56,7 @@ export default function DestinationInputForm() {
              allowHalfIcon={true}
              onClick={ newValue => dispatch(editPostInfo('destinationInfo', {...destinationInfo, ratings: newValue}))  }
             />
-            { errors && errors.ratings && <ErrorDisplay>{ errors.ratings }</ErrorDisplay> }      
+            { errors && errors.ratings && <ErrorDisplay errorRef={ errors.errorMarker === 'ratings' ? errorRef : null}>{ errors.ratings }</ErrorDisplay> }      
           </FormGroupInput>
         </FormGroup>
   )
