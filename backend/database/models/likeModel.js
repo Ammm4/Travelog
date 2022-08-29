@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const LikeSchema = new mongoose.Schema({
+const Like = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
     required: [true, "User Id is required"],
@@ -23,7 +23,10 @@ const LikeSchema = new mongoose.Schema({
     ref:'Post'
   }
   
-}, { timestamps: true, supressReservedKeysWarning: true })
+}, { timestamps: true })
 
+Like.pre([/^find/], function() {
+  this.populate({ path:'user', select:'username _id avatar' })
+})
 
-module.exports = mongoose.model('Like', LikeSchema);
+module.exports = mongoose.model('Like', Like);

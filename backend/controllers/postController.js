@@ -1,21 +1,26 @@
-const { PostModel }  = require("../../database/models/postModel.js");
-const ErrorHandler = require("../../utils/errorHandler.js");
-const LikeModel = require('../../database/models/likeModel');
-const cloudinary = require('cloudinary');
-const createDetails = require('../../utils/createDetails');
-const createPostObject = require('../../utils/createPostObj')
-const createMongoId = require('../../utils/createMongoId');
-const asyncFunctionWrapper =  require('../../utils/asyncFunctionWrapper');
+const PostModel   = require("../database/models/postModel.js");
+const ErrorHandler = require("../utils/errorHandler.js");
+const LikeModel = require('../database/models/likeModel');
+const { imgUploadCloudinary, imgDeleteCloudinary } = require('../utils/imgCloudinary');
+const createDetails = require('../utils/createDetails');
+const createPostObject = require('../utils/createPostObj')
+const createMongoId = require('../utils/createMongoId');
+const asyncFunctionWrapper =  require('../utils/asyncFunctionWrapper');
 const getPosts = asyncFunctionWrapper(async (req, res, next) => {
-  const { query: { user_type, user } } = req;
+  const { query: { user_type, user, page } } = req;
+  const Limit = 4;
+  const Skip = ( page - 1 ) * Limit;
   var posts;
-   if(user_type === 'allUsers') {
-       posts = await PostModel.find().sort({ createdAt: -1 });
+  let postCount;
+  if(user_type === 'allUsers') {
+       postCount = await PostModel.countDocuments({});
+       posts = await PostModel.find().sort({ createdAt: -1 }).skip(Skip).limit(Limit);
       } else {
        const user_id = createMongoId(user_type);
-       posts = await PostModel.find({ user: user_id }).sort({ createdAt: -1 });
+       postCount = await PostModel.countDocuments({ user: user_id });
+       posts = await PostModel.find({ user: user_id }).sort({ createdAt: -1 }).skip(Skip).limit(Limit);
    } 
-   if(user) {
+  if(user) {
     let Posts = [];
     for (const post of posts) {
       const details = createDetails({ user, post: post._id })
@@ -25,7 +30,7 @@ const getPosts = asyncFunctionWrapper(async (req, res, next) => {
     } 
     posts = Posts;
    }
-  res.status(200).json({ success: true, posts })
+  res.status(200).json({ success: true, posts, postCount})
 });
 
 const getPost = asyncFunctionWrapper(async (req, res, next) => {
@@ -55,39 +60,43 @@ const addPost = asyncFunctionWrapper( async ( req, res, next ) => {
   const post = await PostModel.create(newPost);
   await post.populate({ path: 'user', select: 'username avatar' })
   const Post = createPostObject(false, post);
-  res.status(201).send({ success: true, message: "Post Created successfully!!", post: Post});
+  res.status(201).send({ success: true, message: "New Post Created!", post: Post});
 })
 
 const updatePost = asyncFunctionWrapper(async (req, res, next) => {
   const { params: { id } } = req;
   const post = await PostModel.findById(id);
-  if(!post) return next(new ErrorHandler("Post not found", 404))
+  if(!post) return next(new ErrorHandler("Post not found", 404));
   const { images, deletedImageIDs } = req.body;
-  if (deletedImageIDs.length > 0) {
-    deletedImageIDs.forEach(async (imgId) => {
-      await cloudinary.v2.uploader.destroy(imgId);
-    })
+  if(deletedImageIDs && deletedImageIDs.length > 0) {
+    for( let imgId of deletedImageIDs) {
+     await imgDeleteCloudinary(imgId)
+    }
   }
-  let uploadedImages = await Promise.all(images.map( async (image) => {
-    if(image.hasOwnProperty("public_id")) {
-       return {
+  let uploadedImages = [];
+  if(images.length > 0) {
+    for(let image of images) {
+      if(image.hasOwnProperty("public_id")) { 
+        let imageDetails = {
          img_id: image.public_id,
          imgURL: image.imgFile,
          imgName: image.imgTitle
        }
-    } else {
-      const uploadedImg = await fileUploadToCloudinary(image.imgFile);
-       return newItem = {
+       uploadedImages.push(imageDetails) 
+     } else {
+      const uploadedImg = await imgUploadCloudinary(image.imgFile, "postImages");
+      const imageDetails = {
         img_id: uploadedImg.public_id,
         imgURL: uploadedImg.secure_url,
         imgName: image.imgTitle || 'postImage',
-      }
+       }
+       uploadedImages.push(imageDetails) 
     }
-  })
-  )
+  }
+  }
   req.body.images = uploadedImages;
   for( let key in req.body) {
-    post[key] = req.body[key];
+    if(key !== 'deletedImageIDs') post[key] = req.body[key];
   }
   await post.save();
   res.status(200).json({
@@ -101,8 +110,6 @@ const deletePost = asyncFunctionWrapper(async (req, res, next) => {
   const { params: { id } } = req;
   const post = await PostModel.findById(id);
   if(!post) return next(new ErrorHandler("Post not found", 404));
-  const imagesToDelete = post.images.map(img => img.public_id);
-  deleteAllImages(imagesToDelete);
   await post.deleteOne();
    res.status(201).json({
     success: true,
@@ -113,7 +120,7 @@ const deletePost = asyncFunctionWrapper(async (req, res, next) => {
 
 const createImageDetails = async (images) => { 
   return Promise.all(images.map( async (image) => {
-    const uploadedImg = await fileUploadToCloudinary(image.imgFile);
+    const uploadedImg = await imgUploadCloudinary(image.imgFile,"postImages");
     let newItem = {
         img_id: uploadedImg.public_id,
         imgURL: uploadedImg.secure_url,
@@ -124,19 +131,6 @@ const createImageDetails = async (images) => {
   
 }
 
-const fileUploadToCloudinary = async (file) => {
-  const uploadedImg = await cloudinary.v2.uploader.upload(file, {
-    folder: "postImages"
-  }
-  )
-  return uploadedImg;
-}
-
-const deleteAllImages = async(images) => {
-  images.forEach( async(img) => {
-    await cloudinary.v2.uploader.destroy(img);
-  })
-}
 module.exports = {
   getPosts,
   getPost,

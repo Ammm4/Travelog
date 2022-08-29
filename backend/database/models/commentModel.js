@@ -28,10 +28,17 @@ CommentSchema.virtual('numLikes', {
   foreignField: 'comment',
   count: true
 })
+CommentSchema.virtual('numReplies', {
+  ref: 'Reply',
+  localField: '_id',
+  foreignField: 'comment',
+  count: true
+})
 
 CommentSchema.pre(/^find/, function() {
   this.populate({ path:'user', select:'_id username avatar' })
   .populate('numLikes')
+  .populate('numReplies')
 })
 
 CommentSchema.pre('deleteOne', { document: true, query: false}, async function(next) {
@@ -43,14 +50,3 @@ CommentSchema.pre('deleteOne', { document: true, query: false}, async function(n
 })
 
 module.exports = mongoose.model('Comment', CommentSchema);
-
-/* CommentSchema.virtual('replies', {
-  ref: 'Reply',
-  localField: '_id',
-  foreignField: 'comment'
-})
-CommentSchema.virtual('likes', {
-  ref: 'Like',
-  localField: '_id',
-  foreignField: 'comment'
-}) */

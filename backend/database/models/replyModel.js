@@ -13,21 +13,28 @@ const ReplySchema = new mongoose.Schema({
   },
   body: {
     type: String,
-    required: [true, 'Please add a Comment']
+    required: [true, 'Please add a Reply']
   }
   
-}, { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } })
+}, { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true }})
 
-ReplySchema.virtual('likes', {
+ReplySchema.virtual('numLikes', {
   ref: 'Like',
   localField: '_id',
-  foreignField: 'reply'
+  foreignField: 'reply',
+  count: true
 })
 
+ReplySchema.pre(/^find/, function(next) {
+  this.populate({ path:'user', select:'_id username avatar' })
+  .populate('numLikes')
+  next()
+})
+
+
 ReplySchema.pre('deleteOne',{ document: true, query: false}, async function(next) {
-  console.log('Hi Reply');
   this.model('Like').deleteMany({ reply: this._id }, next);
 })
 
-module.exports = mongoose.model('Reply', ReplySchema);
+module.exports = mongoose.models.Reply || mongoose.model('Reply', ReplySchema);
 

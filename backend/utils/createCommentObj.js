@@ -1,10 +1,14 @@
 const createCommentObject = (isLiked, comment) => {
-  const { _id, user, body, numLikes, post } = comment;
+  const { _id, user, body, numLikes, numReplies, post } = comment;
   let commentDetails = {
     _id, 
     user, 
     body, 
     numLikes,
+    numReplies,
+    replies:[],
+    showReplies: false,
+    replyBody:'',
     isLiked: isLiked,
     likes: []
   }

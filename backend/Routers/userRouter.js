@@ -12,8 +12,9 @@ const {
   updateUser,
   changePassword,
   deleteUser,
+  resetPasswordLink,
   resetPassword
-} = require('../controllers/user/controller');
+} = require('../controllers/userController');
 
 router.post('/signup',
   [ check("email", "Please Provide a valid Email").isEmail(),
@@ -22,50 +23,15 @@ router.post('/signup',
 signUpUser);
 
 router.get('/users/:id', is_User_Authenticated, getSingleUser);
-
 router.post('/login', loginUser);
 router.post('/demo', demoLogin);
-
 router.post('/logout', logOutUser);
-
 router.get('/showMe', is_User_Authenticated, showMe);
-
 router.put('/users/:id/profile_change', is_User_Authenticated, updateUser);
-
 router.put('/users/:id/change_password', is_User_Authenticated, changePassword);
-
 router.delete('/users/delete_profile', is_User_Authenticated, deleteUser);
-
-router.post('/forgot_password', resetPassword)
-
-router.put('/reset_password/:token', (req, res) => {
-  /* 
-  const resetToken = req.params.token
-  const resetPasswordToken = crypto
-    .createHash("sha256")
-    .update(resetToken)
-    .digest("hex");
-
-  const user = await userModel.findOne({
-    resetPasswordToken,
-    resetPasswordExpire: { $gt: Date.now() }
-  })
-  if(!user) {
-    res.status(404).send("Reset Password Token is invalid or has been expired")
-  }
-  if(req.body.password !== req.body.confirmPassword) {
-    res.status(404).send("Password does not match!!")
-  }
-  user.password = req.body.password(needs crypting)
-  user.resetPasswordToken = undefined;
-  user.resetPasswordExpire = undefined;
-  await user.save();
- */
-})
-//add authentication CheckAuthentication middleware
-router.get('/me', (req,res) => {
-
-})
+router.post('/forgot_password', resetPasswordLink)
+router.post('/reset_password/:token', resetPassword)
 
 
 module.exports = router;

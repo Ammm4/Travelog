@@ -7,10 +7,15 @@ const ForumSchema = new mongoose.Schema({
     required: [true, "User Id is required"],
     ref:'User'
   },
-  body: { 
+  title: { 
     type: String, 
+    trim: true,
     required: [true, "Forum Topic is required!"],
     minLength:[20, "Forum cannot be less than 20 characters!"]
+  },
+  body: {
+    type: String,
+    trim: true
   },
   views: {
     type: Number,
@@ -47,55 +52,4 @@ ForumSchema.pre('deleteOne', { document: true, query: false }, async function(ne
     this.model('Like').deleteMany({ forum: this._id }, next);
 })
 
-module.exports = mongoose.model('Forum', ForumSchema);
-
-/* 
-ForumSchema.virtual('comments', {
-  ref: 'Comment',
-  localField: '_id',
-  foreignField: 'forum'
-})
-
-ForumSchema.virtual('likes', {
-  ref: 'Like',
-  localField: '_id',
-  foreignField: 'forum'
-})
-
-ForumSchema.pre(/^find/, function() {
-  this.populate({ path:'user', select:'username avatar' })
-  .populate({ path:'likes', populate: { path: 'user', select: 'username avatar'}})
-  .populate(
-    { path:'comments', 
-      populate: [{ path: 'user', select: 'username avatar'}, 
-                 { path: 'likes', populate: { path:'user', select:'username avatar' } }, 
-                 { path: 'replies', 
-                  populate:([ { path: 'user', select:'username avatar'}, 
-                              { path: 'likes', 
-                              populate:({ path:'user', select: 'username avatar' })
-                              }
-                            ])
-                 }
-                ]
-    });
-})
-
-
-ForumSchema.pre(/^find/, function() {
-  this.populate({ path:'user', select:'username avatar' })
-  .populate({ path:'likes', populate: { path: 'user', select: 'username avatar'}})
-  .populate(
-    { path:'comments', 
-      populate: [{ path: 'user', select: 'username avatar'}, 
-                 { path: 'likes', populate: { path:'user', select:'username avatar' } }, 
-                 { path: 'replies', 
-                  populate:([ { path: 'user', select:'username avatar'}, 
-                              { path: 'likes', 
-                              populate:({ path:'user', select: 'username avatar' })
-                              }
-                            ])
-                 }
-                ]
-    });
-})
-*/
+module.exports = mongoose.models.Forum || mongoose.model('Forum', ForumSchema);
