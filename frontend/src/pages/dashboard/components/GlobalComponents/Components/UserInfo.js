@@ -1,5 +1,5 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useReduxSelector } from '../../../../../utils';
 import { IoInformationCircleSharp } from "react-icons/io5";
 import { ProfileImages } from '../StyledComponents/Images';
 import { InfoHeader, UserTitle } from '../StyledComponents/Headings';
@@ -7,7 +7,7 @@ import { UserAvatar, UserCover, UserImageContainer, UserInfo } from '../StyledCo
 
 
 function UserProfileInfos() {
-  const { SingleUser: { singleUser: user }} = useSelector(state => state);
+  const { SingleUser: { singleUser: user }} = useReduxSelector();
   return (
     <>
         <UserImageContainer>   
@@ -24,8 +24,8 @@ function UserProfileInfos() {
          {
            user.about &&
            <div>
-           <span><IoInformationCircleSharp /></span>
-           <p><b>About:</b> { user.about }</p>
+            <span><IoInformationCircleSharp /></span>
+            <p><b>About:</b> { user.about }</p>
            </div>
          }
          { user.hobbies &&
@@ -37,11 +37,10 @@ function UserProfileInfos() {
          {
            (user.city || user.country) && 
            <div>
-            <span><IoInformationCircleSharp /></span>
-            <p><b>Location:</b> { user.city } { user.country && ','} { user.country }</p>
-            </div>
-         }
-            
+             <span><IoInformationCircleSharp /></span>
+             <p><b>Location:</b> { user.city } { user.country && ','} { user.country }</p>
+           </div>
+         }         
        </UserInfo>
     </>
   )

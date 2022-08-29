@@ -2,6 +2,7 @@ import { combineReducers } from "redux";
 import { postsReducer, postReducer } from "./posts/postReducers";
 import { forumsReducer, forumReducer } from "./forums/forumReducers";
 import userReducer, { singleUserReducer } from "./users/userReducers";
+import { likeReducer } from "./likes";
 import { globalReducers } from "./globals/globalReducers";
 
 
@@ -12,6 +13,7 @@ const rootReducer = combineReducers({
   Post: postReducer,
   SingleUser: singleUserReducer,
   Forum: forumReducer,
+  Likes: likeReducer,
   Globals: globalReducers
 })
 

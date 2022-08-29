@@ -43,7 +43,7 @@ export default function RecommendationsInputForm() {
             <Select id="numOfDays" name="numOfDays" value = { recommendations.numOfDays } 
               onChange = {(e) => handleRecommendations(e) }>
               {
-                 recommendationsFormSelect.map((item,i) => <option value={item} disabled={ i === 0 ? true : false}>{ item }</option>)
+                 recommendationsFormSelect.map((item,i) => <option key={item} value={item} disabled={ i === 0 ? true : false}>{ item }</option>)
               } 
             </Select>
             <p> Description (Optional) </p>
@@ -52,7 +52,7 @@ export default function RecommendationsInputForm() {
                name="daysSummary"
                value = { recommendations.daysSummary }
                onChange = {(e) => handleRecommendations(e) }
-              />      
+             />      
           </FormGroupInput>
           <FormGroupInput>
             <InputLabel htmlFor="budget">Budget- <b>£ / person</b></InputLabel>
@@ -73,24 +73,25 @@ export default function RecommendationsInputForm() {
           </FormGroupInput>
           {
             recommendationsFormArrays.map(item => {
+              const { inputName, title, description } = item;
               return (
-                <FormGroupInput key={item}>
-                  <InputLabel> {item === 'heritages' ? 'Heritages To Visit' : item === 'places' ? 'Places To See' : 'Things To Do'}</InputLabel>
+                <FormGroupInput key={inputName}>
+                  <InputLabel> { title }</InputLabel>
                   { 
-                     recommendations[item].map((element, index) => {
+                     recommendations[inputName].map((element, index) => {
                        return <InputWrapper key={index} >
                          <InputElement 
-                          name={item} 
+                          name={inputName} 
                           type="text"
                           value={ element }
                           onChange={ (e) => handleChange( e, index ) }
-                          placeholder={ item === 'heritages' ? 'Athens, Stonehenge...' : item === 'places' ? 'Toledo, Venice ...' : 'Surfing, Bus Tour...'}
+                          placeholder={description}
                           />
-                        { element.trim() && <ClearInputBtn onClick={ (e) => removeInput( e, index, item ) }>Remove</ClearInputBtn>}
+                        { element.trim() && <ClearInputBtn onClick={ (e) => removeInput( e, index, inputName ) }>Remove</ClearInputBtn>}
                       </InputWrapper>
                     })
                    }
-                  <BtnAdd onClick={(e) => addMoreInput(e, item)}>Add More</BtnAdd>
+                  <BtnAdd onClick={(e) => addMoreInput(e, inputName)}>Add More</BtnAdd>
                 </FormGroupInput>
               )
             })

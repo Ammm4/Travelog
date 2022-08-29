@@ -1,32 +1,36 @@
 import React, { useEffect } from 'react';
-import Navbar from './components/Navbar';
-import { Switch, Route, useRouteMatch, Redirect } from 'react-router';
-import { useSelector, useDispatch } from 'react-redux';
+import Navbar from './components/NavBar/Navbar';
+import { Switch, Route, useRouteMatch } from 'react-router';
+import { useReduxSelector, useReduxDispatch } from '../../utils';
 import { useAlert } from 'react-alert';
-import { NEW_POST_RESET } from '../../redux/posts/postTypes';
-import { UPDATE_USER_RESET } from '../../redux/users/userTypes';
-
+import { RESET_POSTS_SUCCESS, CLEAR_POST_ERRORS, CLEAR_POSTS_ERRORS } from '../../redux/posts/postTypes';
+import { CLEAR_USER_ERRORS } from '../../redux/users/userTypes';
+import { CLEAR_FORUMS_ERRORS, RESET_FORUMS_SUCCESS, CLEAR_FORUM_ERRORS } from '../../redux/forums/forumTypes';
+import PageNotFound from '../../GlobalComponents/Components/PageNotFound';
 // ============ Pages ============= //
 import Home from './pages/home';
 import Profile from './pages/profile';
-import ProfileEdit from './components/profileEdit';
+import ProfileEdit from './components/profile/profileEdit';
 import Singlepost from './pages/post';
-import SingleForum from './components/SingleForum';
-import PostModal from './components/PostModal';
-import ForumModal from './components/ForumModal';
+import Forum from './pages/forum';
+import PostModal from './components/Modals/PostModal';
+import ForumModal from './components/Modals/ForumModal';
 import Userprofile from './pages/userprofile';
-import { clearError } from '../../redux/posts/postActions';
-import { clearError as clearUserError } from '../../redux/users/userActions';
-import ChangePassword from './components/ChangePassword';
+import { setShowModal, resetPostInfo, initialiseForumForm } from '../../redux/globals/globalActions';
+import ChangePassword from './components/profile/ChangePassword';
+import LikeModal from './components/Modals/LikeModal';
 
 export default function Dashboard() {
-  const { user, success: userSuccess, error: userError } = useSelector(state => state.User);
-  const { success, error } = useSelector(state => state.Posts);
-  const { error: singlePostError } = useSelector(state => state.Post);
-  const { error: singleUserError } = useSelector(state => state.SingleUser);
-  const { showModal } = useSelector(state => state.Globals);
+  const { 
+          Posts: { success: postsSuccess, postsError },
+          Post: { error: postError },
+          Forums: { success: forumsSuccess, error: forumsError },
+          Forum: { error: forumError },
+          SingleUser: { error: singleUserError },
+          Globals: { showModal }
+   } = useReduxSelector()
   const alert = useAlert();
-  const dispatch = useDispatch();
+  const dispatch = useReduxDispatch();
   const match = useRouteMatch();
   
   useEffect(() => {
@@ -37,38 +41,49 @@ export default function Dashboard() {
   }, [showModal]);
 
   useEffect(() => {
-    if(error) {
-      alert.error(error)
-      dispatch(clearError())
+    if(postsError) {
+      alert.error(postsError)
+      dispatch({ type: CLEAR_POSTS_ERRORS })
     }
     if(singleUserError) {
       alert.error(singleUserError);
-      dispatch(clearUserError())
+      dispatch({ type: CLEAR_USER_ERRORS })
     }
-    if(singlePostError) {
-      alert.error(singlePostError);
-      dispatch(clearError())
+    if(postError) {
+      alert.error(postError);
+      dispatch({ type: CLEAR_POST_ERRORS })
     }
-    if(userError) {
-      alert.error(userError);
-      dispatch(clearUserError())
+    if(forumsError) {
+      alert.error(forumsError)
+      dispatch({ type: CLEAR_FORUMS_ERRORS })
     }
-    if(success) {
-      alert.success(success);
-      dispatch({ type: NEW_POST_RESET })
+    if(forumError) {
+      alert.error(forumError)
+      dispatch({ type: CLEAR_FORUM_ERRORS })
     }
-    if(userSuccess) {
-      alert.success(userSuccess);
-      dispatch({ type: UPDATE_USER_RESET })
-    }
-  }, [alert, dispatch, success, userSuccess, error, userError, singleUserError, singlePostError])
+    
+  }, [alert, dispatch, singleUserError, postsError, postError, forumsError, forumError])
   
+  useEffect(() => {
+    if(postsSuccess) {
+      alert.success(postsSuccess);
+      dispatch(resetPostInfo());
+      dispatch(setShowModal(null))
+      dispatch({ type: RESET_POSTS_SUCCESS  })
+    }
+    if(forumsSuccess) {
+      alert.success(forumsSuccess);
+      dispatch(initialiseForumForm({ title: '', body: '' }))
+      dispatch(setShowModal(null));
+      dispatch({ type: RESET_FORUMS_SUCCESS })
+    }
+  },[ alert, dispatch, forumsSuccess, postsSuccess])
   return (
     <>
       <Navbar />
-      <Switch>   
-        <Route exact path={`${match.path}/home`}>
-          <Home /> 
+      <Switch>  
+        <Route exact path="/dashboard"> 
+          <Home />
         </Route>
         <Route exact path={`${match.path}/profile`}>
           <Profile /> 
@@ -83,23 +98,20 @@ export default function Dashboard() {
            <Singlepost /> 
         </Route>
         <Route exact path={`${match.path}/forums/:forumId`}>
-          <SingleForum /> 
+          <Forum /> 
         </Route>
         <Route exact path={`${match.path}/user_profile/users/:user_id`} >
           <Userprofile />
-        </Route>
-        <Route exact path="/dashboard"> 
-          <Redirect to={`${match.path}/home`} />
-        </Route>
+        </Route>  
         <Route path='/dashboard/*'> 
-          <div>Page Not Found</div>
+          <PageNotFound home='/dashboard' msg='Page Not Found'/>
         </Route>
       </Switch>
        { 
         showModal 
           &&
         ( 
-          showModal.modalType === 'post' ? <PostModal /> : <ForumModal  />
+          showModal.modalType === 'post' ? <PostModal /> : showModal.modalType === 'forum' ? <ForumModal  /> : <LikeModal />
         )
       }
     </>

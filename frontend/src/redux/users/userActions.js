@@ -2,121 +2,83 @@ import {
     LOG_IN_REQUEST,
     LOG_IN_SUCCESS,
     LOG_IN_ERROR,
-
     LOG_OUT_USER_REQUEST,
     LOG_OUT_USER_SUCCESS,
     LOG_OUT_USER_ERROR,
-
     UPDATE_USER_REQUEST,
     UPDATE_USER_SUCCESS,
     UPDATE_USER_ERROR,
-
-    DELETE_USER_REQUEST,
     DELETE_USER_SUCCESS,
     DELETE_USER_ERROR,
-    
     CHANGE_PASSWORD_REQUEST,
     CHANGE_PASSWORD_SUCCESS,
     CHANGE_PASSWORD_ERROR,
-
     SIGN_UP_USER_REQUEST,
     SIGN_UP_USER_SUCCESS ,
     SIGN_UP_USER_ERROR,
-
     GET_SINGLE_USER_REQUEST,
     GET_SINGLE_USER_SUCCESS,
     GET_SINGLE_USER_ERROR,
-    
     SHOW_ME,
     DEMO_LOGIN,
-    CLEAR_USER_ERRORS,
-    
+    RESET_PASSWORD_REQUEST,
+    RESET_PASSWORD_SUCCESS,
+    RESET_PASSWORD_ERROR,
   } from './userTypes';
 
 import axios from 'axios';
-
+import { requestDispatch } from '../../utils';
+import { resetSignUpData } from '../globals/globalActions';
+import { resetAll } from '../../utils';
 // ======================== LOGIN USER ACTION START ======================= //
-const loginRequest = () => {
-  return {
-    type: LOG_IN_REQUEST
-  }
-}
-
-const loginSuccess = (data) => {
-  return {
-    type: LOG_IN_SUCCESS,
-    payload: data
-  }
-}
-
-const loginError = (error) => {
-  return {
-    type: LOG_IN_ERROR,
-    payload: error
-  }
-}
-
 export const login = (body) => {
-  return (dispatch) => {
-    dispatch(loginRequest());
-    axios.post('/api/v1/login', body)
-    .then(response => {
-      dispatch(loginSuccess(response.data))})
-    .catch(error => {
-      dispatch(loginError(error.response.data.error || error))})
+  return async(dispatch) => {
+    dispatch({ type: LOG_IN_REQUEST, payload: 'Logging In' })
+    try {
+      const { data } = await axios.post('/api/v1/login', body)
+      dispatch({ type: LOG_IN_SUCCESS, payload: data })
+    } catch(error) {
+      dispatch({ type: LOG_IN_ERROR, payload: error.response.data.error || error.message })
+    }
   }
-}//status: error.status, error:error.response.data.error
+}
 // ======================== LOGIN USER  ACTION END ======================= //
 
 
 // ======================== LOGOUT USER ACTION START ======================= //
-const logoutUserRequest = () => {
-  return {
-    type: LOG_OUT_USER_REQUEST
-  }
-}
-const logoutUserSuccess = (data) => {
-  return {
-    type: LOG_OUT_USER_SUCCESS,
-    payload: data
-  }
-}
-const logoutUserError = (error) => {
-  return {
-    type: LOG_OUT_USER_ERROR,
-    payload: error
-  }
-}
 
 export const logout = () => {
-  return (dispatch) => {
-    dispatch(logoutUserRequest())
-    axios.post('/api/v1/logout')
-    .then(response => {
-      dispatch(logoutUserSuccess(response.data))
-    })
-    .catch(error => {
-      dispatch(logoutUserError(error.response.data.error || error.message))
-    })
+  return async(dispatch) => {
+    dispatch({ type: LOG_OUT_USER_REQUEST, payload: 'Logging Off' })
+    try {
+      const { data: { message }} = await axios.post('/api/v1/logout');
+      dispatch({ type: LOG_OUT_USER_SUCCESS,payload: { user: null, message } })
+      resetAll(dispatch)
+    } catch(error) {
+      dispatch({ type: LOG_OUT_USER_ERROR, payload: error.response.data.error || error.message })
+
+    }
   }
 }
 // ======================== LOGOUT USER ACTION END ======================= //
+export const resetPassword = (passwords) => {
+  return async(dispatch) => {
+    dispatch({ type: RESET_PASSWORD_REQUEST, payload: 'Password Resetting...' })
+    try {
+      const { data: { message } } = await axios.post('api/v1/reset_password', passwords);
+      dispatch({ type: RESET_PASSWORD_SUCCESS, payload: { message, user: null } })
+    } catch(error) {
+      dispatch({ type: RESET_PASSWORD_ERROR, payload: error.response.data.error || error.message })
 
-
-// ======================== SET USER ACTION START ======================= //
-const showMeSuccess = (user) => {
-  return {
-    type: SHOW_ME,
-    payload: user
+    }
   }
 }
+// ======================== SET USER ACTION START ======================= //
 
 export const showMe = () => {
   return (dispatch) => {
     axios.get('/api/v1/showMe')
-    .then(response => {
-      dispatch(showMeSuccess(response.data.user))
-    })
+    .then(response => dispatch({ type: SHOW_ME, payload: response.data.user }))
   }
 }
 
@@ -128,72 +90,31 @@ export const demoLogin = () => {
   }
 }
 
-
-
 // ======================== GET SINGLE USER ACTION START ======================= //
-
-const getSingleUserRequest = () => {
-  return {
-    type: GET_SINGLE_USER_REQUEST
-  }
-}
-
-const getSingleUserSuccess = (user) => {
-  return {
-    type: GET_SINGLE_USER_SUCCESS,
-    payload: user
-  }
-}
-
-const getSingleUserError = (error) => {
-  return {
-    type: GET_SINGLE_USER_ERROR,
-    payload: error
-  }
-}
 
 export const getSingleUser = (user_id) => {
   return async (dispatch) => {
-    dispatch(getSingleUserRequest());
+    dispatch({ type: GET_SINGLE_USER_REQUEST });
     try {
       const { data } = await axios.get(`/api/v1/users/${user_id}`);
-      dispatch(getSingleUserSuccess(data.user))
+      dispatch({ type: GET_SINGLE_USER_SUCCESS, payload: data.user })
     } catch(error) {
-      dispatch(getSingleUserError(error.response.data.error || error.message))
+      dispatch( { type: GET_SINGLE_USER_ERROR, payload: error.response.data.error || error.message })
     }
   }
 }
 // ======================== GET SINGLE USER ACTION END ======================= //
 
 // ======================== SIGNUP USER ACTION END ===========================//
-  const signUpUserRequest = () => {
-    return {
-      type: SIGN_UP_USER_REQUEST
-    }
-  }
-
-  const signUpUserSuccess = ( data ) => {
-    return {
-      type: SIGN_UP_USER_SUCCESS,
-      payload: data
-    }
-  }
-
-  const signUpUserError = ( error ) => {
-    return {
-      type: SIGN_UP_USER_ERROR,
-      payload: error
-    }
-  }
-
   export const signUpUser =  (body) => {
     return async (dispatch) => {
-      dispatch(signUpUserRequest());
+      dispatch({ type: SIGN_UP_USER_REQUEST, payload: 'Creating Profile' })
       try {
         const { data } = await axios.post('/api/v1/signup', body);
-        dispatch(signUpUserSuccess( data ))
+        dispatch( { type: SIGN_UP_USER_SUCCESS, payload: data })
+        dispatch(resetSignUpData());
       } catch (error) {
-        dispatch(signUpUserError(error.response.data.error))
+        dispatch({ type: SIGN_UP_USER_ERROR, payload: error.response.data.error || error.message })
       }
 
     }
@@ -202,32 +123,14 @@ export const getSingleUser = (user_id) => {
 // ======================== SIGNUP USER ACTION END ===========================//
 
 // ======================== UPDATE USER ACTION START ===========================//
-const updateUserRequest = () => {
-  return {
-    type: UPDATE_USER_REQUEST
-  }
-}
-const updateUserSuccess = (data) => {
-  return {
-    type: UPDATE_USER_SUCCESS,
-    payload: data
-  }
-}
-const updateUserError = (error) => {
-  return {
-    type: UPDATE_USER_ERROR,
-    payload: error
-  }
-}
-
 export const updateUser = (userID, body) => {
   return async(dispatch) => {
-    dispatch(updateUserRequest())
+    dispatch({ type: UPDATE_USER_REQUEST })
     try {
-     const { data } = await axios.put(`/api/v1/users/${ userID }/profile_change`, body)
-     dispatch(updateUserSuccess(data))
+     const { data } = await axios.put(`/api/v1/users/${ userID }/profile_change`, body);
+     dispatch({ type: UPDATE_USER_SUCCESS, payload: data })
     } catch(error) {
-     dispatch(updateUserError(error.response.data.error || error.message))
+     dispatch({ type: UPDATE_USER_ERROR, payload: error.response.data.error || error.message })
     }
   }
 }
@@ -236,32 +139,14 @@ export const updateUser = (userID, body) => {
 // ======================== UPDATE USER ACTION END ===========================//
 
 // ======================== DELETE USER ACTION START ===========================//
-const changePasswordRequest = () => {
-  return {
-    type: CHANGE_PASSWORD_REQUEST
-  }
-}
-const changePasswordSuccess = (data) => {
-  return {
-    type: CHANGE_PASSWORD_SUCCESS,
-    payload: data
-  }
-}
-const changePasswordError = (error) => {
-  return {
-    type: CHANGE_PASSWORD_ERROR,
-    payload: error
-  }
-}
-
 export const changePassword = (userID, body) => {
   return async(dispatch) => {
-    dispatch(changePasswordRequest())
+    dispatch({ type: CHANGE_PASSWORD_REQUEST })
     try {
-     const { data } = await axios.put(`/api/v1/users/${ userID }/change_password`, body)
-     dispatch(changePasswordSuccess(data))
+     const { data } = await axios.put(`/api/v1/users/${ userID }/change_password`, body);
+     dispatch({ type: CHANGE_PASSWORD_SUCCESS, payload: data })
     } catch(error) {
-     dispatch(changePasswordError(error.response.data.error || error.message))
+      dispatch({ type: CHANGE_PASSWORD_ERROR, payload: error.response.data.error || error.message })
     }
   }
 }
@@ -270,32 +155,15 @@ export const changePassword = (userID, body) => {
 // ======================== DELETE USER ACTION END ===========================//
 
 // ======================== DELETE USER ACTION START ===========================//
-const deleteUserRequest = () => {
-  return {
-    type: DELETE_USER_REQUEST
-  }
-}
-const deleteUserSuccess = (data) => {
-  return {
-    type: DELETE_USER_SUCCESS,
-    payload: data
-  }
-}
-const deleteUserError = (error) => {
-  return {
-    type: DELETE_USER_ERROR,
-    payload: error
-  }
-}
-
 export const deleteUser = (body) => {
   return async(dispatch) => {
-    dispatch(deleteUserRequest())
+    requestDispatch(dispatch, 'Deleting Profile')
     try {
      const { data } = await axios.delete(`/api/v1/users/delete_profile`, { data: body })
-     dispatch(deleteUserSuccess(data))
+     dispatch({ type: DELETE_USER_SUCCESS, payload: { user: null, message: data.message } })
     } catch(error) {
-     dispatch(deleteUserError(error.response.data.error || error.message))
+     requestDispatch(dispatch, null)
+     dispatch({ type: DELETE_USER_ERROR, payload: error.response.data.error || error.message })
     }
   }
 }
@@ -303,16 +171,3 @@ export const deleteUser = (body) => {
 
 // ======================== DELETE USER ACTION END ===========================//
 
-// ========================= CLEAR ERRORS ACTION START ====================== //
- const clearErrorAction = () => {
-    return {
-      type: CLEAR_USER_ERRORS
-    }
-  }
-  export const clearError = () => {
-     return (dispatch) => {
-       dispatch(clearErrorAction())
-     }
-  }
-
-// ========================= CLEAR ERRORS ACTION END ====================== //

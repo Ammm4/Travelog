@@ -1,20 +1,15 @@
 import React, { useState } from 'react';
-import styled from 'styled-components';
 import axios from 'axios';
-import { FormContainer, InputContainer } from '../../GlobalComponents/StyledComponents/Container';
+import { useReduxSelector } from '../../utils';
+import { Redirect } from 'react-router-dom';
+import { FormContainer, InputContainer, ForgotPasswordContainer } from '../../GlobalComponents/StyledComponents/Container';
 import { Input, Label, Submit } from '../../GlobalComponents/StyledComponents/Inputs';
 import { H2 } from '../../GlobalComponents/StyledComponents/Headings';
 import { Form } from '../../GlobalComponents/StyledComponents/Form';
-import Loading from '../dashboard/components/Loading';
-import ErrorDisplay from '../../GlobalComponents/Components/Error';
-
-const Container = styled.div`
-width: 100%;
-max-width: 400px;
-margin: 5rem auto;
-`
-
+import Loading from '../../GlobalComponents/Components/Loading';
+import { PasswordErrors, PasswordSuccess } from '../../GlobalComponents/StyledComponents/Error';
 export default function ForgotPassword() {
+  const { User: { user } } = useReduxSelector();
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState('');
@@ -25,27 +20,29 @@ export default function ForgotPassword() {
     setLoading(true);
     try {
       await axios.post('api/v1/forgot_password', { email });
-      setError(null);
+      setResetMail(true);
+      setEmail('');
       setLoading(false);
+      setError(null);
     } catch(error) {
-      setError(error.response.data.error || error.message);
-      setLoading(false)
+      setLoading(false);
+      setError('Sorry, an error occurred. Please try again Later. Thanks');
     }
   }
-  
+  if(user) return <Redirect to="/dashboard" />  
+  if(loading) return <Loading msg="Requesting"/>
   return <>
-    { loading && <Loading msg="Sending Email"/> }
-    <Container>
+    <ForgotPasswordContainer>
     {
       resetMail ?
       <FormContainer>
-        <H2>Check Your Email</H2>
-        <p>An email has been sent to your email address for resetting your password</p>
+        <H2>Reset Link</H2>
+        <PasswordSuccess>A link has been sent to your email address.</PasswordSuccess>
       </FormContainer>
        :
       <FormContainer>
       <H2>Forgot Password</H2>
-      {error && <ErrorDisplay>{ error }</ErrorDisplay>}
+      { error && <PasswordErrors>{ error }</PasswordErrors>}
       <Form onSubmit={ (e) => handleSubmit(e)}>
         <InputContainer>
           <Label htmlFor='email'>Enter Your Email</Label>
@@ -62,6 +59,6 @@ export default function ForgotPassword() {
       </Form>
     </FormContainer>
     }
-    </Container>
+    </ForgotPasswordContainer>
   </>
 }

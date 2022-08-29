@@ -1,34 +1,16 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useReduxDispatch } from './utils';
+import { Link } from 'react-router-dom';
 import { demoLogin } from './redux/users/userActions';
 import { SiYourtraveldottv } from "react-icons/si";
 import { BiMenuAltLeft } from "react-icons/bi";
 import { MdClear } from "react-icons/md";
-import { Link } from 'react-router-dom';
 import { RiUserLine } from "react-icons/ri";
+import { LogoLink } from './GlobalComponents/StyledComponents/Links';
+import { NavContainer } from './GlobalComponents/StyledComponents/Container';
+import { Logo } from './GlobalComponents/StyledComponents/Headings';
 
-const LogoLink = styled(Link)`
-  text-decoration: none;
-`
-const NavContainer = styled.div`
-  position: fixed;
-  top:0;
-  left:0;
-  width: 100%;
-  height: 75px;
-  background-color: transparent;
-  color: #021b41;
-  padding: 5px 8px;
-  display: flex;
-  justify-items: center;
-  align-items: center;
-  transition: .5s all ease-in;
-  &:hover {
-    background-color: #ffffff;
-    background-image: linear-gradient(315deg, #ffffff 0%, #d7e1ec 74%);
-  }
-`
 const Nav = styled.nav`
   width: 100%;
   display: flex;
@@ -44,14 +26,7 @@ span {
   font-size: 2rem
 }
 `
-const Logo = styled.h1 `
-  font-family: 'Montserrat Alternates', sans-serif;
-  color: #021b41; 
-  font-size: 25px;
-  font-weight: 500;
-  letter-spacing: 0.8px;
-  color: #021b41;
-`
+
 const MenuBar = styled.div`
   display: none;
   font-size: 2.5rem;

@@ -3,7 +3,7 @@ import { useReduxSelector, useReduxDispatch, checkSignUpErrors } from '../../../
 import Asterisk from '../../../GlobalComponents/Components/Asterisk';
 import { signUpInputs } from '../../../constants';
 import { signUpUser } from '../../../redux/users/userActions';
-import { setSignUpData, resetSignUpData } from '../../../redux/globals/globalActions';
+import { setSignUpData } from '../../../redux/globals/globalActions';
 import ErrorDisplay from '../../../GlobalComponents/Components/Error';
 import { Input, Submit, Label } from '../../../GlobalComponents/StyledComponents/Inputs';
 import { FormContainer, InputContainer, ToggleLinkContainer } from '../../../GlobalComponents/StyledComponents/Container';
@@ -12,13 +12,10 @@ import { H2 } from '../../../GlobalComponents/StyledComponents/Headings';
 import { Form } from '../../../GlobalComponents/StyledComponents/Form';
 
 export default function SignupForm() {
-  const { 
-    Globals: { 
-      signUpData,
-      signUpData: { errors } } 
-  }= useReduxSelector();
+  const { Globals: { signUpData, signUpData: { errors } } } = useReduxSelector();
   const errorRef = useRef();
   const dispatch = useReduxDispatch();
+  
   const handleChange = (e) => {
     dispatch(setSignUpData(e.target.name,e.target.value))
      
@@ -32,10 +29,8 @@ export default function SignupForm() {
         dispatch(setSignUpData('errors', err));
       } else {
         dispatch(signUpUser(signUpData));
-        dispatch(resetSignUpData());
     }
-    })
-    
+    }) 
   }
   
   return (

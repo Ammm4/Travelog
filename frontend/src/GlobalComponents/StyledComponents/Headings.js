@@ -19,3 +19,11 @@ export const H3 = styled.h3`
   text-align: center;
   letter-spacing: .8px;
 `
+export const Logo = styled.h1 `
+  font-family: 'Montserrat Alternates', sans-serif;
+  color: #021b41; 
+  font-size: 25px;
+  font-weight: 500;
+  letter-spacing: 0.8px;
+  color: #021b41;
+`

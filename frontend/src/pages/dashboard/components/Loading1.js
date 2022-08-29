@@ -7,6 +7,7 @@ const rotateAnimation = keyframes`
 `
 const Container = styled.div`
  width: 100%;
+ margin-top: 2rem;
  padding: 8px;
  display: flex;
  flex-direction: column;
@@ -14,25 +15,26 @@ const Container = styled.div`
  justify-content: center;
 `
 const Spinner = styled.div`
- width: 30px;
- height: 30px;
+ width: 40px;
+ height: 40px;
  border-radius: 50%;
- border: 3px solid #ccc;
+ border: 3.5px solid #ccc;
  border-bottom: 3px solid #888;
  animation-name: ${rotateAnimation};
  animation-duration: 1s;
  animation-iteration-count: infinite;
 `
-const LoadingText = styled.h2`
+const LoadingText = styled.h3`
  margin-top: 2rem;
  font-family: 'Montserrat Alternates', sans-serif;
- color: #021B41;
+ color: ${props => props.color ? '#021b41': '#fff'};
 `
-export default function Loading1({ msg }) {
+export default function Loading1({ msg, color }) {
+
   return (
     <Container>
       <Spinner />
-      <LoadingText>{ msg && `${msg}...`}</LoadingText>
+      <LoadingText color={color}>{ msg && `${msg}...` }</LoadingText>
     </Container>
   )
 }

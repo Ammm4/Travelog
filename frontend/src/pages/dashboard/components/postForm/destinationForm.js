@@ -7,7 +7,7 @@ import ErrorDisplay from '../../../../GlobalComponents/Components/Error';
 import { TextArea, InputLabel, InputElement } from '../GlobalComponents/StyledComponents/Inputs';
 import { editPostInfo } from '../../../../redux/globals/globalActions';
 import { destinationInputs } from '../../../../constants';
-import { Rating } from 'react-simple-star-rating';
+import RatingForm from './ratingForm';
 
 export default function DestinationInputForm({ errorRef }) {
    const { Globals: { postInfo: { destinationInfo, errors }} } = useReduxSelector();
@@ -19,20 +19,21 @@ export default function DestinationInputForm({ errorRef }) {
   return (
     <FormGroup>
           <InputsGroupHeading>Destination Info: </InputsGroupHeading>
-          {destinationInputs.map(input => {
+          {destinationInputs.map(item => {
+            const {inputName, title, description } = item;
             return (
-              <FormGroupInput key={input}>
-                <InputLabel htmlFor={input}>{input === 'destination' ? 'Name of Place' : input}<Asterisk/></InputLabel>
+              <FormGroupInput key={inputName}>
+                <InputLabel htmlFor={inputName}>{title}<Asterisk/></InputLabel>
                 <InputElement 
-                  id={input}
-                  name={input}
+                  id={inputName}
+                  name={inputName}
                   type="text"
-                  value = { destinationInfo[input] }
+                  value = { destinationInfo[inputName] }
                   onChange = {(e) => handleDestinationInfo(e) }
-                  placeholder={ input === 'destination' ? 'Barcelona, Venice, Porto...' : 'Italy, Greece, France...' }
-                  errors = { errors && errors[input]}
+                  placeholder={ description }
+                  errors = { errors && errors[inputName]}
                  />
-                { errors && errors[input] && <ErrorDisplay errorRef={ errors.errorMarker === input ? errorRef : null}>{ errors.destination }</ErrorDisplay> }
+                { errors && errors[inputName] && <ErrorDisplay errorRef={ errors.errorMarker === inputName ? errorRef : null}>{ errors.destination }</ErrorDisplay> }
               </FormGroupInput>
             )
           })}
@@ -47,17 +48,7 @@ export default function DestinationInputForm({ errorRef }) {
             />
             { errors && errors.summary && <ErrorDisplay errorRef={ errors.errorMarker === 'summary' ? errorRef : null}>{ errors.summary }</ErrorDisplay> }
           </FormGroupInput>
-          <FormGroupInput>
-            <InputLabel htmlFor="ratings">Ratings<Asterisk/> </InputLabel>
-            <Rating
-             ratingValue={ destinationInfo.ratings }
-             iconsCount={5}
-             fillColor='#2a78cd'
-             allowHalfIcon={true}
-             onClick={ newValue => dispatch(editPostInfo('destinationInfo', {...destinationInfo, ratings: newValue}))  }
-            />
-            { errors && errors.ratings && <ErrorDisplay errorRef={ errors.errorMarker === 'ratings' ? errorRef : null}>{ errors.ratings }</ErrorDisplay> }      
-          </FormGroupInput>
+          <RatingForm errorRef={errorRef}/>
         </FormGroup>
   )
 }

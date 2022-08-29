@@ -10,3 +10,12 @@ export const PostForumLink = styled(Link)`
 text-decoration: none;
 color: #021b41;
 `
+export const AuthLink = styled(Link)`
+ text-decoration: none;
+ display: flex;
+ align-items: center;
+ color: #021b41;
+ &:hover {
+   color: #2a78cd;
+ }
+`

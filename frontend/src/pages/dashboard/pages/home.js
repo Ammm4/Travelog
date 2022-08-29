@@ -1,10 +1,11 @@
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { useReduxSelector, useReduxDispatch } from '../../../utils';
-import { setPageInitialState } from '../../../redux/globals/globalActions';
-import PostBar from '../components/PostBar';
-import Posts from '../components/Posts';
-import Forums from '../components/Forums';
+import { resetHomePage, setNavbar } from '../../../redux/globals/globalActions';
+import { homeNavbar } from '../../../constants';
+import PostBar from '../components/GlobalComponents/Components/PostBar';
+import Posts from '../components/Posts/Posts';
+import Forums from '../components/Forums/Forums';
 const HomeContainer = styled.section`
  color:#1e1e1e;
  margin-top: 5.65rem;
@@ -19,10 +20,17 @@ const HomeContainer = styled.section`
 `
 
 export default function Home() {
-  const { Globals : { pageData: { showPost }}} = useReduxSelector();
+  const { Globals : { homePage: { showPost } } } = useReduxSelector();
   const dispatch = useReduxDispatch();
   useEffect(() => {
-    dispatch(setPageInitialState('home', 'allUsers', true, true))
+    dispatch(setNavbar(homeNavbar))
+    function handlePopState() {
+      dispatch(resetHomePage())
+    }
+    window.addEventListener('popstate',handlePopState);
+    return () => {
+      window.removeEventListener('popstate',handlePopState)
+    } 
   },[dispatch])
   return (
     <HomeContainer>

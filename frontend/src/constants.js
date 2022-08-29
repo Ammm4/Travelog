@@ -1,6 +1,9 @@
 export const loginInputs = ['email','password'];
 export const signUpInputs = ['username', 'email', 'password', 'confirmpassword'];
-export const destinationInputs = ['destination', 'country'];
+export const destinationInputs = [
+  { inputName: 'destination', title:'Name of Place', description: 'Barcelona, Venice, Porto...' },
+  { inputName: 'country', title:'Country', description: 'Italy, Greece, France...' },
+  ];
 export const changePasswordInputs = [
   { inputName: 'oldPassword', title: 'Old Password', description: 'Enter Old Password' },
   { inputName: 'newPassword', title: 'New Password', description: 'Enter New Password' },
@@ -18,7 +21,37 @@ export const travelFormSelect = [
     options: ['Select Time', ...timeOptions]
   }
 ];
-export const recommendationsFormArrays = ['heritages','places','todos'];
+export const recommendationsFormArrays = [
+  { inputName: 'heritages', title: 'Heritages To Visit', description: 'Athens, Stonehenge...' },
+  { inputName: 'places', title: 'Places To See', description: 'Toledo, Venice...' },
+  { inputName: 'todos', title: 'Things To Do', description: 'Surfing, Bus Tour...' },
+  ];
+export const BtnArray = [
+  {
+    name: 'No. of Days to Stay',
+    btnType: 'days'
+  },
+  {
+    name: 'Budget',
+    btnType: 'budget'
+  },
+  {
+    name: 'Places To Visit',
+    btnType: 'places'
+  },
+  {
+    name: 'Heritages To See',
+    btnType: 'heritages'
+  },
+  {
+    name: 'Things To Do',
+    btnType: 'todos'
+  },
+  {
+    name: 'Others',
+    btnType: 'others'
+  }
+]
 export const profileInputs = [
   { 
     name: 'username',
@@ -59,4 +92,148 @@ export const profileTextAreas = [
   },
   
 ]
+// ========================= NavBar ========================== //
+export const homeNavbar = {
+  activePage: 'home', 
+  menuBar: false, 
+  showCreateMenu: false, 
+  showAddBtn: true
+}
+
+export const profileNavbar = {
+  ...homeNavbar,
+  activePage: 'profile', 
+}
+export const userNavbar = {
+  activePage: 'user', 
+  menuBar: false, 
+  showCreateMenu: false, 
+  showAddBtn: false
+}
+export const postNavbar = {
+  ...userNavbar,
+  activePage: 'post', 
+}
+export const forumNavbar = {
+  ...userNavbar,
+  activePage: 'forum', 
+}
+// ========================= NavBar ========================== //
+// ========================= Global Reducer Reset==============//
+export const resetPostValue = () => {
+  return {
+    images: [],
+    deletedImageIDs:[],
+    imgPreview: [],
+    destinationInfo: {
+      destination: '', 
+      country: '', 
+      summary: '',
+      ratings: 0
+    },
+    travellerInfo: {
+      travelType: 'Select Type', 
+      time: 'Select Time'
+    },
+    recommendations: {
+      numOfDays: 'Select Time to Spend', 
+      daysSummary:'', 
+      budget: 0, 
+      budgetSummary:'', 
+      heritages:[''], 
+      places:[''], 
+      todos:[''], 
+      others:''
+    },
+    errors: null
+  }
+}
+export const resetHomePageValue = () => {
+  return {
+    showPost: true,
+    showCreate: true,
+    userType:'allUsers',
+    postMarkerId: null,
+    forumMarkerId: null,
+ }
+}
+ 
+
+export const resetProfilePageValue = () => {
+  return {
+    showPost: true,
+    showCreate: true,
+    postMarkerId: null,
+    forumMarkerId: null,
+    showSettings: false,
+    userType:null
+  }
+}
+
+export const resetUserPageValue = () => {
+  return {
+    showPost: true,
+    postMarkerId: null,
+    forumMarkerId: null,
+    showCreate: false,
+    userType:null,
+  }
+}
+
+export const resetGlobalValues = () => {
+  return {
+    navBar: {
+    activePage: null,
+    menuBar: false,
+    showAddBtn: false,
+    showCreateMenu: false,
+  },
+    signUpData : {
+    username:'', 
+    email:'', 
+    password:'', 
+    confirmpassword:'',
+    errors:''
+  },
+    loginData : {
+    email: '',
+    password: '',
+    errors: ''
+  },
+  resetPassword: {
+    btnAbled: true,
+    oldPassword: '',
+    newPassword: '',
+    confirmPassword: '',
+    errors: {
+      oldPassword: '',
+      newPassword: '',
+      confirmPassword: ''
+    }
+  },
+  homePage: resetHomePageValue(),
+  profilePage: resetProfilePageValue(),
+  userPage:resetUserPageValue(),
+  postInfo: resetPostValue(),
+  userInfo: {
+    username: '',
+    email:'',
+    about:'',
+    hobbies: '',
+    city:'',
+    country: '',
+    avatarImg:'',
+    coverImg:''
+  },
+  forumForm: {
+    title: '',
+    body:''
+  },
+  showScrollUpBtn: false,
+  showCreateComment: false,
+  showModal: null,
+  loadingMsg:'',
+ }
+}
+
 

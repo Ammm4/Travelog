@@ -5,56 +5,53 @@ import {
   GET_SINGLE_FORUM_REQUEST,
   GET_SINGLE_FORUM_SUCCESS,
   GET_SINGLE_FORUM_ERROR,
-  CREATE_FORUM_REQUEST,
   CREATE_FORUM_SUCCESS,
   CREATE_FORUM_ERROR,
-  UPDATE_FORUM_REQUEST,
   UPDATE_FORUM_SUCCESS,
   UPDATE_FORUM_ERROR,
-  DELETE_FORUM_REQUEST,
   DELETE_FORUM_SUCCESS,
   DELETE_FORUM_ERROR,
   LIKE_FORUM_SUCCESS,
   LIKE_FORUM_ERROR,
-  GET_COMMENTS_REQUEST,
+  LIKE_THE_FORUM_SUCCESS,
+  SET_NUMBER_OF_COMMENTS,
+  SET_FORUM_VIEWS,
+  UPDATE_THE_FORUM_SUCCESS,
+  UPDATE_THE_FORUM_ERROR,
+  DELETE_THE_FORUM_SUCCESS,
+  DELETE_THE_FORUM_ERROR,
   GET_COMMENTS_SUCCESS,
   GET_COMMENTS_ERROR,
-  CREATE_COMMENT_REQUEST,
   CREATE_COMMENT_SUCCESS,
   CREATE_COMMENT_ERROR,
-  DELETE_COMMENT_REQUEST,
   DELETE_COMMENT_SUCCESS,
-  DELETE_COMMENT_ERROR,
   LIKE_COMMENT_REQUEST,
   LIKE_COMMENT_SUCCESS,
   LIKE_COMMENT_ERROR,
-  UPDATE_COMMENT_REQUEST,
   UPDATE_COMMENT_SUCCESS,
-  UPDATE_COMMENT_ERROR,
-  CREATE_REPLY_REQUEST,
+  SET_COMMENT_BODY,
+  SET_COMMENT_DATA,
+
+  GET_REPLIES_SUCCESS,
   CREATE_REPLY_SUCCESS,
-  CREATE_REPLY_ERROR,
-  LIKE_REPLY_REQUEST,
   LIKE_REPLY_SUCCESS,
   LIKE_REPLY_ERROR,
-  UPDATE_REPLY_REQUEST,
   UPDATE_REPLY_SUCCESS,
-  UPDATE_REPLY_ERROR,
-  DELETE_REPLY_REQUEST,
   DELETE_REPLY_SUCCESS,
-  DELETE_REPLY_ERROR,
-  CLEAR_FORUM_ERRORS,
-  FORUM_RESET
+  UPDATE_DELETE_REPLY_REQUEST_ERR0R,
+  GET_CREATE_REPLY_REQUEST_ERROR,
+  UPDATE_DELETE_COMMENT_REQUEST_ERROR,
+  GET_CREATE_COMMENT_REQUEST,
 } from "./forumTypes";
-/*  NEW_FORUM_RESET,
-  FORUM_RESET */
-import axios from 'axios';
 
-export const getForums = (userId, userType) => {
+import axios from 'axios';
+import { requestDispatch } from "../../utils";
+
+export const getForums = (userType, userId, pageNumber) => {
   return async(dispatch) => {
      dispatch({ type: GET_FORUMS_REQUEST });
      try {
-       const { data } = await axios.get(`/api/v1/forums?user_type=${userType}&user=${userId}`)
+       const { data } = await axios.get(`/api/v1/forums?user_type=${userType}&user=${userId}&page=${pageNumber}`)
        dispatch({ type: GET_FORUMS_SUCCESS, payload: data })
       } catch(error) {
        dispatch({ type: GET_FORUMS_ERROR, payload: error.response.data.error || error.message })
@@ -66,8 +63,9 @@ export const getForum = (forumId, userId) => {
   return async(dispatch) => {
      dispatch({ type: GET_SINGLE_FORUM_REQUEST });
      try {
-       const { data } = await axios.get(`/api/v1/forums/${forumId}?user=${userId}`)
-       dispatch({ type: GET_SINGLE_FORUM_SUCCESS, payload: data})
+       const { data } = await axios.get(`/api/v1/forums/${forumId}?user=${userId}`);
+       dispatch({ type: GET_SINGLE_FORUM_SUCCESS, payload: data});
+       dispatch({ type: SET_FORUM_VIEWS, payload: forumId});
       } catch(error) {
        dispatch({type: GET_SINGLE_FORUM_ERROR, payload: error.response.data.error || error.message })
       }
@@ -76,22 +74,24 @@ export const getForum = (forumId, userId) => {
 
 export const createForum = (body) => {
   return async (dispatch) => {
-    dispatch({ type: CREATE_FORUM_REQUEST });
+    requestDispatch(dispatch, 'Creating Forum')
     try {
       const { data } = await axios.post('/api/v1/forums', body);
-      dispatch({ type: CREATE_FORUM_SUCCESS, payload: data})
+      dispatch({ type: CREATE_FORUM_SUCCESS, payload: data })
     } catch (error) {
+      requestDispatch(dispatch, null)
       dispatch({ type: CREATE_FORUM_ERROR, payload: error.response.data.error || error.message})
     }
   }
 }
-export const updateForum = (postId, body) => {
+export const updateForum = (forumId, body) => {
   return async (dispatch) => {
-    dispatch({ type: UPDATE_FORUM_REQUEST });
+    requestDispatch(dispatch, 'Editing Forum')
     try {
-      const { data } = await axios.put(`/api/v1/posts/${ postId }`, body);
+      const { data } = await axios.patch(`/api/v1/forums/${ forumId }`, body);
       dispatch({ type: UPDATE_FORUM_SUCCESS, payload: data})
     } catch (error) {
+      requestDispatch(dispatch, null)
       dispatch({ type: UPDATE_FORUM_ERROR ,payload : error.response.data.error || error.message})
     }
   }
@@ -99,12 +99,13 @@ export const updateForum = (postId, body) => {
 
 export const deleteForum = (forumId) => {
   return async (dispatch) => {
-    dispatch({ type: DELETE_FORUM_REQUEST });
+    requestDispatch(dispatch, 'Deleting Forum')
     try {
-      await axios.delete(`/api/v1/forums/${ forumId }`);
-      dispatch({ type: DELETE_FORUM_SUCCESS })
+      const { data } = await axios.delete(`/api/v1/forums/${ forumId }`);
+      dispatch({ type: DELETE_FORUM_SUCCESS, payload: data })
     } catch (error) {
-      dispatch({ type:DELETE_FORUM_ERROR, payload: error.response.data.error || error.message })
+      requestDispatch(dispatch, null)
+      dispatch({ type: DELETE_FORUM_ERROR, payload: error.response.data.error || error.message })
     }
   }
 }
@@ -112,21 +113,54 @@ export const deleteForum = (forumId) => {
 export const likeForum = (forumId) => {
   return async (dispatch) => {
     try {
-      let { data } = await axios.post(`/api/v1/forums/${forumId}`);
+      let { data } = await axios.post(`/api/v1/likes?type=forum&id=${forumId}`);
       dispatch({ type: LIKE_FORUM_SUCCESS, payload: data})
+      dispatch({ type: LIKE_THE_FORUM_SUCCESS, payload: data})
     } catch(error) {
       dispatch({ type: LIKE_FORUM_ERROR, payload: error.response.data.error || error.message })
     }
   }
 }
 
-//================================== COMMENTS =======================================
-export const getComments = (forumId, userId) => {
+
+//%%%%%%%%%%%%%%%%%%%%%%%% FORUM %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+export const updateTheForum = (forumId, body) => {
   return async (dispatch) => {
-    dispatch({ type: GET_COMMENTS_REQUEST })
+    requestDispatch(dispatch, 'Editing Forum')
     try {
-      const { data: { comments } } = await axios.get(`/api/v1/forums/${forumId}/comments?user=${userId}`);
-      dispatch({ type: GET_COMMENTS_SUCCESS, payload: comments})
+      const { data } = await axios.patch(`/api/v1/forums/${ forumId }`, body);;
+      dispatch({ type: UPDATE_THE_FORUM_SUCCESS, payload: data })
+      dispatch({ type: UPDATE_FORUM_SUCCESS, payload: data })
+    } catch (error) {
+      requestDispatch(dispatch, null)
+      dispatch({ type:UPDATE_THE_FORUM_ERROR, payload: error.response.data.error || error.message })
+    }
+  }
+}
+
+export const deleteTheForum = (forumId) => {
+  return async (dispatch) => {
+    requestDispatch(dispatch, 'Deleting Forum')
+    try {
+      const { data } = await axios.delete(`/api/v1/forums/${ forumId }`);
+      dispatch({ type: DELETE_THE_FORUM_SUCCESS, payload: data })
+      data.msg = '';
+      dispatch({ type: DELETE_FORUM_SUCCESS, payload: data })
+    } catch (error) {
+      requestDispatch(dispatch, null)
+      dispatch({ type: DELETE_THE_FORUM_ERROR, payload: error.response.data.error || error.message })
+    }
+  }
+}
+
+//================================== COMMENTS =======================================
+export const getComments = (forumId, userId, pageNumber) => {
+  return async (dispatch) => {
+    dispatch({ type: GET_CREATE_COMMENT_REQUEST, payload: { loader: { commentLoading: true } }} )
+    try {
+      const { data: { comments } } = await axios.get(`/api/v1/comments?type=forum&id=${forumId}&user=${userId}&page=${pageNumber}`);
+      dispatch({ type: GET_COMMENTS_SUCCESS, payload: comments })
     } catch(error) {
       dispatch({type: GET_COMMENTS_ERROR, payload: error.response.data.error || error.message })
     }
@@ -135,11 +169,12 @@ export const getComments = (forumId, userId) => {
 
 export const createComment = ( forumId, body ) => {
   return async (dispatch) => {
-    dispatch({ type: CREATE_COMMENT_REQUEST })
+    dispatch({ type: GET_CREATE_COMMENT_REQUEST, payload: { loader: { addingComment: true} } })
     try {
-      const { data: { comment } } = await axios.post(`/api/v1/forums/${forumId}/comments`, body);
+      const { data: { comment } } = await axios.post(`/api/v1/comments?type=forum&id=${ forumId }`, body);
       let Comment = { ...comment, isLiked: false, numLikes: 0, likes: [] }
       dispatch({ type: CREATE_COMMENT_SUCCESS, payload: Comment})
+      dispatch({ type: SET_NUMBER_OF_COMMENTS, payload: { id: forumId, commentAdded: true } })
     } catch(error) {
       dispatch({ type: CREATE_COMMENT_ERROR, payload: error.response.data.error || error.message })
     }
@@ -150,7 +185,7 @@ export const likeComment = ( commentId ) => {
   return async (dispatch) => {
     dispatch({ type: LIKE_COMMENT_REQUEST })
     try {
-      let { data } = await axios.post(`/api/v1/comments/${commentId}`);
+      let { data } = await axios.post(`/api/v1/likes?type=comment&id=${commentId}`);
       dispatch({ type: LIKE_COMMENT_SUCCESS, payload: data})
     } catch(error) {
       dispatch({ type: LIKE_COMMENT_ERROR, payload: error.response.data.error || error.message})
@@ -160,90 +195,101 @@ export const likeComment = ( commentId ) => {
 
 export const updateComment = ( commentId, body ) => {
     return async (dispatch) => {
-      //dispatch({ type: UPDATE_COMMENT_REQUEST})
+      dispatch({ type: UPDATE_DELETE_COMMENT_REQUEST_ERROR, payload: { commentId, loader: { updatingComment: true } }})
       try {
-        let { data } = await axios.patch(`/api/v1/comments/${ commentId }`, body);
-        dispatch({ type: UPDATE_COMMENT_SUCCESS, payload: data })
+        let { data: { comment } } = await axios.patch(`/api/v1/comments/${ commentId }`, body);
+        dispatch({ type: UPDATE_COMMENT_SUCCESS, payload: { commentId, comment } })
       } catch(error) {
-        dispatch({ type: UPDATE_COMMENT_ERROR, payload: error.response.data.error || error.message})
+        dispatch({ type: UPDATE_DELETE_COMMENT_REQUEST_ERROR, payload: { commentId, loader: { updatingComment: false }, error: error.response.data.error || error.message }})
       }
     }
 }
 
 export const deleteComment = ( commentId ) => {
   return async (dispatch) => {
-    dispatch({ type: DELETE_COMMENT_REQUEST})
+    dispatch({ type: UPDATE_DELETE_COMMENT_REQUEST_ERROR, payload: { commentId, loader: { deletingComment: true } }})
     try {
       let { data } = await axios.delete(`/api/v1/comments/${ commentId }`);
       dispatch({ type: DELETE_COMMENT_SUCCESS, payload: data})
+      dispatch({ type: SET_NUMBER_OF_COMMENTS, payload: { id: data.comment.forum, commentAdded: false }})
     } catch(error) {
-      dispatch({ type:DELETE_COMMENT_ERROR, payload: error.response.data.error || error.message})
+      dispatch({ type: UPDATE_DELETE_COMMENT_REQUEST_ERROR, payload: { commentId, loader: { deletingComment: false }, error: error.response.data.error || error.message }})
     }
   }
 }
 
-//================================== REPLIESS =======================================
+export const setCommentBody = (value) => {
+  return (dispatch) => {
+    dispatch({ type: SET_COMMENT_BODY, payload: value })
+  }
+}
+
+export const setCommentData = (commentId, name, value) => {
+    return (dispatch) => {
+    dispatch({ type: SET_COMMENT_DATA, payload: { commentId, name, value }})
+  }
+ }
+
+
+//================================== REPLIES =======================================
+
+ export const getReplies = (userId, commentId, page) => {
+   return async(dispatch) => {
+     dispatch({ type: GET_CREATE_REPLY_REQUEST_ERROR, payload: { commentId, loader: { replyLoading: true } } })
+     try {
+      let { data: { replies } } = await axios.get(`/api/v1/comments/${ commentId }/replies?user=${userId}&page=${page}`);
+      dispatch({ type: GET_REPLIES_SUCCESS, payload: { commentId, replies } })
+    } catch(error) {
+      dispatch({ type: GET_CREATE_REPLY_REQUEST_ERROR, payload: { commentId, loader: { replyLoading: false }, error: error.response.data.error || error.message }})
+    }
+   }
+ }
  export const addReply = ( commentId, body ) => {
   return async (dispatch) => {
-    dispatch({ type: CREATE_REPLY_REQUEST })
+    dispatch({ type: GET_CREATE_REPLY_REQUEST_ERROR, payload: { commentId, loader: { addingReply: true } } })
     try {
-      let { data } = await axios.put(`/api/v1/comments/${ commentId }/replies`, body);
-      dispatch({ type: CREATE_REPLY_SUCCESS, payload: data})
+      let { data } = await axios.post(`/api/v1/comments/${ commentId }/replies`, body);
+      dispatch({ type: CREATE_REPLY_SUCCESS, payload: data })
     } catch(error) {
-      dispatch({type:CREATE_REPLY_ERROR, payload: error.response.data.error || error.message})
+      dispatch({ type: GET_CREATE_REPLY_REQUEST_ERROR, payload: { commentId, loader: { addingReply: false }, error: error.response.data.error || error.message }})
     }
   }
 }
 
-export const likeReply = ( replyId ) => {
+export const likeReply = ( commentId, replyId ) => {
   return async (dispatch) => {
-    dispatch({ type: LIKE_REPLY_REQUEST})
     try {
-      let { data } = await axios.put(`/api/v1/replies/${ replyId}`);
-      dispatch({ type: LIKE_REPLY_SUCCESS, payload: data })
+      let { data: { Liked, Like } } = await axios.post(`/api/v1/likes?type=reply&id=${replyId}`);
+      dispatch({ type: LIKE_REPLY_SUCCESS, payload: { commentId, Liked, Like } })
     } catch(error) {
       dispatch({ type: LIKE_REPLY_ERROR, payload: error.response.data.error || error.message})
     }
   }
 }
 
-export const deleteReply = ( replyId ) => {
+export const deleteReply = ( commentId, replyId ) => {
   return async (dispatch) => {
-    dispatch({ type: DELETE_REPLY_REQUEST })
+    dispatch({ type: UPDATE_DELETE_REPLY_REQUEST_ERR0R, payload: { commentId, replyId, loader: { deletingReply: true }} })
     try {
       let { data } = await axios.delete(`/api/v1/replies/${replyId}`);
       dispatch({ type: DELETE_REPLY_SUCCESS , payload: data})
     } catch(error) {
-      dispatch({ type: DELETE_REPLY_ERROR, payload: error.response.data.error || error.message})
+      dispatch({ type: UPDATE_DELETE_REPLY_REQUEST_ERR0R, payload: { commentId, replyId, loader: { deletingReply: false }, error: error.response.data.error || error.message }})
     }
   }
 }
 
-export const updateReply = ( replyId, body ) => {
+export const updateReply = ( commentId, replyId, body ) => {
   return async (dispatch) => {
-    dispatch({ type: UPDATE_REPLY_REQUEST })
+    dispatch({ type: UPDATE_DELETE_REPLY_REQUEST_ERR0R, payload: { commentId, replyId, loader: { updatingReply: true } } })
     try {
-      let { data } = await axios.patch(`/api/v1/replies/${replyId}`, body);
-      dispatch({ type: UPDATE_REPLY_SUCCESS, payload: data})
+      let { data: { reply } } = await axios.patch(`/api/v1/replies/${replyId}`, body);
+      dispatch({ type: UPDATE_REPLY_SUCCESS, payload: { commentId, replyId, reply }})
     } catch(error) {
-      dispatch({ type: UPDATE_REPLY_ERROR, payload: error.response.data.error || error.message})
+      dispatch({ type: UPDATE_DELETE_REPLY_REQUEST_ERR0R, payload: { commentId, replyId, loader: { updatingReply: false }, error: error.response.data.error || error.message }})
     }
   }
 }
+// ======================= REPLY ACTIONS =======================================//
 
-//=================== CLEAR ERRORS =============================//
- const clearErrorAction = () => {
-    return {
-      type: CLEAR_FORUM_ERRORS
-    }
-  }
- export const forumReset = () => {
-    return {
-      type: FORUM_RESET
-    }
-  }
-  export const clearError = () => {
-     return (dispatch) => {
-       dispatch(clearErrorAction())
-     }
-  }
+ 

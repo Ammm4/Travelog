@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useReduxSelector, infoRequiredToDisplay } from '../../../../utils';
-import { Infos, InfoGroup, StyledParagraph } from '../GlobalComponents/StyledComponents/Containers';
+import { Infos, InfoGroup } from '../GlobalComponents/StyledComponents/Containers';
 import { InputsGroupHeading, InfoLabel } from '../GlobalComponents/StyledComponents/Headings';
 import { Answer } from '../GlobalComponents/StyledComponents/Paragraphs';
 

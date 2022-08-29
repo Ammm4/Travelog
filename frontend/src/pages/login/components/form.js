@@ -7,12 +7,11 @@ import { FormContainer, InputContainer, ToggleLinkContainer } from '../../../Glo
 import { H2 } from '../../../GlobalComponents/StyledComponents/Headings';
 import { AuthLink } from '../../../GlobalComponents/StyledComponents/Links';
 import { Form } from '../../../GlobalComponents/StyledComponents/Form';
-import Loading from '../../dashboard/components/Loading';
 import { setLoginData, resetLoginData } from '../../../redux/globals/globalActions';
 import ErrorBox from './errorBox';
 
 export default function LoginForm() {
-  const { User: { loading }, Globals: { loginData, loginData: { email, password, errors }} } = useReduxSelector();
+  const { Globals: { loginData, loginData: { email, password, errors }} } = useReduxSelector();
   const dispatch = useReduxDispatch();
   const errorRef = useRef();
 
@@ -23,7 +22,6 @@ export default function LoginForm() {
     e.preventDefault();
     console.log(email, password)
     let err = checkLoginErrors(email, password);
-    console.log(err);
     new Promise((resolve) => resolve(dispatch(setLoginData('errors', null )))).then(() => {
       if(Object.keys(err).length > 0) {    
         return dispatch(setLoginData('errors', err ))
@@ -31,10 +29,6 @@ export default function LoginForm() {
       dispatch(login({ email, password }));
       dispatch(resetLoginData())
     })
-  }
-
-  if(loading) {
-    return <Loading msg="Loading"/>
   }
 
   return (

@@ -1,19 +1,21 @@
 import { 
   //=== Navbar ==== //
-  SET_MENU_BAR,
-  SET_CREATE_MENU,
+  SET_NAV_BAR,
+  SET_NAV_BAR_ITEMS,
   // ==== Modal === //
   SHOW_MODAL,
-  SET_SHOW_POST_FORM,
+  SET_SHOW_FORM,
   //==== 
   SHOW_CREATE_COMMENT, 
-  LOADING_MESSAGE,
-  // ==== Page ==== //
-  SET_PAGE_INITIAL_STATE,
-  SET_PAGE_DATA_SHOW_POST,
-  SET_PAGE_DATA_POST_MARKER_ID,
-  SET_PAGE_DATA_FORUM_MARKER_ID,
-  SET_PAGE_DATA_SHOW_SETTINGS,
+  // ======= Homepage ========//
+  SET_HOME_PAGE,
+  RESET_HOME_PAGE,
+  // ======= Profilepage ========//
+  SET_PROFILE_PAGE,
+  RESET_PROFILE_PAGE,
+  // ======= Userpage ========//
+  SET_USER_PAGE,
+  RESET_USER_PAGE,
   // ==== Sign Up ==== //
   SET_SIGN_UP_DATA,
   RESET_SIGN_UP_DATA,
@@ -27,135 +29,84 @@ import {
   // ======== User Form ==== //
   INITIALISE_USER_EDIT_INFO,
   EDIT_USER_INFO,
+  // ======== Forum Form =====//
+  SET_FORUM_FORM,
+  INITIALISE_FORUM_FORM,
   // ======= Change Password ======= //
   SET_RESET_PASSWORD,
+  RESET_CHANGE_PASSWORD_DATA,
   // ==== UTILS ==========//
   RESET_GLOBALS,
   SET_SHOW_SCROLL_UP_BUTTON,
 } from "./globalTypes";
+import { resetGlobalValues, resetPostValue, resetHomePageValue, resetProfilePageValue, resetUserPageValue } from "../../constants";
 
-
-const resetPostValue = {
-    images: [],
-    deletedImageIDs:[],
-    imgPreview: [],
-    destinationInfo: {
-      destination: '', 
-      country: '', 
-      summary: '',
-      ratings: 0
-    },
-    travellerInfo: {
-      travelType: 'Select Type', 
-      time: 'Select Time'
-    },
-    recommendations: {
-      numOfDays: 'Select Time to Spend', 
-      daysSummary:'', 
-      budget: 0, 
-      budgetSummary:'', 
-      heritages:[''], 
-      places:[''], 
-      todos:[''], 
-      others:''
-    },
-    errors: null
-  }
-
-const resetGlobalValues = {
- navBar: {
-    activePage: null,
-    menuBar: false,
-    showAddBtn: false,
-    showCreateMenu: false,
-  },
-  pageData: {
-    showPost: true,
-    showSettings: false,
-    pageType: null,
-    showCreate: null,
-    postsUserType: null,
-    forumsUserType:null,
-    postMarkerId: null,
-    forumMarkerId: null
-  },
-  postInfo: {
-    images: [],
-    deletedImageIDs:[],
-    imgPreview: [],
-    destinationInfo: {
-      destination: '', 
-      country: '', 
-      summary: '',
-      ratings: 0
-    },
-    travellerInfo: {
-      travelType: '', 
-      time: ''
-    },
-    recommendations: {
-      numOfDays: '', 
-      daysSummary:'', 
-      budget: 0, 
-      budgetSummary:'', 
-      heritages:[''], 
-      places:[''], 
-      todos:[''], 
-      others:''
-    },
-    errors: null
-  },
-  userInfo: {
-    username: '',
-    email:'',
-    about:'',
-    hobbies: '',
-    city:'',
-    country: '',
-    avatarImg:'',
-    coverImg:''
-  },
-  showScrollUpBtn: false,
-  showCreateComment: false,
-  showModal: null,
-  loadingMsg:'',
-  }
-  
 export const setShowModal = ( modalType ) => {
   return (dispatch) => {
     dispatch( { type: SHOW_MODAL, payload: modalType })
   }
 }
 
-export const setLoadingMessage = ( message ) => {
+// ======================= NavBar =============================== //
+export const setNavbar = (value) => {
   return (dispatch) => {
-    dispatch( { type: LOADING_MESSAGE, payload: message })
+    dispatch( { type: SET_NAV_BAR, payload: value })
   }
 }
-export const setPageInitialState = (pageType, userType, showBtn, showCreate) => {
-   let initialState = { page: pageType, userType, showBtn, showCreate }
-   return (dispatch) => {
-     dispatch({ type: SET_PAGE_INITIAL_STATE, payload: initialState})
+export const setNavbarItems = (name, value) => {
+  return (dispatch) => {
+    dispatch( { type: SET_NAV_BAR_ITEMS, payload: { name, value } })
+  }
+}
+// ======================= NavBar =============================== //
+
+// ======================= Home Page =============================== //
+export const setHomePage = (name, value) => {
+  return (dispatch) => {
+    dispatch( { type: SET_HOME_PAGE, payload: { name, value }})
+  }
+}
+
+// ======================= Home Page =============================== //
+
+// ======================= Profile Page =============================== //
+export const setProfilePage = (name, value) => {
+  return (dispatch) => {
+    dispatch( { type: SET_PROFILE_PAGE, payload: { name, value }})
+  }
+}
+export const resetProfilePage = () => {
+  return (dispatch) => {
+    dispatch( { type: RESET_PROFILE_PAGE, payload: resetProfilePageValue()})
+  }
+}
+// ======================= Profile Page =============================== //
+
+// ======================= User Page =============================== //
+export const setUserPage = (name, value) => {
+  return (dispatch) => {
+    dispatch( { type: SET_USER_PAGE, payload: { name, value }})
+  }
+}
+
+
+export const resetUserPage = () => {
+  return (dispatch) => {
+    dispatch( { type: RESET_USER_PAGE, payload: resetUserPageValue()})
+  }
+}
+// ======================= User Page =============================== //
+
+
+//=============================
+export const setForumForm = (name,value) => {
+  return (dispatch) => {
+     dispatch({ type: SET_FORUM_FORM , payload: { name, value}})
    }
 }
-export const setPageDataShowPost = (value) => {
+export const initialiseForumForm = (value) => {
    return (dispatch) => {
-     dispatch({ type: SET_PAGE_DATA_SHOW_POST, payload: value})
-   }
-}
-export const setPageDataShowSettings = (value) => {
-   return (dispatch) => {
-     dispatch({ type: SET_PAGE_DATA_SHOW_SETTINGS, payload: value})
-   }
-}
-export const setPageDataPostMarkerId = (value) => {
-   return (dispatch) => {
-     dispatch({ type: SET_PAGE_DATA_POST_MARKER_ID, payload: value})
-   }
-}
-export const setPageDataForumMarkerId = (value) => {
-   return (dispatch) => {
-     dispatch({ type: SET_PAGE_DATA_FORUM_MARKER_ID, payload: value})
+     dispatch({ type: INITIALISE_FORUM_FORM , payload: value})
    }
 }
 
@@ -169,9 +120,9 @@ export const initialisePostEditInfo = (data) => {
      dispatch({ type: INITIALISE_POST_EDIT_INFO , payload: data })
    }
 }
-export const setShowPostForm = (value) => {
+export const setShowForm = (name, value) => {
   return (dispatch) => {
-     dispatch({ type: SET_SHOW_POST_FORM , payload: value })
+     dispatch({ type: SET_SHOW_FORM , payload: {name, value} })
    }
 }
 
@@ -187,33 +138,18 @@ export const editPostInfo = (name, value) => {
 }
 export const resetPostInfo = () => {
   return (dispatch) => {
-     dispatch({ type: RESET_POST_INFO , payload: resetPostValue })
+     dispatch({ type: RESET_POST_INFO , payload: resetPostValue() })
    } 
 }
-
 
 export const setShowScrollUpBtn = (value) => {
   return (dispatch) => {
     dispatch({ type: SET_SHOW_SCROLL_UP_BUTTON, payload: value })
   }
 }
-export const resetGlobals = () => {
-   return (dispatch) => {
-    dispatch( { type: RESET_GLOBALS, payload: resetGlobalValues })
-  }
-}
-// ==================== NavBar ================================//
 
-export const setMenubar = (value) => {
-   return (dispatch) => {
-    dispatch( { type: SET_MENU_BAR, payload: value  })
-  }
-}
-export const setCreateMenu = (value) => {
-   return (dispatch) => {
-    dispatch( { type: SET_CREATE_MENU, payload: value  })
-  }
-}
+
+
 // ==================== Sign Up Page ================================//
 export const setSignUpData = ( name, value) => {
   return (dispatch) => {
@@ -250,10 +186,24 @@ export const resetLoginData = () => {
   }
 }
 // ==================== Change Password Page ================================//
-export const setResetPassword = ( name, value) => {
+export const setResetPassword = ( name, value ) => {
   return (dispatch) => {
     dispatch( { type: SET_RESET_PASSWORD, payload: { name, value }  })
   }
+}
+export const resetChangePasswordData = () => {
+  let resetValue = {
+    btnAbled: true,
+    oldPassword: '',
+    newPassword: '',
+    confirmPassword: '',
+    errors: {
+      oldPassword: '',
+      newPassword: '',
+      confirmPassword: ''
+    }
+  }
+  return (dispatch) => dispatch({ type: RESET_CHANGE_PASSWORD_DATA, payload: resetValue }) 
 }
 
 
@@ -264,3 +214,15 @@ export const showCreateCommentForm = ( toggle ) => {
   }
 }
 
+//==================== Resets ==============================//
+export const resetGlobals = () => {
+   return (dispatch) => {
+   dispatch( { type: RESET_GLOBALS, payload: resetGlobalValues() })
+  }
+}
+
+export const resetHomePage = () => {
+  return (dispatch) => {
+    dispatch( { type: RESET_HOME_PAGE, payload: resetHomePageValue()})
+  }
+}

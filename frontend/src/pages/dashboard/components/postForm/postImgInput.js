@@ -14,7 +14,7 @@ let inputStyle = {
   padding: '8px'
 }
 export default function PostImgInput() {
-  const { Globals: { postInfo : { imgPreview, images, deletedImageIds }}} = useReduxSelector();
+  const { Globals: { postInfo : { imgPreview, images, deletedImageIDs }}} = useReduxSelector();
   const dispatch = useReduxDispatch();
   const imageInputRef = useRef();
   const handleKeyUp = (e) => {
@@ -38,9 +38,9 @@ export default function PostImgInput() {
     let newImages = images.filter((img, index) => index !== i);
     let deletedImage = images.find((img,index) => index === i);
     if (deletedImage.hasOwnProperty('public_id')) {
-      dispatch(editPostInfo('deletedImageIDs', [...deletedImageIds, deletedImage.public_id]))
+      dispatch(editPostInfo('deletedImageIDs', [...deletedImageIDs, deletedImage.public_id]))
     }
-     dispatch(editPostInfo('images', newImages));
+    dispatch(editPostInfo('images', newImages));
     dispatch(editPostInfo('imgPreview', newImages))
   }
   const handleFileUpload = (e) => {

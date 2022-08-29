@@ -24,3 +24,22 @@ export const SignUpLink = styled(Link)`
      color: #fff;
    }
 `
+export const LogoLink = styled(Link)`
+  text-decoration: none;
+`
+export const GoToHomeLink = styled(Link)`
+  text-decoration: none;
+  display: block;
+  background-color: #021b41;
+  color: #fff;
+  letter-spacing: 0.8px;
+  font-size: 1.2rem;
+  margin: 1rem auto;
+  padding: 16px;
+  border-radius: 3px;
+  width: 200px;
+  text-align: center;
+  &:hover {
+    background-color: #2a78cd;
+  }
+`

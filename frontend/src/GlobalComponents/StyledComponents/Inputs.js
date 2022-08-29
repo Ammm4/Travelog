@@ -40,5 +40,8 @@ export const Submit = styled.input`
       background-color: #2a78cd;
     }
   }
-
+  &:disabled {
+    background-color: #ccc;
+    border: none;
+  }
 `

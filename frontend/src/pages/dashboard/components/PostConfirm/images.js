@@ -13,7 +13,7 @@ export default function Images() {
           { imgPreview && imgPreview.map((img, index) => {
             return  <ImagePreviewImg key={ index }>
                       <PostFormImg src={ img.imgFile } alt={ img.imgTitle }/>
-                      { img.imgTitle && <h5> { img.imgTitle }</h5> }
+                      { img.imgTitle && <h5 style={{marginBottom: '1rem'}}> { img.imgTitle }</h5> }
                     </ImagePreviewImg>
               })
           }

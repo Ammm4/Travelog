@@ -1,29 +1,35 @@
-import React from 'react';
-import styled from 'styled-components';
+import React, { useEffect } from 'react';
 import Reply from './Reply';
-import { useSelector } from 'react-redux';
-import { useCommentAPI } from './Comment';
-const ReplyContainer = styled.div`
-  grid-column-start: 2;
-  grid-column-end: 4;
-`
+import { useReduxSelector, useReduxDispatch } from '../../../utils';
+import CreateReply from './GlobalComponents/Components/CreateReply';
+import { GridItemContainer } from './GlobalComponents/StyledComponents/Containers';
+import { getPostCommentReplies, getPostsCommentsReplies } from '../../../redux/posts/postActions';
+import AddingReplySkeleton from './Skeleton.js/AddingReplySkeleton';
 
-export default function Replies() {
-  const {singlepost: post} = useSelector(state => state.SinglePost);
-  const { commentId } = useCommentAPI();
-  const comment = post.comments.find(comment => comment.comment_id === commentId);
-  const replies = [...comment.replies]
-  const newReversedReplies = replies.reverse();
+export default function Replies({ comment }) {
+  const { _id, replies, numReplies, singlePost, post, replyBody, replyLoading, addingReply } = comment;
+  const { User: { user: { userId } }} = useReduxSelector();
+  const dispatch = useReduxDispatch()
+  useEffect(() => {
+    if(replies.length > 0 || numReplies === 0) return
+    if(singlePost) return dispatch(getPostCommentReplies(_id,userId,1))
+    dispatch(getPostsCommentsReplies(post, _id, userId, 1 ))
+  },[post, _id, replies, numReplies, singlePost, userId, dispatch])
   return (
-    <ReplyContainer>
+    <GridItemContainer>
+      { replyLoading && <h4>Loading...</h4>}
+      { addingReply && <AddingReplySkeleton post={true} body={replyBody}/> }
       { 
-        newReversedReplies.map(reply => {
+        replies.map(reply => {
           return <Reply 
                   key={ reply.reply_id }
-                  reply={ reply } 
+                  reply={ reply }
+                  post={post}
+                  singlePost={singlePost}
                 />
         })
       }
-    </ReplyContainer>
+      <CreateReply comment={comment} post={post} singlePost={singlePost} body={replyBody}/>
+    </GridItemContainer>
   )
 }

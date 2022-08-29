@@ -8,12 +8,11 @@
   padding: 0;
   box-sizing: border-box;
 }
-/*font-family:  'Montserrat Alternates', sans-serif; */
+
 body {
   font-family: 'Roboto', sans-serif;
   color:#021b41;
   background-color: #f4f4f5;
-  /* background-color: #E1E1E1; AAC9FF*/
   @media only screen and (max-width: 600px){
    background-color: #AAC9FF;
   } 
@@ -62,4 +61,17 @@ div.sticky {
   position: -webkit-sticky;
   position: sticky;
   top: 75px;
+}
+
+.skeleton-loading {
+  animation: skeleton-loading 1s linear infinite alternate;
+}
+
+@keyframes skeleton-loading {
+  0%{
+    background-color: hsl(200, 20%, 70%);
+  }
+  100% {
+      background-color: hsl(200, 20%, 95%);
+    }
 }

@@ -3,7 +3,7 @@ import { useReduxSelector } from '../../../../utils';
 import { Infos, InfoGroup, StyledParagraph } from '../GlobalComponents/StyledComponents/Containers';
 import { InputsGroupHeading, InfoLabel } from '../GlobalComponents/StyledComponents/Headings';
 import { Answer } from '../GlobalComponents/StyledComponents/Paragraphs';
-import Ratings from '../Ratings';
+import Ratings from '../GlobalComponents/Components/Ratings';
 
 export default function DestinationInfo() {
   const { Globals: { postInfo: { destinationInfo }} } = useReduxSelector();

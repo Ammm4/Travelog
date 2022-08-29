@@ -1,36 +1,39 @@
 import React, { useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
 import { useReduxSelector, useReduxDispatch } from '../../../utils';
-import useProfile from '../components/useProfile';
-import Posts from '../components/Posts';
-import Forums from '../components/Forums';
-import PostBar from '../components/PostBar';
-import ProfileSettings from '../components/ProfileSettings';
+import { profileNavbar } from '../../../constants';
+import ProfileSkeleton from '../components/Skeleton.js/ProfileSkeleton';
+import useProfile from '../components/hooks/useProfile';
+import Posts from '../components/Posts/Posts';
+import Forums from '../components/Forums/Forums';
+import PostBar from '../components/GlobalComponents/Components/PostBar';
+import ProfileSettings from '../components/profile/ProfileSettings';
 import UserProfileInfos from '../components/GlobalComponents/Components/UserInfo';
 import { ProfileHeading } from '../components/GlobalComponents/StyledComponents/Headings';
 import { ProfileContainer, UserProfile } from '../components/GlobalComponents/StyledComponents/Containers';
-import { setPageInitialState } from '../../../redux/globals/globalActions';
-import Loading from '../components/Loading';
+import { setNavbar, setProfilePage, resetProfilePage } from '../../../redux/globals/globalActions';
 
 export default function Profile() {
   const { 
     User: { user: { userId }}, 
-    Globals: { pageData: { showPost } }  
+    Globals : { profilePage: { showPost } }  
   } = useReduxSelector();
-  const { loading, user, error } = useProfile(userId);
+  
+  const { loading, user } = useProfile(userId);
   const dispatch = useReduxDispatch();
-  const history = useHistory();
   useEffect(() => {
-    dispatch(setPageInitialState('profile', userId, true, true));
-  },[dispatch, userId]);
-  useEffect(() => {
-    if(error) {
-      history.goBack()
+    dispatch(setNavbar(profileNavbar));
+    dispatch(setProfilePage('userType', userId))
+    function handlePopState() {
+      dispatch(resetProfilePage())
     }
-  },[error, history])
-
+    window.addEventListener('popstate',handlePopState);
+    return () => {
+      window.removeEventListener('popstate',handlePopState)
+    }
+  },[dispatch, userId]);
+  
   if(loading || Object.keys(user).length < 1) {
-    return <Loading msg="Profile Loading"/>
+    return <ProfileSkeleton loading={ loading }/>
   }
   return (
     <ProfileContainer>

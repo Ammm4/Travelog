@@ -1,55 +1,41 @@
 import React, { useEffect } from 'react';
 import {  useParams } from 'react-router-dom';
 import { useReduxSelector, useReduxDispatch } from '../../../utils';
-import styled from 'styled-components';
-import PostDelete from '../components/PostDelete';
+import { postNavbar } from '../../../constants';
 import { getPost } from '../../../redux/posts/postActions';
-
-import SinglePost from '../components/SinglePost';
-import SinglePostImages from '../components/SinglePostImages';
-import Loading from '../components/Loading';
-import { setPageInitialState, setLoadingMessage } from '../../../redux/globals/globalActions';
-
-const SinglePostContainer = styled.div`
-  width: 100%;
-  height: 100vh;
-  overflow: hidden;
-  display: grid;
-  grid-template-columns: ${ props => props.expand ? '1fr' : '1.35fr 0.65fr'};
-  grid-template-rows: 100vh auto;
-  @media only screen and (max-width: 600px) {
-    grid-template-columns: 1fr;
-    grid-template-rows: ${ props => props.expand ? '100vh' : '50vh auto'};
-  }
-`
-const ImageGridWrapper = styled.div`
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  background-color: #111111;
-  padding: 0%;
-`
+import { SinglePostContainer, ImageGridWrapper } from '../components/GlobalComponents/StyledComponents/Containers';
+import SinglePost from '../components/Post/SinglePost';
+import SinglePostImages from '../components/Post/SinglePostImages';
+import { setNavbar } from '../../../redux/globals/globalActions';
+import SinglePostSkeleton from '../components/Skeleton.js/SinglePostSkeleton';
+import DeletedBlog from '../components/Skeleton.js/DeletedBlog';
+import { SINGLE_POST_RESET } from '../../../redux/posts/postTypes';
 
 export default function Singlepost() {
   const { post_id } = useParams();
-  const { Post: { loading, post }, User: { user : { userId }}} = useReduxSelector();
+  const { Post: { loading, post }, User: { user : { userId } } } = useReduxSelector();
   const dispatch = useReduxDispatch();
   useEffect(() => {
-    dispatch(setPageInitialState(null,null,null))
+    function handlePopState() {
+      dispatch({ type: SINGLE_POST_RESET });
+    }
+    window.addEventListener('popstate',handlePopState);
+    return () => {
+      window.removeEventListener('popstate',handlePopState)
+    }
+  })
+  useEffect(() => {
+    dispatch(setNavbar(postNavbar))
     dispatch(getPost(post_id, userId));
   }, [post_id, dispatch, userId])
   
- /*  useEffect(() => {
-    dispatch(setLoadingMessage('Post Loading'));
-  }, [loading, dispatch]) */
-
   if(loading || Object.keys(post).length < 1) {
-    return <Loading />
+    return <SinglePostSkeleton loading={loading}/>
   }
   if(post.deleted) {
-    return <PostDelete />
+    return <DeletedBlog blogType='Post'/>
   }
-  
+ 
   return (
     <SinglePostContainer expand={ post.expand }>
       <ImageGridWrapper>
